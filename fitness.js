@@ -100,11 +100,12 @@ document.getElementById('exportarCSV').addEventListener('click', function() {
     URL.revokeObjectURL(url);
 });
 
+// Event listener para el botón de importar CSV
 document.getElementById('importarCSV').addEventListener('click', function() {
     document.getElementById('fileInput').click();
 });
 
-// Event listener para el import CSV file
+// Event listener para el input de archivo
 document.getElementById('fileInput').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
