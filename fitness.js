@@ -1,5 +1,8 @@
+// Variables globales
 const clientes = [];
 
+
+// función para calcular los campos necesarios
 function calcularCampos({altura, peso, edad, grasa, actividad, objetivo}) {
     // Masa magra y masa grasa
     const masaGrasa = peso * (grasa / 100);
@@ -24,6 +27,7 @@ function calcularCampos({altura, peso, edad, grasa, actividad, objetivo}) {
     };
 }
 
+// Event listener para el formulario
 document.getElementById('fitnessForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const nombre = document.getElementById('nombre').value;
@@ -52,6 +56,7 @@ document.getElementById('fitnessForm').addEventListener('submit', function(e) {
     this.reset();
 });
 
+// Renderizar la tabla de clientes
 function renderTabla() {
     const tbody = document.querySelector('#clientesTable tbody');
     tbody.innerHTML = '';
