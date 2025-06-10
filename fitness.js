@@ -91,7 +91,7 @@ document.getElementById('exportarCSV').addEventListener('click', function() {
         c.nombre, c.altura, c.peso, c.edad, c.grasa, c.masaMagra, c.masaGrasa, c.imc, c.mb, c.caloriasObjetivo, c.actividad, c.objetivo
     ]);
     const csv = [encabezado, ...filas].map(f => f.join(';')).join('\n');
-    const blob = new Blob([csv], {type: 'text/csv'});
+    const blob = new Blob([csv], {type: 'text/csv'}); // comprobar si se puede crear en string aunque creo que blob es más rápido
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
