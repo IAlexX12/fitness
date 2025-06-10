@@ -75,6 +75,8 @@ function renderTabla() {
     }
 }
 
+
+// Event listener para botón de exportar CSV
 document.getElementById('exportarCSV').addEventListener('click', function() {
     if (clientes.length === 0) return alert('No hay datos para exportar');
     const encabezado = [
