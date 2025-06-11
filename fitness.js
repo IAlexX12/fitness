@@ -151,3 +151,16 @@ function importarDesdeCSV(text) {
     }
     renderTabla();
 }
+
+// Event listener para el formulario de comidas
+document.getElementById('comidasForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const checks = document.querySelectorAll('#comidasCheckboxes input[type=checkbox]:checked');
+    const seleccionadas = Array.from(checks).map(c => c.value);
+    const div = document.getElementById('comidasSeleccionadas');
+    if (seleccionadas.length === 0) {
+        div.innerHTML = '<div class="alert alert-warning">No has seleccionado ninguna comida.</div>';
+    } else {
+        div.innerHTML = `<div class="alert alert-success">Comidas seleccionadas: <strong>${seleccionadas.join(', ')}</strong></div>`;
+    }
+});
