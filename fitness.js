@@ -10,7 +10,7 @@ function calcularCampos({altura, peso, edad, grasa, actividad, objetivo}) {
     // IMC
     const imc = peso / Math.pow(altura / 100, 2);
     // Metabolismo basal (fuente internet)
-    const mb = 88.36 + (13.4 * peso) + (4.8 * altura) - (5.7 * edad);
+    const mb = 88.36 + (13.4 * peso) + (4.8 * altura) - (5.7 * edad); // Hay que poner mas decimales?
     // Calorías mantenimiento
     const caloriasMantenimiento = mb * actividad;
     // Calorías objetivo
