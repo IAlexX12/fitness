@@ -1,9 +1,7 @@
 .fitness-app {
+    max-width: 1200px;
+    margin-top: 20px;
     background: #f7f7f7;
-}
-.fitness-app {
-    max-width: 800px;
-    margin-top: 40px;
 }
 .fitness-app .table-responsive {
     margin-top: 30px;
@@ -27,4 +25,14 @@
     background-color: #60a5fa;
     border-color: #60a5fa;
     color: #1e3a8a;
+}
+.btn-delete {
+    background-color: #fca5a5;
+    border-color: #fca5a5;
+    color: #991b1b;
+}
+.btn-delete:hover {
+    background-color: #ef4444;
+    border-color: #ef4444;
+    color: #fff;
 }

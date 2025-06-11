@@ -60,7 +60,7 @@ document.getElementById('fitnessForm').addEventListener('submit', function(e) {
 function renderTabla() {
     const tbody = document.querySelector('#clientesTable tbody');
     tbody.innerHTML = '';
-    for (const c of clientes) {
+    clientes.forEach((c, idx) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${c.nombre}</td>
@@ -75,8 +75,16 @@ function renderTabla() {
             <td>${c.caloriasObjetivo}</td>
             <td>${c.actividad}</td>
             <td>${c.objetivo}</td>
+            <td><button class="btn btn-delete btn-sm" onclick="borrarCliente(${idx})">Borrar</button></td>
         `;
         tbody.appendChild(tr);
+    });
+}
+
+window.borrarCliente = function(idx) {
+    if (confirm('Confirmar borrado del cliente?')) {
+        clientes.splice(idx, 1);
+        renderTabla();
     }
 }
 
