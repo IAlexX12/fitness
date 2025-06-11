@@ -155,6 +155,8 @@ function importarDesdeCSV(text) {
 // Event listener para el formulario de comidas
 document.getElementById('comidasForm').addEventListener('submit', function(e) {
     e.preventDefault();
+    
+    //comidasCheckboxes
     const checks = document.querySelectorAll('#comidasCheckboxes input[type=checkbox]:checked');
     const seleccionadas = Array.from(checks).map(c => c.value);
     const div = document.getElementById('comidasSeleccionadas');
