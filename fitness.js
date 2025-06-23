@@ -61,7 +61,7 @@ document.getElementById('fitnessForm').addEventListener('submit', function(e) {
         caloriasObjetivo: calculos.caloriasObjetivo,
         actividad: actividadTxt,
         objetivo: objetivoTxt,
-        alergias: alergias // esto debe ser un array, aunque esté vacío
+        alergias: alergias
     };
     clientes.push(cliente);
     renderTabla();
@@ -72,25 +72,28 @@ document.getElementById('fitnessForm').addEventListener('submit', function(e) {
 function renderTabla() {
     const tbody = document.querySelector('#clientesTable tbody');
     tbody.innerHTML = '';
-    clientes.forEach((c, idx) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${c.nombre}</td>
-            <td>${c.altura}</td>
-            <td>${c.peso}</td>
-            <td>${c.edad}</td>
-            <td>${c.grasa}</td>
-            <td>${c.masaMagra}</td>
-            <td>${c.masaGrasa}</td>
-            <td>${c.imc}</td>
-            <td>${c.mb}</td>
-            <td>${c.caloriasObjetivo}</td>
-            <td>${c.actividad}</td>
-            <td>${c.objetivo}</td>
-            <td>[${(c.alergias || []).map(a => `"${a}"`).join(', ')}]</td>
-            <td><button class="btn btn-delete btn-sm" onclick="borrarCliente(${idx})">Borrar</button></td>
+    clientes.forEach((cliente, idx) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${cliente.nombre}</td>
+            <td>${cliente.altura}</td>
+            <td>${cliente.peso}</td>
+            <td>${cliente.edad}</td>
+            <td>${cliente.grasa}</td>
+            <td>${cliente.masaMagra}</td>
+            <td>${cliente.masaGrasa}</td>
+            <td>${cliente.imc}</td>
+            <td>${cliente.mb}</td>
+            <td>${cliente.caloriasObjetivo}</td>
+            <td>${cliente.actividad}</td>
+            <td>${cliente.objetivo}</td>
+            <td>[${(cliente.alergias || []).map(a => `"${a}"`).join(', ')}]</td>
+            <td>
+                <button class="btn btn-warning btn-sm me-1" onclick="abrirEditarCliente(${idx})">Editar</button>
+                <button class="btn btn-danger btn-sm" onclick="borrarCliente(${idx})">Borrar</button>
+            </td>
         `;
-        tbody.appendChild(tr);
+        tbody.appendChild(row);
     });
 }
 
@@ -106,17 +109,33 @@ window.borrarCliente = function(idx) {
 document.getElementById('exportarCSV').addEventListener('click', function() {
     let csv = 'Nombre,Altura,Peso,Edad,% Graso,M. Magra,M. Grasa,IMC,MB,Calorías Objetivo,Actividad,Objetivo,Alergias\n';
     clientes.forEach(cliente => {
+        // Recalcular campos anets de exportar
+        const altura = Number(cliente.altura);
+        const peso = Number(cliente.peso);
+        const edad = Number(cliente.edad);
+        const grasa = Number(cliente.grasa);
+        let actividad = cliente.actividad;
+        if (isNaN(Number(actividad))) {
+            actividad = 1.2;
+        } else {
+            actividad = Number(actividad);
+        }
+        let objetivo = cliente.objetivo;
+        if (!['deficit', 'volumen', 'recomposicion'].includes(objetivo)) {
+            objetivo = 'deficit';
+        }
+        const calculos = calcularCampos({altura, peso, edad, grasa, actividad, objetivo});
         csv += [
             cliente.nombre,
             cliente.altura,
             cliente.peso,
             cliente.edad,
             cliente.grasa,
-            cliente.mMagra,
-            cliente.mGrasa,
-            cliente.imc,
-            cliente.mb,
-            cliente.caloriasObjetivo,
+            calculos.masaMagra,
+            calculos.masaGrasa,
+            calculos.imc,
+            calculos.mb,
+            calculos.caloriasObjetivo,
             cliente.actividad,
             cliente.objetivo,
             (cliente.alergias || []).join(';')
@@ -163,10 +182,38 @@ function importarDesdeCSV(text) {
             if (header === 'Alergias') {
                 // Convierte el string de alergias en array
                 cliente.alergias = values[idx] ? values[idx].split(';').map(a => a.trim()).filter(a => a) : [];
+            } else if (header.trim().toLowerCase() === '% graso') {
+                cliente.grasa = values[idx];
             } else {
                 cliente[header.trim().toLowerCase().replace(/ /g, '')] = values[idx];
             }
         });
+
+        // Recalcular campos si faltan o están vacíos por si acaso
+        const altura = Number(cliente.altura);
+        const peso = Number(cliente.peso);
+        const edad = Number(cliente.edad);
+        const grasa = Number(cliente.grasa);
+        let actividad = cliente.actividad;
+        if (isNaN(Number(actividad))) {
+            // Si es texto asigna un valor por defecto (sedentario)
+            actividad = 1.2;
+        } else {
+            actividad = Number(actividad);
+        }
+        let objetivo = cliente.objetivo;
+        if (!['deficit', 'volumen', 'recomposicion'].includes(objetivo)) {
+            objetivo = 'deficit';
+        }
+        if (!cliente.masaMagra || !cliente.masaGrasa || !cliente.caloriasObjetivo ||
+            cliente.masaMagra === '' || cliente.masaGrasa === '' || cliente.caloriasObjetivo === '') {
+            const calculos = calcularCampos({altura, peso, edad, grasa, actividad, objetivo});
+            cliente.masaMagra = calculos.masaMagra;
+            cliente.masaGrasa = calculos.masaGrasa;
+            cliente.imc = calculos.imc;
+            cliente.mb = calculos.mb;
+            cliente.caloriasObjetivo = calculos.caloriasObjetivo;
+        }
         clientes.push(cliente);
     });
     renderTabla();
@@ -205,3 +252,51 @@ document.addEventListener('DOMContentLoaded', function() {
 
   
 });
+
+window.abrirEditarCliente = function(idx) {
+    const cliente = clientes[idx];
+    document.getElementById('editIndex').value = idx;
+    document.getElementById('editNombre').value = cliente.nombre;
+    document.getElementById('editAltura').value = cliente.altura;
+    document.getElementById('editPeso').value = cliente.peso;
+    document.getElementById('editEdad').value = cliente.edad;
+    document.getElementById('editGrasa').value = cliente.grasa;
+    document.getElementById('editActividad').value = cliente.actividad;
+    document.getElementById('editObjetivo').value = cliente.objetivo;
+    // Alergias (select múltiple)
+    //const alergiasSelect = document.getElementById('editAlergias');
+    //Array.from(alergiasSelect.options).forEach(opt => {
+        //opt.selected = (cliente.alergias || []).includes(opt.text);
+    //});
+
+    // Abre el modal
+    const modal = new bootstrap.Modal(document.getElementById('editarClienteModal'));
+    modal.show();
+}
+
+// Guardar cambios del modal
+const formEditarCliente = document.getElementById('formEditarCliente');
+if (formEditarCliente) {
+    formEditarCliente.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const idx = parseInt(document.getElementById('editIndex').value, 10);
+        const nombre = document.getElementById('editNombre').value;
+        const altura = document.getElementById('editAltura').value;
+        const peso = document.getElementById('editPeso').value;
+        const edad = document.getElementById('editEdad').value;
+        const grasa = document.getElementById('editGrasa').value;
+        const actividad = document.getElementById('editActividad').value;
+        const objetivo = document.getElementById('editObjetivo').value;
+        const alergiasSelect = document.getElementById('editAlergias');
+        //const alergias = Array.from(alergiasSelect.selectedOptions).map(opt => opt.text);
+        const calculos = calcularCampos({altura, peso, edad, grasa, actividad, objetivo});
+        clientes[idx] = {
+            nombre, altura, peso, edad, grasa, actividad, objetivo,
+            ...calculos
+        };
+        renderTabla();
+        // Cierra el modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('editarClienteModal'));
+        modal.hide();
+    });
+}
