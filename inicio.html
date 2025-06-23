@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio - Gestión Fitness</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <style>
+        body, html {
+            height: 100%;
+        }
+        .pantalla-carga {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container pantalla-carga">
+    <h2 class="mb-4">Bienvenido</h2>
+    <p class="mb-3">Por favor, carga un archivo CSV de clientes para continuar.</p>
+    <input type="file" id="csvInicialInput" accept=".csv" class="form-control mb-3" style="max-width:300px;">
+    <div id="csvError" class="text-danger mb-3"></div>
+    <button id="continuarBtn" class="btn btn-success" style="display:none;">Continuar</button>
+</div>
+<script>
+let csvValido = false;
+
+
+
+// Parte JS para gestionar la carga del CSV
+// Se añade un listener al input de tipo file para validar el CSV
+document.getElementById('csvInicialInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const csvError = document.getElementById('csvError');
+    const continuarBtn = document.getElementById('continuarBtn');
+    csvError.textContent = '';
+    continuarBtn.style.display = 'none';
+
+    if (!file) return;
+    if (!file.name.endsWith('.csv')) {
+        csvError.textContent = 'Por favor, selecciona un archivo CSV válido.';
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+        try {
+            const lines = evt.target.result.trim().split('\n');
+            if (lines.length < 2 || lines[0].split(',').length < 3) {
+                throw new Error();
+            }
+            csvValido = true;
+            continuarBtn.style.display = '';
+            // Guardar el CSV en localStorage
+            localStorage.setItem('clientesCSV', evt.target.result);
+        } catch {
+            csvError.textContent = 'El archivo CSV no tiene el formato esperado.';
+            csvValido = false;
+        }
+    };
+    reader.readAsText(file);
+});
+
+document.getElementById('continuarBtn').addEventListener('click', function() {
+    if (csvValido) {
+        window.location.href = 'index.html';
+    }
+});
+</script>
+</body>
+</html>

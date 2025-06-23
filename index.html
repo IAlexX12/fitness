@@ -50,9 +50,9 @@
                 <option value="recomposicion">Recomposición</option>
             </select>
         </div>
-        <!-- Modificar lo y hacer lo bien -->
+        <!-- Modificarlo y hacerlo bien -->
         <div class="form-group">
-            <label for="habilidades">Selecciona tus alrgias:</label>
+            <label for="habilidades">Selecciona tus alergias:</label>
             <select name="habilidades" id="habilidades" multiple>
                 <option value="html">HTML</option>
                 <option value="css">CSS</option>
@@ -64,30 +64,30 @@
             </select>
         </div>
         <!-- hacer lo mismo que el de arriba -->
-        <div class="col-md-3">
-  <label for="comida" class="form-label">Alimentos disponibles</label>
-  <select class="form-select" id="comida" name="comida[]" multiple aria-label="Selecciona varios alimentos">
-    <option value="pescao">Pescao</option>
-    <option value="carne">Carne</option>
-    <option value="huevo">Huevo</option>
-    <option value="vegetales">Vegetales</option>
-  </select>
-  <div class="invalid-feedback">
-    Por favor, selecciona al menos una opción.
-  </div>
-        </div>
-        <div class="row mt-4">
-    <div class="col-12 d-flex justify-content-center mb-2">
+    <div class="col-md-3">
+    <label for="comida" class="form-label">Alimentos disponibles</label>
+    <select class="form-select" id="comida" name="comida[]" multiple aria-label="Selecciona varios alimentos">
+        <option value="pescao">Pescao</option>
+        <option value="carne">Carne</option>
+        <option value="huevo">Huevo</option>
+        <option value="vegetales">Vegetales</option>
+    </select>
+    <div class="invalid-feedback">
+        Por favor, selecciona al menos una opción.
+    </div>
+    </div>
+            <div class="col-12 d-flex justify-content-between align-items-center mt-4">
         <button type="submit" class="btn btn-primary">Añadir Cliente</button>
+        <div class="d-flex gap-2 ms-auto">
+            <button type="button" class="btn btn-export" id="exportarCSV">Exportar CSV</button>
+            <button type="button" class="btn btn-import" id="importarCSV">Importar CSV</button>
+            <input type="file" id="fileInput" accept=".csv" style="display:none">
+        </div>
     </div>
-    <div class="col-12 d-flex justify-content-end">
-        <button type="button" class="btn btn-export me-2" id="exportarCSV">Exportar CSV</button>
-        <button type="button" class="btn btn-import" id="importarCSV">Importar CSV</button>
-        <input type="file" id="fileInput" accept=".csv" style="display:none">
-    </div>
-</div>
+        <div class="col-12">
+            <div class="alert alert-info" id="infoMessage" style="display:none;"></div>
+        </div>
     </form>
-    </div>
     <div class="table-responsive">
         <table class="table table-striped table-sm mt-4" id="clientesTable" style="font-size: 0.95rem;">
             <thead>
@@ -104,13 +104,14 @@
                     <th>Calorías Objetivo</th>
                     <th>Actividad</th>
                     <th>Objetivo</th>
+                    <th>Alergias</th> <!-- Nueva columna -->
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody></tbody>
         </table>
     </div>
-</div>
+
 <script src="fitness.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 </body>
