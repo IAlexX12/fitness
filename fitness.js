@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
             searchEnabled: true,
             duplicateItemsAllowed: false,
             placeholder: true,
-            placeholderValue: 'Busca o selecciona habilidades...',
+            placeholderValue: 'Selecciona alergias...',
             searchPlaceholderValue: 'Escribe para buscar...',
             shouldSort: false,
             loadingText: 'Cargando...',
