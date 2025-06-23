@@ -75,19 +75,21 @@
   <div class="invalid-feedback">
     Por favor, selecciona al menos una opción.
   </div>
-        <div class="col-12 d-flex justify-content-between">
-            <div>
-                <button type="submit" class="btn btn-primary">Añadir Cliente</button>
-            </div>
-            <div>
-                <button type="button" class="btn btn-export me-2" id="exportarCSV">Exportar CSV</button>
-                <button type="button" class="btn btn-import" id="importarCSV">Importar CSV</button>
-                <input type="file" id="fileInput" accept=".csv" style="display:none">
-            </div>
         </div>
+        <div class="row mt-4">
+    <div class="col-12 d-flex justify-content-center mb-2">
+        <button type="submit" class="btn btn-primary">Añadir Cliente</button>
+    </div>
+    <div class="col-12 d-flex justify-content-end">
+        <button type="button" class="btn btn-export me-2" id="exportarCSV">Exportar CSV</button>
+        <button type="button" class="btn btn-import" id="importarCSV">Importar CSV</button>
+        <input type="file" id="fileInput" accept=".csv" style="display:none">
+    </div>
+</div>
     </form>
+    </div>
     <div class="table-responsive">
-        <table class="table table-striped mt-4" id="clientesTable">
+        <table class="table table-striped table-sm mt-4" id="clientesTable" style="font-size: 0.95rem;">
             <thead>
                 <tr>
                     <th>Nombre</th>
