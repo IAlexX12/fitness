@@ -151,3 +151,38 @@ function importarDesdeCSV(text) {
     }
     renderTabla();
 }
+
+// Espera a que el DOM esté completamente cargado
+document.addEventListener('DOMContentLoaded', function() {
+  // Inicializa el select múltiple
+  const selectHabilidades = new Choices('#habilidades', {
+    removeItemButton: true,       // Permite eliminar items seleccionados
+    searchEnabled: true,         // Habilita la búsqueda
+    duplicateItemsAllowed: false, // Evita duplicados
+    placeholder: true,            // Habilita texto placeholder
+    placeholderValue: 'Busca o selecciona habilidades...',
+    searchPlaceholderValue: 'Escribe para buscar...',
+    shouldSort: false,            // Desactiva orden automático
+    loadingText: 'Cargando...',
+    noResultsText: 'No se encontraron resultados',
+    noChoicesText: 'No hay más opciones para seleccionar',
+    itemSelectText: 'Presiona para seleccionar',
+    maxItemCount: 5,             // Límite de selecciones (opcional)
+  });
+
+  // Manejo del formulario
+  const formulario = document.getElementById('miFormulario');
+
+  formulario.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    // Obtener valores seleccionados
+    const valores = selectHabilidades.getValue(true);
+    console.log('Habilidades seleccionadas:', valores);
+
+    // Aquí puedes hacer lo que necesites con los datos
+    // Por ejemplo, enviarlos por AJAX o validarlos
+
+    alert('Habilidades enviadas: ${valores.map(item => item.value).join(',')}');
+  });
+});
