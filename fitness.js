@@ -146,10 +146,18 @@ document.getElementById('exportarCSV').addEventListener('click', function() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'clientes.csv';
+    const fecha = obtenerFechaHoraActual();
+    a.download = `clientes+${fecha}.csv`;
     a.click();
     URL.revokeObjectURL(url);
 });
+
+// Función para obtener la fecha y hora actual formateada
+function obtenerFechaHoraActual() {
+    const now = new Date();
+    const pad = n => n.toString().padStart(2, '0');
+    return `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}/${pad(now.getHours())}.${pad(now.getMinutes())}.${pad(now.getSeconds())}`;
+}
 
 // Event listener para el botón de importar CSV
 document.getElementById('importarCSV').addEventListener('click', function() {
