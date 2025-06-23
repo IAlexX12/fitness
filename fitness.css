@@ -1,3 +1,13 @@
+body, html {
+    height: 100%;
+}
+.pantalla-carga {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 .fitness-app {
     max-width: 1200px;
     margin-top: 20px;
