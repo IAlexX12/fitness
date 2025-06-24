@@ -59,12 +59,12 @@ body, html {
     box-shadow: 0 4px 12px rgba(96,165,250,0.18);
 }
 .btn-informe {
-    background: linear-gradient(90deg, #fbbf24 0%, #f59e42 100%);
+    background: linear-gradient(90deg, #2fdefd 0%, #65d1f1 100%);
     color: #fff;
     box-shadow: 0 2px 6px rgba(251,191,36,0.15);
 }
 .btn-informe:hover {
-    background: linear-gradient(90deg, #f59e42 0%, #fbbf24 100%);
+    background: linear-gradient(90deg, #65d1f1 0%, #2fdefd 100%);
     color: #fff;
     transform: translateY(-2px) scale(1.04);
     box-shadow: 0 4px 12px rgba(251,191,36,0.25);
