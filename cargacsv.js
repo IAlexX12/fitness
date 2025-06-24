@@ -115,9 +115,9 @@ class CargaCSV {
                 if (lines.length < 2 || headers.length < 3) {
                     throw new Error();
                 }
-                // Validar encabezados
+                // Validar formato
                 if (headers.length !== expectedHeaders.length || !headers.every((h, i) => h === expectedHeaders[i])) {
-                    alimentosError.textContent = 'El archivo CSV de alimentos no tiene los encabezados esperados (nombre,categoria,calorias).';
+                    alimentosError.textContent = 'El archivo CSV de alimentos no tiene el formato esperado';
                     if (alimentosStatusIcon) {
                         alimentosStatusIcon.textContent = '✗';
                         alimentosStatusIcon.style.color = 'red';
