@@ -2,14 +2,18 @@
 // Clase para gestionar la carga y validación del archivo CSV en la pantalla de inicio
 
 class CargaCSV {
+    // =====================
+    // Variables de instancia
+    // =====================
     constructor() {
         this.csvValido = false;
         this.alimentosValido = false;
         this.init();
     }
 
-    // Inicializa los eventos de la página
-    // Configura los manejadores de eventos para los inputs de CSV y el botón de continuar
+    // =====================
+    // Inicialización y eventos
+    // =====================
     init() {
         const csvInput = document.getElementById('csvInicialInput');
         const continuarBtn = document.getElementById('continuarBtn');
@@ -24,8 +28,9 @@ class CargaCSV {
         continuarBtn.addEventListener('click', () => this.handleContinue());
     }
 
-    // Maneja el cambio de archivo CSV
-    // Valida el formato del archivo y muestra mensajes de error si es necesario
+    // =====================
+    // Validación y carga de CSV de clientes
+    // =====================
     handleFileChange(e, csvError, continuarBtn) {
         const file = e.target.files[0];
         csvError.textContent = '';
@@ -81,8 +86,9 @@ class CargaCSV {
         reader.readAsText(file);
     }
 
-    // Maneja el cambio del archivo CSV de alimentos
-    // Valida el formato del archivo y muestra mensajes de error si es necesario
+    // =====================
+    // Validación y carga de CSV de alimentos
+    // =====================
     handleAlimentosChange(e, alimentosError, continuarBtn) {
         const file = e.target.files[0];
         alimentosError.textContent = '';
@@ -109,9 +115,9 @@ class CargaCSV {
                 if (lines.length < 2 || headers.length < 3) {
                     throw new Error();
                 }
-                // Validar formato
+                // Validar encabezados
                 if (headers.length !== expectedHeaders.length || !headers.every((h, i) => h === expectedHeaders[i])) {
-                    alimentosError.textContent = 'El archivo CSV de alimentos no tiene el formato esperados';
+                    alimentosError.textContent = 'El archivo CSV de alimentos no tiene los encabezados esperados (nombre,categoria,calorias).';
                     if (alimentosStatusIcon) {
                         alimentosStatusIcon.textContent = '✗';
                         alimentosStatusIcon.style.color = 'red';
@@ -138,8 +144,9 @@ class CargaCSV {
         reader.readAsText(file);
     }
 
-    // Maneja el botón de continuar
-    // Verifica que ambos archivos CSV sean válidos antes de continuar
+    // =====================
+    // Validación final y navegación
+    // =====================
     handleContinue() {
         const csvError = document.getElementById('csvError');
         const alimentosError = document.getElementById('alimentosError');
@@ -160,7 +167,9 @@ class CargaCSV {
     }
 }
 
-// Inicializar la clase al cargar la página
+// =====================
+// Inicialización global
+// =====================
 window.addEventListener('DOMContentLoaded', () => {
     new CargaCSV();
 });
