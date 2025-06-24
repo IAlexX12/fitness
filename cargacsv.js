@@ -8,6 +8,8 @@ class CargaCSV {
         this.init();
     }
 
+    // Inicializa los eventos de la página
+    // Configura los manejadores de eventos para los inputs de CSV y el botón de continuar
     init() {
         const csvInput = document.getElementById('csvInicialInput');
         const continuarBtn = document.getElementById('continuarBtn');
