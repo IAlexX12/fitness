@@ -26,7 +26,7 @@ window.generarInforme = function(idx) {
     doc.text(`Calorías Objetivo: ${cliente.caloriasObjetivo}`, 15, 125);
     doc.text(`Actividad: ${cliente.actividad}`, 15, 135);
     doc.text(`Objetivo: ${cliente.objetivo}`, 15, 145);
-    doc.text(`Alergias: ${(cliente.alergias || []).join(', ')}`, 15, 155);
+    doc.text(`Alergias: ${(cliente.alergias || "").join(', ')}`, 15, 155);
 
     doc.save(`informe_${cliente.nombre}.pdf`);
 };

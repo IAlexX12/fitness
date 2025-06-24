@@ -57,7 +57,7 @@ function renderTabla() {
             <td>${cliente.caloriasObjetivo}</td>
             <td>${cliente.actividad}</td>
             <td>${cliente.objetivo}</td>
-            <td>[${(cliente.alergias || []).map(a => `"${a}"`).join(', ')}]</td>
+            <td>${(cliente.alergias || []).join(', ')}</td>
             <td>
                 <button class="btn btn-success btn-sm me-1" onclick="generarInforme(${idx})">Generar informe</button>
                 <button class="btn btn-warning btn-sm me-1" onclick="abrirEditarCliente(${idx})">Editar</button>
@@ -211,7 +211,7 @@ document.getElementById('exportarCSV').addEventListener('click', function() {
             calculos.caloriasObjetivo,
             cliente.actividad,
             cliente.objetivo,
-            (cliente.alergias || []).join(';')
+            (cliente.alergias || "").join(';')
         ].join(',') + '\n';
     });
     const blob = new Blob([csv], { type: 'text/csv' });
