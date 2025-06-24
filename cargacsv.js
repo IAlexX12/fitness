@@ -4,6 +4,7 @@
 class CargaCSV {
     constructor() {
         this.csvValido = false;
+        this.alimentosValido = false;
         this.init();
     }
 
@@ -11,9 +12,13 @@ class CargaCSV {
         const csvInput = document.getElementById('csvInicialInput');
         const continuarBtn = document.getElementById('continuarBtn');
         const csvError = document.getElementById('csvError');
-        if (!csvInput || !continuarBtn || !csvError) return;
+        const alimentosInput = document.getElementById('alimentosInicialInput');
+        const alimentosError = document.getElementById('alimentosError');
+        this.alimentosValido = false;
+        if (!csvInput || !continuarBtn || !csvError || !alimentosInput || !alimentosError) return;
 
         csvInput.addEventListener('change', (e) => this.handleFileChange(e, csvError, continuarBtn));
+        alimentosInput.addEventListener('change', (e) => this.handleAlimentosChange(e, alimentosError, continuarBtn));
         continuarBtn.addEventListener('click', () => this.handleContinue());
     }
 
@@ -45,8 +50,36 @@ class CargaCSV {
         reader.readAsText(file);
     }
 
+    handleAlimentosChange(e, alimentosError, continuarBtn) {
+        const file = e.target.files[0];
+        alimentosError.textContent = '';
+        continuarBtn.style.display = 'none';
+
+        if (!file) return;
+        if (!file.name.endsWith('.csv')) {
+            alimentosError.textContent = 'Por favor, selecciona un archivo CSV válido de alimentos.';
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            try {
+                const lines = evt.target.result.trim().split('\n');
+                if (lines.length < 2 || lines[0].split(',').length < 3) {
+                    throw new Error();
+                }
+                this.alimentosValido = true;
+                localStorage.setItem('alimentosCSV', evt.target.result);
+                if (this.csvValido) continuarBtn.style.display = '';
+            } catch {
+                alimentosError.textContent = 'El archivo CSV de alimentos no tiene el formato esperado.';
+                this.alimentosValido = false;
+            }
+        };
+        reader.readAsText(file);
+    }
+
     handleContinue() {
-        if (this.csvValido) {
+        if (this.csvValido && this.alimentosValido) {
             window.location.href = 'index.html';
         }
     }

@@ -28,5 +28,19 @@ window.generarInforme = function(idx) {
     doc.text(`Objetivo: ${cliente.objetivo}`, 15, 145);
     doc.text(`Alergias: ${(cliente.alergias || "").join(', ')}`, 15, 155);
 
+    // Recomendación de alimentos
+    let alimentosRecomendados = [];
+    if (window.alimentosManager && window.alimentosManager.alimentos.length > 0) {
+        alimentosRecomendados = window.alimentosManager.getRecomendacion(
+            cliente.caloriasObjetivo,
+            cliente.alergias || [],
+            5
+        );
+        doc.text('Alimentos recomendados:', 15, 165);
+        alimentosRecomendados.forEach((alimento, i) => {
+            doc.text(`- ${alimento.nombre} (${alimento.categoria}, ${alimento.calorias} kcal)`, 20, 175 + i * 10);
+        });
+    }
+
     doc.save(`informe_${cliente.nombre}.pdf`);
 };

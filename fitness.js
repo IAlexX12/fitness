@@ -302,3 +302,34 @@ if (formEditarCliente) {
     });
 }
 
+// =====================
+// Cargar alimentos desde CSV
+// =====================
+const alimentosInput = document.getElementById('alimentosCSV');
+if (alimentosInput) {
+    alimentosInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const errorDiv = document.getElementById('alimentosCSVError');
+        errorDiv.textContent = '';
+        if (!file) return;
+        if (!file.name.endsWith('.csv')) {
+            errorDiv.textContent = 'Por favor, selecciona un archivo CSV válido.';
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            try {
+                window.alimentosManager.cargarDesdeCSV(evt.target.result);
+                errorDiv.textContent = 'Alimentos cargados correctamente.';
+                errorDiv.classList.remove('text-danger');
+                errorDiv.classList.add('text-success');
+            } catch {
+                errorDiv.textContent = 'El archivo CSV no tiene el formato esperado.';
+                errorDiv.classList.remove('text-success');
+                errorDiv.classList.add('text-danger');
+            }
+        };
+        reader.readAsText(file);
+    });
+}
+
