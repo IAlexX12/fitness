@@ -28,17 +28,21 @@ window.generarInforme = function(idx) {
     doc.text(`Objetivo: ${cliente.objetivo}`, 15, 145);
     doc.text(`Alergias: ${(cliente.alergias || "").join(', ')}`, 15, 155);
 
-    // Recomendación de alimentos
+    // Recomendación de alimentos (usando el algoritmo avanzado)
     let alimentosRecomendados = [];
     if (window.alimentosManager && window.alimentosManager.alimentos.length > 0) {
-        alimentosRecomendados = window.alimentosManager.getRecomendacion(
+        alimentosRecomendados = window.alimentosManager.getRecomendacionAvanzada2(
             cliente.caloriasObjetivo,
             cliente.alergias || [],
             5
         );
         doc.text('Alimentos recomendados:', 15, 165);
-        alimentosRecomendados.forEach((alimento, i) => {
-            doc.text(`- ${alimento.nombre} (${alimento.categoria}, ${alimento.calorias} kcal)`, 20, 175 + i * 10);
+        let y = 175;
+        alimentosRecomendados.forEach((rec, i) => {
+            const a = rec.alimento;
+            doc.text(`- ${a.nombre} (${a.categoria})`, 20, y);
+            doc.text(`  Porciones: ${rec.porciones}  |  Cal: ${rec.totalCal} kcal  | Prot: ${rec.totalProt}g  | Carb: ${rec.totalCarb}g  | Grasas: ${rec.totalGrasas}g`, 25, y + 7);
+            y += 17;
         });
     }
 

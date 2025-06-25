@@ -96,7 +96,8 @@ class CargaCSV {
         const alimentosStatusIcon = document.getElementById('alimentosStatusIcon');
         if (alimentosStatusIcon) alimentosStatusIcon.textContent = '';
 
-        const expectedHeaders = ['nombre','categoria','calorias'];
+        // Nueva estructura de encabezados
+        const expectedHeaders = ['nombre','categoria','proteina','carbohidratos','grasas','calorias','porcion'];
 
         if (!file) return;
         if (!file.name.endsWith('.csv')) {
@@ -112,28 +113,35 @@ class CargaCSV {
             try {
                 const lines = evt.target.result.trim().split('\n');
                 const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-                if (lines.length < 2 || headers.length < 3) {
-                    throw new Error();
-                }
-                // Validar formato
-                if (headers.length !== expectedHeaders.length || !headers.every((h, i) => h === expectedHeaders[i])) {
-                    alimentosError.textContent = 'El archivo CSV de alimentos no tiene el formato esperado';
+                if (lines.length < 2 || headers.length < 7) {
+                    alimentosError.textContent = 'El archivo CSV de alimentos debe tener al menos 2 filas y 7 columnas.';
+                    this.alimentosValido = false;
                     if (alimentosStatusIcon) {
                         alimentosStatusIcon.textContent = '✗';
                         alimentosStatusIcon.style.color = 'red';
                     }
+                    return;
+                }
+                // Validar formato
+                if (headers.length !== expectedHeaders.length || !headers.every((h, i) => h === expectedHeaders[i])) {
+                    alimentosError.textContent = 'El encabezado del CSV de alimentos no es válido.';
                     this.alimentosValido = false;
+                    if (alimentosStatusIcon) {
+                        alimentosStatusIcon.textContent = '✗';
+                        alimentosStatusIcon.style.color = 'red';
+                    }
                     return;
                 }
                 this.alimentosValido = true;
                 localStorage.setItem('alimentosCSV', evt.target.result);
-                if (this.csvValido) continuarBtn.style.display = '';
+                if (this.csvValido)
+                    continuarBtn.style.display = '';
                 if (alimentosStatusIcon) {
                     alimentosStatusIcon.textContent = '✓';
                     alimentosStatusIcon.style.color = 'green';
                 }
             } catch {
-                alimentosError.textContent = 'El archivo CSV de alimentos no tiene el formato esperado.';
+                alimentosError.textContent = 'El archivo CSV no tiene el formato esperado.';
                 this.alimentosValido = false;
                 if (alimentosStatusIcon) {
                     alimentosStatusIcon.textContent = '✗';
