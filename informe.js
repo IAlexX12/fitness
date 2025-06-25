@@ -31,6 +31,30 @@ window.generarInforme = function(idx) {
     doc.text(`Objetivo: ${cliente.objetivo}`, 15, 145);
     doc.text(`Alergias: ${(cliente.alergias || "").join(', ')}`, 15, 155);
 
+    // ====== NUEVO BLOQUE DE PORCIONES ======
+    const calcPorciones = new PorcionesCalculator(cliente);
+    const resumen = calcPorciones.getResumen();
+    let yPorciones = 165;
+    doc.setFontSize(12);
+    doc.setTextColor(44, 62, 200);
+    doc.text('Plan de Porciones (1 porción = 100 kcal):', 15, yPorciones);
+    doc.setTextColor(30,30,30);
+    yPorciones += 7;
+    doc.text(`Total de porciones: ${resumen.total}`, 15, yPorciones);
+    yPorciones += 6;
+    doc.text(`Porciones de proteína: ${resumen.proteina}`, 15, yPorciones);
+    yPorciones += 6;
+    doc.text(`Porciones de carbohidrato: ${resumen.carbohidrato}`, 15, yPorciones);
+    yPorciones += 6;
+    doc.text(`Porciones de grasa: ${resumen.grasa}`, 15, yPorciones);
+    // ====== FIN BLOQUE DE PORCIONES ======
+
+    // Función para filtrar alimentos por alergias
+    function filtrarAlimentosPorAlergias(alimentos, alergias) {
+        if (!Array.isArray(alergias)) return alimentos;
+        const alergiasLower = alergias.map(a => a.trim().toLowerCase());
+        return alimentos.filter(a => !alergiasLower.includes((a.categoria || '').trim().toLowerCase()));
+    }
 
     // Tablas de alimentos clasificados (si existen en localStorage)
     const clasificadosCSV = localStorage.getItem('clasificadosCSV');
@@ -43,7 +67,7 @@ window.generarInforme = function(idx) {
         const idxProt = headers.indexOf('esproteico');
         const idxCarb = headers.indexOf('escarbohidrato');
         const idxGrasa = headers.indexOf('esgrasa');
-        const proteicos = [], carbohidratos = [], grasas = [];
+        let proteicos = [], carbohidratos = [], grasas = [];
         lines.slice(1).forEach(line => {
             const values = line.split(',');
             const nombre = values[idxNombre];
@@ -53,7 +77,12 @@ window.generarInforme = function(idx) {
             if (values[idxCarb] === '1') carbohidratos.push({nombre, categoria, gramaje});
             if (values[idxGrasa] === '1') grasas.push({nombre, categoria, gramaje});
         });
-        let y = 170;
+        
+        // Filtrar por alergias usando la función filtrarAlimentosPorAlergias
+        proteicos = filtrarAlimentosPorAlergias(proteicos, cliente.alergias);
+        carbohidratos = filtrarAlimentosPorAlergias(carbohidratos, cliente.alergias);
+        grasas = filtrarAlimentosPorAlergias(grasas, cliente.alergias);
+        let y = 200; // Aumentado para evitar solapamiento con el bloque de porciones
 
         // Función para dibujar tablas
         function drawTable(title, data, color) {
@@ -102,3 +131,5 @@ window.generarInforme = function(idx) {
 
     doc.save(`informe_${cliente.nombre}.pdf`);
 };
+
+
