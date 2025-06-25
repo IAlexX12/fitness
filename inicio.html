@@ -10,9 +10,21 @@
 <body>
 <div class="container pantalla-carga">
     <h2 class="mb-4">Bienvenido</h2>
-    <p class="mb-3">Por favor, carga un archivo CSV de clientes para continuar.</p>
-    <input type="file" id="csvInicialInput" accept=".csv" class="form-control mb-3" style="max-width:300px;">
-    <div id="csvError" class="text-danger mb-3"></div>
+    <p class="mb-3">Por favor, carga los archivos CSV requeridos para continuar.</p>
+    <div class="mb-3" style="max-width:300px;">
+        <label for="csvInicialInput" class="form-label">CSV de clientes</label>
+        <input type="file" id="csvInicialInput" accept=".csv" class="form-control mb-1">
+        <div id="csvError" class="text-danger mb-2"></div>
+        <span id="csvTick" style="display:none;color:green;font-size:1.2em;">✔️</span>
+        <span id="csvCross" style="display:none;color:red;font-size:1.2em;">❌</span>
+    </div>
+    <div class="mb-3" style="max-width:300px;">
+        <label for="clasificadosCSV" class="form-label">CSV de alimentos clasificados</label>
+        <input type="file" id="clasificadosCSV" accept=".csv" class="form-control mb-1">
+        <div id="clasificadosError" class="text-danger mb-2"></div>
+        <span id="clasificadosTick" style="display:none;color:green;font-size:1.2em;">✔️</span>
+        <span id="clasificadosCross" style="display:none;color:red;font-size:1.2em;">❌</span>
+    </div>
     <button id="continuarBtn" class="btn btn-success" style="display:none;">Continuar</button>
 </div>
 
