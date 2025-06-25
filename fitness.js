@@ -12,13 +12,13 @@ function pad(n) {
 
 function obtenerFechaHoraActual() {
     const now = new Date();
-    return `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}.${pad(now.getHours())}.${pad(now.getMinutes())}.${pad(now.getSeconds())}`;
+    return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}.${pad(now.getHours())}.${pad(now.getMinutes())}.${pad(now.getSeconds())}`;
 }
 
 // =====================
 // Cálculos
 // =====================
-function calcularCampos({altura, peso, edad, grasa, actividad, objetivo}) {
+function calcularCampos({ altura, peso, edad, grasa, actividad, objetivo }) {
     const masaGrasa = peso * (grasa / 100);
     const masaMagra = peso - masaGrasa;
     const imc = peso / Math.pow(altura / 100, 2);
@@ -105,7 +105,7 @@ function importarDesdeCSV(text) {
         }
         if (!cliente.masaMagra || !cliente.masaGrasa || !cliente.caloriasObjetivo ||
             cliente.masaMagra === '' || cliente.masaGrasa === '' || cliente.caloriasObjetivo === '') {
-            const calculos = calcularCampos({altura, peso, edad, grasa, actividad, objetivo});
+            const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo });
             cliente.masaMagra = calculos.masaMagra;
             cliente.masaGrasa = calculos.masaGrasa;
             cliente.imc = calculos.imc;
@@ -120,7 +120,7 @@ function importarDesdeCSV(text) {
 // =====================
 // Borrar cliente
 // =====================
-window.borrarCliente = function(idx) {
+window.borrarCliente = function (idx) {
     if (confirm('Confirmar borrado del cliente?')) {
         clientes.splice(idx, 1);
         renderTabla();
@@ -130,7 +130,7 @@ window.borrarCliente = function(idx) {
 // =====================
 // Editar cliente (modal)
 // =====================
-window.abrirEditarCliente = function(idx) {
+window.abrirEditarCliente = function (idx) {
     const cliente = clientes[idx];
     document.getElementById('editIndex').value = idx;
     document.getElementById('editNombre').value = cliente.nombre;
@@ -149,22 +149,40 @@ window.abrirEditarCliente = function(idx) {
 // Event listeners
 // =====================
 // Formulario de alta de cliente
-document.getElementById('fitnessForm').addEventListener('submit', function(e) {
+document.getElementById('fitnessForm').addEventListener('submit', function (e) {
     e.preventDefault();
+
+    // Limpiar errores previos
+    document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+    document.getElementById('infoMessage').style.display = 'none';
+
+    // Validar antes de procesar
+    if (!validarFormularioCompleto()) {
+        document.getElementById('infoMessage').textContent = 'Por favor corrige los errores marcados';
+        document.getElementById('infoMessage').style.display = 'block';
+        document.getElementById('infoMessage').classList.add('alert-danger');
+        return;
+    }
+
     const nombre = document.getElementById('nombre').value;
     const altura = Number(document.getElementById('altura').value);
     const peso = Number(document.getElementById('peso').value);
     const edad = Number(document.getElementById('edad').value);
     const grasa = Number(document.getElementById('grasa').value);
-    const actividad = Number(document.getElementById('actividad').value);
-    const objetivo = document.getElementById('objetivo').value;
+
     const actividadTxt = document.getElementById('actividad').selectedOptions[0].text;
+    const actividad = Number(document.getElementById('actividad').value);
     const objetivoTxt = document.getElementById('objetivo').selectedOptions[0].text;
-    const alergiasSelect = document.getElementById('habilidades');
+    const objetivo = document.getElementById('objetivo').value;
+    
+    const alergiasSelect = document.getElementById('alergias');
     const alergias = Array.from(alergiasSelect.selectedOptions).map(opt => opt.text);
-    const calculos = calcularCampos({altura, peso, edad, grasa, actividad, objetivo});
+    const alimentosSelect = document.getElementById('alimentos');
+    const alimentos = Array.from(alimentosSelect.selectedOptions).map(opt => opt.text);
+
+    const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo });
     const cliente = {
-        nombre, altura, peso, edad, grasa,
+        nombre: formatearNombre(nombre), altura, peso, edad, grasa,
         masaMagra: calculos.masaMagra,
         masaGrasa: calculos.masaGrasa,
         imc: calculos.imc,
@@ -172,15 +190,20 @@ document.getElementById('fitnessForm').addEventListener('submit', function(e) {
         caloriasObjetivo: calculos.caloriasObjetivo,
         actividad: actividadTxt,
         objetivo: objetivoTxt,
-        alergias: alergias
+        alergias: alergias,
+        alimentos: alimentos
     };
     clientes.push(cliente);
     renderTabla();
-    this.reset();
+    setTimeout(() => {
+        this.reset();
+        document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+        document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+    }, 0);
 });
 
 // Exportar a CSV
-document.getElementById('exportarCSV').addEventListener('click', function() {
+document.getElementById('exportarCSV').addEventListener('click', function () {
     let csv = 'Nombre,Altura,Peso,Edad,% Graso,M. Magra,M. Grasa,IMC,MB,Calorías Objetivo,Actividad,Objetivo,Alergias\n';
     clientes.forEach(cliente => {
         const altura = Number(cliente.altura);
@@ -197,7 +220,7 @@ document.getElementById('exportarCSV').addEventListener('click', function() {
         if (!['deficit', 'volumen', 'recomposicion'].includes(objetivo)) {
             objetivo = 'deficit';
         }
-        const calculos = calcularCampos({altura, peso, edad, grasa, actividad, objetivo});
+        const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo });
         csv += [
             cliente.nombre,
             cliente.altura,
@@ -225,16 +248,16 @@ document.getElementById('exportarCSV').addEventListener('click', function() {
 });
 
 // Importar desde CSV
-document.getElementById('importarCSV').addEventListener('click', function() {
+document.getElementById('importarCSV').addEventListener('click', function () {
     document.getElementById('fileInput').click();
 });
 
 // Manejar la carga de archivo CSV
-document.getElementById('fileInput').addEventListener('change', function(e) {
+document.getElementById('fileInput').addEventListener('change', function (e) {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = function(evt) {
+    reader.onload = function (evt) {
         const text = evt.target.result;
         importarDesdeCSV(text);
     };
@@ -244,7 +267,8 @@ document.getElementById('fileInput').addEventListener('change', function(e) {
 // =====================
 // Inicialización
 // =====================
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
+    configurarValidaciones();
     // Importar CSV desde localStorage
     const csv = localStorage.getItem('clientesCSV');
     if (csv) {
@@ -255,27 +279,42 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     // Inicializar Choices.js
     if (window.Choices) {
-        new Choices('#habilidades', {
+        // Configuración común
+        const commonConfig = {
             removeItemButton: true,
             searchEnabled: true,
             duplicateItemsAllowed: false,
             placeholder: true,
-            placeholderValue: 'Selecciona alergias...',
-            searchPlaceholderValue: 'Escribe para buscar...',
             shouldSort: false,
             loadingText: 'Cargando...',
             noResultsText: 'No se encontraron resultados',
             noChoicesText: 'No hay más opciones para seleccionar',
-            itemSelectText: 'Presiona para seleccionar',
-            maxItemCount: 5,
+            itemSelectText: 'Presiona para seleccionar'
+        };
+
+        // Inicializar select de alergias
+        new Choices('#alergias', {
+            ...commonConfig,
+            placeholderValue: 'Selecciona alergias...',
+            searchPlaceholderValue: 'Buscar alergias...'
+        });
+
+        // Inicializar select de alimentos
+        new Choices('#alimentos', {
+            ...commonConfig,
+            placeholderValue: 'Selecciona alimentos...',
+            searchPlaceholderValue: 'Buscar alimentos...'
         });
     }
+
+
+
 });
 
 // Guardar cambios del modal de edición
 const formEditarCliente = document.getElementById('formEditarCliente');
 if (formEditarCliente) {
-    formEditarCliente.addEventListener('submit', function(e) {
+    formEditarCliente.addEventListener('submit', function (e) {
         e.preventDefault();
         const idx = parseInt(document.getElementById('editIndex').value, 10);
         const nombre = document.getElementById('editNombre').value;
@@ -286,7 +325,7 @@ if (formEditarCliente) {
         const actividad = document.getElementById('editActividad').value;
         const objetivo = document.getElementById('editObjetivo').value;
         // alergias
-        const calculos = calcularCampos({altura, peso, edad, grasa, actividad, objetivo});
+        const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo });
         clientes[idx] = {
             nombre, altura, peso, edad, grasa, actividad, objetivo,
             masaMagra: calculos.masaMagra,
@@ -302,3 +341,101 @@ if (formEditarCliente) {
     });
 }
 
+// =====================
+// Configuración de validación
+// =====================
+const configValidacion = {
+  nombre: {
+    regex: /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, 
+    mensaje: 'Solo se permiten letras y espacios (sin números ni símbolos)'
+  },
+  altura: { min: 100, max: 250, mensaje: 'Debe ser entre 100 y 250 cm' },
+  peso: { min: 30, max: 300, mensaje: 'Debe ser entre 30 y 300 kg' },
+  edad: { min: 15, max: 120, mensaje: 'Debe ser entre 15 y 120 años' },
+  grasa: { min: 1, max: 60, mensaje: 'Debe ser entre 1% y 60%' }
+};
+
+// =====================
+// Funciones de validación
+// =====================
+function validarCampo(input) {
+  const id = input.id;
+  const valor = input.value.trim();
+  const feedback = document.querySelector(`.${id}-feedback`);
+  
+  feedback.textContent = '';
+  input.classList.remove('is-invalid');
+
+  // Validar campo vacío
+  if (valor === '') {
+    feedback.textContent = 'Este campo es obligatorio';
+    input.classList.add('is-invalid');
+    return false;
+  }
+
+  // Validación especial para nombre
+  if (id === 'nombre') {
+    if (!configValidacion.nombre.regex.test(valor)) {
+      feedback.textContent = configValidacion.nombre.mensaje;
+      input.classList.add('is-invalid');
+      return false;
+    }
+    return true;
+  }
+
+  const numero = parseInt(valor);
+  const config = configValidacion[id];
+
+  if (numero < config.min || numero > config.max) {
+    feedback.textContent = config.mensaje;
+    input.classList.add('is-invalid');
+    return false;
+  }
+
+  return true;
+}
+
+function validarFormularioCompleto() {
+  let valido = true;
+  const campos = ['nombre', 'altura', 'peso', 'edad', 'grasa'];
+
+  campos.forEach(id => {
+    const input = document.getElementById(id);
+    if (!validarCampo(input)) {
+      valido = false;
+    }
+  });
+
+  return valido;
+}
+
+// =====================
+// Configurar eventos
+// =====================
+function configurarValidaciones() {
+  // Validación en tiempo real
+  document.querySelectorAll('#nombre, #altura, #peso, #edad, #grasa').forEach(input => {
+    input.addEventListener('input', function() {
+      if (this.id !== 'nombre') {
+        this.value = this.value.replace(/\D/g, ''); // Solo números
+      }
+      validarCampo(this);
+    });
+
+    input.addEventListener('blur', function() {
+      validarCampo(this);
+    });
+  });
+}
+
+// Función para formatear nombre 
+function formatearNombre(nombre) {
+    return nombre
+        .trim()
+        .replace(/\s+/g, ' ')
+        .toLowerCase()
+        .split(' ')
+        .filter(palabra => palabra.length > 0)
+        .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1))
+        .join(' ');
+}

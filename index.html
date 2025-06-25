@@ -1,193 +1,193 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión Fitness</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="fitness.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión Fitness</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="fitness.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
 </head>
+
 <body>
-<div class="container fitness-app">
+  <div class="container fitness-app">
     <h1 class="mb-4">Gestión de Clientes Fitness</h1>
     <form id="fitnessForm" class="row g-3">
-        <div class="col-md-6">
-            <label class="form-label">Nombre</label>
-            <input type="text" class="form-control" id="nombre" required>
-        </div>
-        <div class="col-md-3">
-            <label class="form-label">Altura (cm)</label>
-            <input type="number" class="form-control" id="altura" required>
-        </div>
-        <div class="col-md-3">
-            <label class="form-label">Peso (kg)</label>
-            <input type="number" class="form-control" id="peso" required>
-        </div>
-        <div class="col-md-3">
-            <label class="form-label">Edad</label>
-            <input type="number" class="form-control" id="edad" required>
-        </div>
-        <div class="col-md-3">
-            <label class="form-label">% Graso</label>
-            <input type="number" class="form-control" id="grasa" required>
-        </div>
-        <div class="col-md-3">
-            <label class="form-label">Actividad Física</label>
-            <select class="form-select" id="actividad" required>
+      <div class="col-md-6">
+        <label class="form-label">Nombre Completo</label>
+        <input type="text" class="form-control" id="nombre" required placeholder="Ej: María López García">
+        <div class="invalid-feedback nombre-feedback">Formato: Nombre y Apellidos (mayúsculas iniciales)</div>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Altura (cm)</label>
+        <input type="text" class="form-control" id="altura" required placeholder="Ej: 175">
+        <div class="invalid-feedback altura-feedback">Debe ser entre 100 y 250 cm</div>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Peso (kg)</label>
+        <input type="text" class="form-control" id="peso" required placeholder="Ej: 90">
+        <div class="invalid-feedback peso-feedback">Debe ser entre 30 y 300 kg</div>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Edad</label>
+        <input type="text" class="form-control" id="edad" required placeholder="Ej: 25">
+        <div class="invalid-feedback edad-feedback">Debe ser entre 15 y 120 años</div>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">% Graso</label>
+        <input type="text" class="form-control" id="grasa" required placeholder="Ej: 10">
+        <div class="invalid-feedback grasa-feedback">Debe ser entre 1% y 60%</div>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Actividad Física</label>
+        <select class="form-select" id="actividad" required>
+          <option value="1.2">Sedentario</option>
+          <option value="1.375">Ligera</option>
+          <option value="1.55">Moderada</option>
+          <option value="1.725">Intensa</option>
+          <option value="1.9">Muy intensa</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Objetivo</label>
+        <select class="form-select" id="objetivo" required>
+          <option value="deficit">Déficit</option>
+          <option value="volumen">Volumen</option>
+          <option value="recomposicion">Recomposición</option>
+        </select>
+      </div>
+      <!-- Modificarlo y hacerlo bien -->
+      <div class="form-group col-md-6">
+        <label for="alergias">Selecciona tus alergias:</label>
+        <select name="alergias" id="alergias" class="form-control" multiple>
+          <option value="leche">Leche</option>
+          <option value="huevos">Huevos</option>
+          <option value="pescado">Pescado</option>
+          <option value="mariscos">Mariscos</option>
+          <option value="mani">Maní</option>
+          <option value="nueces">Nueces</option>
+          <option value="soja">Soja</option>
+          <option value="trigo">Trigo</option>
+        </select>
+      </div>
+      <!-- hacer lo mismo que el de arriba -->
+      <div class="form-group col-md-6">
+        <label for="alimentos">Alimentos Disponibles:</label>
+        <select name="alimentos" id="alimentos" class="form-control" multiple>
+          <option value="carne">Carne</option>
+          <option value="vegetales">Vegetales</option>
+          <option value="pescado">Pescado</option>
+          <option value="marisco">Mariscos</option>
+        </select>
+      </div>
+  <div class="col-12 d-flex justify-content-between align-items-center mt-4">
+    <button type="submit" class="btn btn-primary">Añadir Cliente</button>
+    <div class="d-flex gap-2 ms-auto">
+      <button type="button" class="btn btn-export" id="exportarCSV">Exportar CSV</button>
+      <button type="button" class="btn btn-import" id="importarCSV">Importar CSV</button>
+      <input type="file" id="fileInput" accept=".csv" style="display:none">
+    </div>
+  </div>
+  <div class="col-12">
+    <div class="alert alert-info" id="infoMessage" style="display:none;"></div>
+  </div>
+  </form>
+  <div class="table-responsive">
+    <table class="table table-striped table-sm mt-4" id="clientesTable" style="font-size: 0.95rem;">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Altura</th>
+          <th>Peso</th>
+          <th>Edad</th>
+          <th>% Graso</th>
+          <th>M. Magra</th>
+          <th>M. Grasa</th>
+          <th>IMC</th>
+          <th>MB</th>
+          <th>Calorías Objetivo</th>
+          <th>Actividad</th>
+          <th>Objetivo</th>
+          <th>Alergias</th> <!-- Nueva columna -->
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+
+
+  <!-- Nuevo modal de edición de cliente -->
+  <div class="modal fade" id="editarClienteModal" tabindex="-1" aria-labelledby="editarClienteModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <form id="formEditarCliente">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editarClienteModalLabel">Editar Cliente</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body row g-3">
+            <input type="hidden" id="editIndex">
+            <div class="col">
+              <label class="form-label">Nombre</label>
+              <input type="text" class="form-control" id="editNombre" required>
+            </div>
+            <div class="col">
+              <label class="form-label">Altura (cm)</label>
+              <input type="text" class="form-control" id="editAltura" required>
+            </div>
+            <div class="col">
+              <label class="form-label">Peso (kg)</label>
+              <input type="text" class="form-control" id="editPeso" required>
+            </div>
+            <div class="col">
+              <label class="form-label">Edad</label>
+              <input type="text" class="form-control" id="editEdad" required>
+            </div>
+            <div class="col">
+              <label class="form-label">% Graso</label>
+              <input type="text" class="form-control" id="editGrasa" required>
+            </div>
+            <div class="col">
+              <label class="form-label">Actividad Física</label>
+              <select class="form-select" id="editActividad" required>
                 <option value="1.2">Sedentario</option>
                 <option value="1.375">Ligera</option>
                 <option value="1.55">Moderada</option>
                 <option value="1.725">Intensa</option>
                 <option value="1.9">Muy intensa</option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <label class="form-label">Objetivo</label>
-            <select class="form-select" id="objetivo" required>
+              </select>
+            </div>
+            <div class="col">
+              <label class="form-label">Objetivo</label>
+              <select class="form-select" id="editObjetivo" required>
                 <option value="deficit">Déficit</option>
                 <option value="volumen">Volumen</option>
                 <option value="recomposicion">Recomposición</option>
-            </select>
-        </div>
-        <!-- Modificarlo y hacerlo bien -->
-        <div class="form-group">
-            <label for="habilidades">Selecciona tus alergias:</label>
-            <select name="habilidades" id="habilidades" multiple>
-                <option value="html">HTML</option>
-                <option value="css">CSS</option>
-                <option value="javascript">JavaScript</option>
-                <option value="python">Python</option>
-                <option value="php">PHP</option>
-                <option value="java">Java</option>
-                <option value="csharp">C#</option>
-            </select>
-        </div>
-        <!-- hacer lo mismo que el de arriba -->
-    <div class="col-md-3">
-    <label for="comida" class="form-label">Alimentos disponibles</label>
-    <select class="form-select" id="comida" name="comida[]" multiple aria-label="Selecciona varios alimentos">
-        <option value="pescao">Pescao</option>
-        <option value="carne">Carne</option>
-        <option value="huevo">Huevo</option>
-        <option value="vegetales">Vegetales</option>
-    </select>
-    <div class="invalid-feedback">
-        Por favor, selecciona al menos una opción.
-    </div>
-    </div>
-            <div class="col-12 d-flex justify-content-between align-items-center mt-4">
-        <button type="submit" class="btn btn-primary">Añadir Cliente</button>
-        <div class="d-flex gap-2 ms-auto">
-            <button type="button" class="btn btn-export" id="exportarCSV">Exportar CSV</button>
-            <button type="button" class="btn btn-import" id="importarCSV">Importar CSV</button>
-            <input type="file" id="fileInput" accept=".csv" style="display:none">
-        </div>
-    </div>
-        <div class="col-12">
-            <div class="alert alert-info" id="infoMessage" style="display:none;"></div>
-        </div>
-    </form>
-    <div class="table-responsive">
-        <table class="table table-striped table-sm mt-4" id="clientesTable" style="font-size: 0.95rem;">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Altura</th>
-                    <th>Peso</th>
-                    <th>Edad</th>
-                    <th>% Graso</th>
-                    <th>M. Magra</th>
-                    <th>M. Grasa</th>
-                    <th>IMC</th>
-                    <th>MB</th>
-                    <th>Calorías Objetivo</th>
-                    <th>Actividad</th>
-                    <th>Objetivo</th>
-                    <th>Alergias</th> <!-- Nueva columna -->
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-
-
-
-<!-- Nuevo modal de edición de cliente -->
-<div class="modal fade" id="editarClienteModal" tabindex="-1" aria-labelledby="editarClienteModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <form id="formEditarCliente">
-        <div class="modal-header">
-          <h5 class="modal-title" id="editarClienteModalLabel">Editar Cliente</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body row g-3">
-          <input type="hidden" id="editIndex">
-          <div class="col">
-            <label class="form-label">Nombre</label>
-            <input type="text" class="form-control" id="editNombre" required>
+              </select>
+            </div>
           </div>
-          <div class="col">
-            <label class="form-label">Altura (cm)</label>
-            <input type="number" class="form-control" id="editAltura" required>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
           </div>
-          <div class="col">
-            <label class="form-label">Peso (kg)</label>
-            <input type="number" class="form-control" id="editPeso" required>
-          </div>
-          <div class="col">
-            <label class="form-label">Edad</label>
-            <input type="number" class="form-control" id="editEdad" required>
-          </div>
-          <div class="col">
-            <label class="form-label">% Graso</label>
-            <input type="number" class="form-control" id="editGrasa" required>
-          </div>
-          <div class="col">
-            <label class="form-label">Actividad Física</label>
-            <select class="form-select" id="editActividad" required>
-              <option value="1.2">Sedentario</option>
-              <option value="1.375">Ligera</option>
-              <option value="1.55">Moderada</option>
-              <option value="1.725">Intensa</option>
-              <option value="1.9">Muy intensa</option>
-            </select>
-          </div>
-          <div class="col">
-            <label class="form-label">Objetivo</label>
-            <select class="form-select" id="editObjetivo" required>
-              <option value="deficit">Déficit</option>
-              <option value="volumen">Volumen</option>
-              <option value="recomposicion">Recomposición</option>
-            </select>
-          </div>
-          <!--
-          <div class="col">
-            <label class="form-label">Alergias</label>
-            <select class="form-select" id="editAlergias" multiple>
-              <option value="Gluten">Gluten</option>
-              <option value="Lactosa">Lactosa</option>
-              <option value="Frutos secos">Frutos secos</option>
-              <option value="Mariscos">Mariscos</option>
-            </select>
-          </div>
-          -->
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   </div>
-</div>
 
-<script src="fitness.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="informe.js"></script>
+  <script src="fitness.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="informe.js"></script>
 </body>
+
 </html>
