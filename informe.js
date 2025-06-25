@@ -14,7 +14,7 @@ window.generarInforme = function(idx) {
     // Plantilla personalizada
     // =====================
 
-    // Datos del cliente
+    // ====== BLOQUE DE DATOS DEL CLIENTE ======
     doc.text("Informe Personalizado de Cliente", 15, 20);
     doc.setFontSize(12);
     doc.text(`Nombre: ${cliente.nombre}`, 15, 35);
@@ -31,7 +31,7 @@ window.generarInforme = function(idx) {
     doc.text(`Objetivo: ${cliente.objetivo}`, 15, 145);
     doc.text(`Alergias: ${(cliente.alergias || "").join(', ')}`, 15, 155);
 
-    // ====== NUEVO BLOQUE DE PORCIONES ======
+    // ====== BLOQUE DE PORCIONES ======
     const calcPorciones = new PorcionesCalculator(cliente);
     const resumen = calcPorciones.getResumen();
     let yPorciones = 165;
@@ -47,8 +47,8 @@ window.generarInforme = function(idx) {
     doc.text(`Porciones de carbohidrato: ${resumen.carbohidrato}`, 15, yPorciones);
     yPorciones += 6;
     doc.text(`Porciones de grasa: ${resumen.grasa}`, 15, yPorciones);
-    // ====== FIN BLOQUE DE PORCIONES ======
 
+    // ====== FIN BLOQUE DE PORCIONES ======
     // Función para filtrar alimentos por alergias
     function filtrarAlimentosPorAlergias(alimentos, alergias) {
         if (!Array.isArray(alergias)) return alimentos;
