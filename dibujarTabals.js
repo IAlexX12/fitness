@@ -1,16 +1,21 @@
+// Clase para dibujarf las tablas de los informes de clientes
 class AlimentosTableDrawer {
     constructor(cliente, doc) {
         this.cliente = cliente;
         this.doc = doc;
-        this.y = 200; // Aumentado para evitar solapamiento con el bloque de porciones
+        this.y = 200; // Aumentado para evitar solapamiento con el bloque de porciones, aumentar si es necesario
     }
 
+    // Filtra los alimentos según las alergias del cliente para no mostrarlos en el informe
     filtrarAlimentosPorAlergias(alimentos, alergias) {
         if (!Array.isArray(alergias)) return alimentos;
         const alergiasLower = alergias.map(a => a.trim().toLowerCase());
         return alimentos.filter(a => !alergiasLower.includes((a.categoria || '').trim().toLowerCase()));
     }
 
+    // Dibuja una tabla en el INFORME con los alimentos clasificados
+    // Dibuja una tabla por cada tipo (proteínas, carbohidratos, grasas)
+    // Se hacen tres llamadas a esta función
     drawTable(title, data, color) {
         if (data.length === 0) return;
         const doc = this.doc;
@@ -49,6 +54,7 @@ class AlimentosTableDrawer {
         this.y = y;
     }
 
+    // Dibuja las tablas de alimentos clasificados según el CSV almacenado
     dibujarTablas() {
         const clasificadosCSV = localStorage.getItem('clasificadosCSV');
         if (!clasificadosCSV) return;
@@ -73,6 +79,7 @@ class AlimentosTableDrawer {
         proteicos = this.filtrarAlimentosPorAlergias(proteicos, this.cliente.alergias);
         carbohidratos = this.filtrarAlimentosPorAlergias(carbohidratos, this.cliente.alergias);
         grasas = this.filtrarAlimentosPorAlergias(grasas, this.cliente.alergias);
+        // Dibuja las tablas en el informe
         this.drawTable('Proteínas', proteicos, [44, 62, 200]);
         this.drawTable('Carbohidratos', carbohidratos, [34, 197, 94]);
         this.drawTable('Grasas', grasas, [245, 158, 11]);

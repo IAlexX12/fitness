@@ -50,7 +50,8 @@ window.generarInforme = function(idx) {
     yPorciones += 6;
     doc.text(`Porciones de grasa: ${resumen.grasa}`, 15, yPorciones);
 
-    // ====== BLOQUE DE TABLAS DE ALIMENTOS (usando la clase abstraída) ======
+    // ====== BLOQUE DE TABLAS DE ALIMENTOS ======
+    // Se usa la clase dibujarTablas.js para dibujar las tablas
     const drawer = new AlimentosTableDrawer(cliente, doc);
     drawer.dibujarTablas();
 
