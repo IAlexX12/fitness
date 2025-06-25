@@ -24,7 +24,7 @@ class CargaCSV {
         if (!csvInput || !continuarBtn || !csvError || !clasificadosInput || !clasificadosError) return;
 
         csvInput.addEventListener('change', (e) => this.handleClientesCSV(e, csvError, csvTick, csvCross, continuarBtn));
-        clasificadosInput.addEventListener('change', (e) => this.handleClasificadosCSV(e, clasificadosError, clasificadosTick, clasificadosCross, continuarBtn));
+        clasificadosInput.addEventListener('change', (e) => this.handleAlimentosCSV(e, clasificadosError, clasificadosTick, clasificadosCross, continuarBtn));
         continuarBtn.addEventListener('click', () => this.handleContinue());
         // Si ya hay archivos válidos en localStorage, mostrar ticks
         this.checkLocalStorage(csvTick, csvCross, clasificadosTick, clasificadosCross);
@@ -47,14 +47,17 @@ class CargaCSV {
         reader.onload = (evt) => {
             try {
                 const lines = evt.target.result.trim().split('\n');
-                if (lines.length < 2 || lines[0].split(',').length < 3) {
-                    throw new Error();
+                const expectedHeader = 'Nombre,Altura,Peso,Edad,% Graso,M. Magra,M. Grasa,IMC,MB,Calorías Objetivo,Actividad,Objetivo,Alergias';
+                const fileHeader = lines[0].trim();
+                if (fileHeader !== expectedHeader) {
+                    throw new Error('El archivo CSV no tiene el formato esperado.');
                 }
+                
                 this.csvClientesValido = true;
                 csvTick.style.display = '';
                 csvCross.style.display = 'none';
                 localStorage.setItem('clientesCSV', evt.target.result);
-            } catch {
+            } catch (err) {
                 csvError.textContent = 'El archivo CSV no tiene el formato esperado.';
                 csvCross.style.display = '';
                 csvTick.style.display = 'none';
@@ -65,7 +68,7 @@ class CargaCSV {
         reader.readAsText(file);
     }
 
-    handleClasificadosCSV(e, clasificadosError, clasificadosTick, clasificadosCross, continuarBtn) {
+    handleAlimentosCSV(e, clasificadosError, clasificadosTick, clasificadosCross, continuarBtn) {
         const file = e.target.files[0];
         clasificadosError.textContent = '';
         clasificadosTick.style.display = 'none';
@@ -93,7 +96,7 @@ class CargaCSV {
                 clasificadosCross.style.display = 'none';
                 localStorage.setItem('clasificadosCSV', csv);
             } catch {
-                clasificadosError.textContent = 'El archivo CSV no tiene el formato esperado (campos requeridos: nombre, categoria, gramaje, esproteico, escarbohidrato, esgrasa).';
+                clasificadosError.textContent = 'El archivo CSV no tiene el formato esperado.';
                 clasificadosCross.style.display = '';
                 clasificadosTick.style.display = 'none';
                 this.csvClasificadosValido = false;
@@ -114,7 +117,7 @@ class CargaCSV {
     }
 
     checkLocalStorage(csvTick, csvCross, clasificadosTick, clasificadosCross) {
-        // Si ya hay archivos válidos en localStorage, mostrar ticks
+        // Si ya hay archivos válidos en localStorage, mostrar ticks solo si son realmente válidos
         const clientesCSV = localStorage.getItem('clientesCSV');
         if (clientesCSV) {
             this.csvClientesValido = true;
@@ -123,9 +126,21 @@ class CargaCSV {
         }
         const clasificadosCSV = localStorage.getItem('clasificadosCSV');
         if (clasificadosCSV) {
-            this.csvClasificadosValido = true;
-            clasificadosTick.style.display = '';
-            clasificadosCross.style.display = 'none';
+            // Validar headers y al menos una fila de datos
+            try {
+                const lines = clasificadosCSV.trim().split('\n');
+                const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+                const required = ['nombre','categoria','gramaje','esproteico','escarbohidrato','esgrasa'];
+                if (!required.every(h => headers.includes(h))) throw new Error();
+                if (lines.length < 2) throw new Error();
+                this.csvClasificadosValido = true;
+                clasificadosTick.style.display = '';
+                clasificadosCross.style.display = 'none';
+            } catch {
+                this.csvClasificadosValido = false;
+                clasificadosTick.style.display = 'none';
+                clasificadosCross.style.display = '';
+            }
         }
         this.updateContinueBtn(document.getElementById('continuarBtn'));
     }
