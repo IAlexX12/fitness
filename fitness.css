@@ -132,7 +132,10 @@ body, html {
   display: block;
 }
 
-/* Auto-mayúscula para nombre */
 #nombre {
+  text-transform: capitalize;
+}
+
+#editNombre {
   text-transform: capitalize;
 }

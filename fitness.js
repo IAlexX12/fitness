@@ -141,6 +141,14 @@ window.abrirEditarCliente = function (idx) {
     document.getElementById('editActividad').value = cliente.actividad;
     document.getElementById('editObjetivo').value = cliente.objetivo;
     // alergias
+
+    // Limpiar estados de validación al abrir el modal
+    document.querySelectorAll('#editNombre, #editAltura, #editPeso, #editEdad, #editGrasa').forEach(input => {
+        input.classList.remove('is-invalid');
+        const feedback = document.querySelector(`.${input.id}-feedback`);
+        if (feedback) feedback.textContent = '';
+    });
+
     const modal = new bootstrap.Modal(document.getElementById('editarClienteModal'));
     modal.show();
 }
@@ -269,6 +277,7 @@ document.getElementById('fileInput').addEventListener('change', function (e) {
 // =====================
 document.addEventListener('DOMContentLoaded', function () {
     configurarValidaciones();
+    configurarValidacionesEdicion();
     // Importar CSV desde localStorage
     const csv = localStorage.getItem('clientesCSV');
     if (csv) {
@@ -311,18 +320,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
-// Guardar cambios del modal de edición
+// =====================
+// Guardar cambios del modal de edición - Función modificada
+// =====================
 const formEditarCliente = document.getElementById('formEditarCliente');
 if (formEditarCliente) {
     formEditarCliente.addEventListener('submit', function (e) {
         e.preventDefault();
+
+        // Validar el formulario completo antes de enviar
+        if (!validarFormularioEdicionCompleto()) {
+            return;
+        }
+
         const idx = parseInt(document.getElementById('editIndex').value, 10);
         const nombre = document.getElementById('editNombre').value;
         const altura = document.getElementById('editAltura').value;
         const peso = document.getElementById('editPeso').value;
         const edad = document.getElementById('editEdad').value;
         const grasa = document.getElementById('editGrasa').value;
+        const actividadTxt = document.getElementById('editActividad').selectedOptions[0].text;
         const actividad = document.getElementById('editActividad').value;
+        const objetivoTxt = document.getElementById('editObjetivo').selectedOptions[0].text;
         const objetivo = document.getElementById('editObjetivo').value;
         // alergias
         const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo });
@@ -333,7 +352,8 @@ if (formEditarCliente) {
             imc: calculos.imc,
             mb: calculos.mb,
             caloriasObjetivo: calculos.caloriasObjetivo,
-            alergias: clientes[idx].alergias // mantiene las alergias originales
+            alergias: clientes[idx].alergias, // mantiene las alergias originales
+            alimentos: clientes[idx].alimentos || [] // mantiene los alimentos originales
         };
         renderTabla();
         const modal = bootstrap.Modal.getInstance(document.getElementById('editarClienteModal'));
@@ -395,6 +415,49 @@ function validarCampo(input) {
   return true;
 }
 
+// =====================
+// Validaciones para el formulario de edición
+// =====================
+function validarCampoEdicion(input) {
+    const idOriginal = input.id.replace('edit', '').toLowerCase();
+    const valor = input.value.trim();
+    const feedback = document.querySelector(`.${input.id}-feedback`);
+    
+    if (!feedback) return true; // Si no hay elemento de feedback, continuar
+    
+    feedback.textContent = '';
+    input.classList.remove('is-invalid');
+
+    // Validar campo vacío
+    if (valor === '') {
+        feedback.textContent = 'Este campo es obligatorio';
+        input.classList.add('is-invalid');
+        return false;
+    }
+
+    // Validación especial para nombre
+    if (idOriginal === 'nombre') {
+        if (!configValidacion.nombre.regex.test(valor)) {
+            feedback.textContent = configValidacion.nombre.mensaje;
+            input.classList.add('is-invalid');
+            return false;
+        }
+        return true;
+    }
+
+    const numero = parseInt(valor);
+    const config = configValidacion[idOriginal];
+
+    if (isNaN(numero) || numero < config.min || numero > config.max) {
+        feedback.textContent = config.mensaje;
+        input.classList.add('is-invalid');
+        return false;
+    }
+
+    return true;
+}
+
+
 function validarFormularioCompleto() {
   let valido = true;
   const campos = ['nombre', 'altura', 'peso', 'edad', 'grasa'];
@@ -407,6 +470,21 @@ function validarFormularioCompleto() {
   });
 
   return valido;
+}
+
+// Función para validar todo el formulario de edición
+function validarFormularioEdicionCompleto() {
+    let valido = true;
+    const campos = ['editNombre', 'editAltura', 'editPeso', 'editEdad', 'editGrasa'];
+
+    campos.forEach(id => {
+        const input = document.getElementById(id);
+        if (!validarCampoEdicion(input)) {
+            valido = false;
+        }
+    });
+
+    return valido;
 }
 
 // =====================
@@ -427,6 +505,25 @@ function configurarValidaciones() {
     });
   });
 }
+
+// =====================
+// Configurar eventos de validación para edición
+// =====================
+function configurarValidacionesEdicion() {
+    document.querySelectorAll('#editNombre, #editAltura, #editPeso, #editEdad, #editGrasa').forEach(input => {
+        input.addEventListener('input', function() {
+            if (this.id !== 'editNombre') {
+                this.value = this.value.replace(/\D/g, ''); // Solo números
+            }
+            validarCampoEdicion(this);
+        });
+
+        input.addEventListener('blur', function() {
+            validarCampoEdicion(this);
+        });
+    });
+}
+
 
 // Función para formatear nombre 
 function formatearNombre(nombre) {
