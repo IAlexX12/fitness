@@ -23,25 +23,25 @@
       <div class="col-md-3">
         <label class="form-label">Altura (cm)</label>
         <input type="text" class="form-control" id="altura" required placeholder="Ej: 175">
-        <div class="invalid-feedback altura-feedback">Debe ser entre 100 y 250 cm</div>
+        <div class="invalid-feedback altura-feedback"></div>
       </div>
 
       <div class="col-md-3">
         <label class="form-label">Peso (kg)</label>
         <input type="text" class="form-control" id="peso" required placeholder="Ej: 90">
-        <div class="invalid-feedback peso-feedback">Debe ser entre 30 y 300 kg</div>
+        <div class="invalid-feedback peso-feedback"></div>
       </div>
 
       <div class="col-md-3">
         <label class="form-label">Edad</label>
         <input type="text" class="form-control" id="edad" required placeholder="Ej: 25">
-        <div class="invalid-feedback edad-feedback">Debe ser entre 15 y 120 años</div>
+        <div class="invalid-feedback edad-feedback"></div>
       </div>
 
       <div class="col-md-3">
         <label class="form-label">% Graso</label>
         <input type="text" class="form-control" id="grasa" required placeholder="Ej: 10">
-        <div class="invalid-feedback grasa-feedback">Debe ser entre 1% y 60%</div>
+        <div class="invalid-feedback grasa-feedback"></div>
       </div>
       <div class="col-md-3">
         <label class="form-label">Actividad Física</label>
@@ -80,6 +80,7 @@
       <div class="form-group col-md-6">
         <label for="alimentos">Alimentos Disponibles:</label>
         <select name="alimentos" id="alimentos" class="form-control" multiple>
+          <option value="todos">Todos</option>
           <option value="carne">Carne</option>
           <option value="vegetales">Vegetales</option>
           <option value="pescado">Pescado</option>
