@@ -346,7 +346,7 @@ if (formEditarCliente) {
         // alergias
         const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo });
         clientes[idx] = {
-            nombre, altura, peso, edad, grasa, actividad, objetivo,
+            nombre: formatearNombre(nombre), altura, peso, edad, grasa, actividad, objetivo,
             masaMagra: calculos.masaMagra,
             masaGrasa: calculos.masaGrasa,
             imc: calculos.imc,
