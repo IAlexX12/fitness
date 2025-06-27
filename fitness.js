@@ -239,7 +239,7 @@ document.getElementById('exportarCSV').addEventListener('click', function () {
             calculos.masaGrasa,
             calculos.imc,
             calculos.mb,
-            calculos.caloriasObjetivo,
+            cliente.caloriasObjetivo,
             cliente.actividad,
             cliente.objetivo,
             (cliente.alergias || "").join(';')
