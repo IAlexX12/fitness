@@ -73,45 +73,36 @@ function renderTabla() {
 // =====================
 function importarDesdeCSV(text) {
     const lines = text.trim().split('\n');
-    const headers = lines[0].split(',');
+    const headers = lines[0].split(',').map(h => h.trim());
+    const map = {
+        'nombre': 'nombre',
+        'altura': 'altura',
+        'peso': 'peso',
+        'edad': 'edad',
+        '% graso': 'grasa',
+        'm. magra': 'masaMagra',
+        'm. grasa': 'masaGrasa',
+        'imc': 'imc',
+        'mb': 'mb',
+        'calorías objetivo': 'caloriasObjetivo',
+        'actividad': 'actividad',
+        'objetivo': 'objetivo',
+        'alergias': 'alergias'
+    };
     clientes.length = 0;
     lines.slice(1).forEach(line => {
         if (!line.trim()) return;
         const values = line.split(',');
         const cliente = {};
         headers.forEach((header, idx) => {
-            if (header === 'Alergias') {
+            const key = map[header.trim().toLowerCase()];
+            if (!key) return;
+            if (key === 'alergias') {
                 cliente.alergias = values[idx] ? values[idx].split(';').map(a => a.trim()).filter(a => a) : [];
-            } else if (header.trim().toLowerCase() === '% graso') {
-                cliente.grasa = values[idx];
             } else {
-                cliente[header.trim().toLowerCase().replace(/ /g, '')] = values[idx];
+                cliente[key] = values[idx];
             }
         });
-        // Recalcular campos si faltan o están vacíos
-        const altura = Number(cliente.altura);
-        const peso = Number(cliente.peso);
-        const edad = Number(cliente.edad);
-        const grasa = Number(cliente.grasa);
-        let actividad = cliente.actividad;
-        if (isNaN(Number(actividad))) {
-            actividad = 1.2;
-        } else {
-            actividad = Number(actividad);
-        }
-        let objetivo = cliente.objetivo;
-        if (!['deficit', 'volumen', 'recomposicion'].includes(objetivo)) {
-            objetivo = 'deficit';
-        }
-        if (!cliente.masaMagra || !cliente.masaGrasa || !cliente.caloriasObjetivo ||
-            cliente.masaMagra === '' || cliente.masaGrasa === '' || cliente.caloriasObjetivo === '') {
-            const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo });
-            cliente.masaMagra = calculos.masaMagra;
-            cliente.masaGrasa = calculos.masaGrasa;
-            cliente.imc = calculos.imc;
-            cliente.mb = calculos.mb;
-            cliente.caloriasObjetivo = calculos.caloriasObjetivo;
-        }
         clientes.push(cliente);
     });
     renderTabla();
