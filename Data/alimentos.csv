@@ -1,3 +1,161 @@
-nombre,categoria,gramaje,esproteico,escarbohidrato,esgrasa
-muslo de pollo,carne,100,1,0,0
-pasta,pasta,50,0,1,0
+nombre,categoria,alergenos,gramaje,esproteico,escarbohidrato,esgrasa
+Scup de cualquier proteína mínimo 75% proteínas,proteina,leche,30,1,0,0
+Barrita de proteínas,proteina,trigo,2,1,0,0
+Soja texturizada,proteina,soja,30,1,0,0
+Gelatina proteica,proteina,,250,1,0,0
+Claras de huevo,proteina,huevos,200,1,0,0
+Bebida de soja ligth,proteina,soja,400,1,0,0
+Bebida de soja (cualquiera),proteina,soja,270,1,0,0
+Bebida de soja Proteica,proteina,soja,200,1,0,0
+Helado proteico,proteina,leche,80,1,0,0
+Pollo (sin piel),carne,,100,1,0,0
+Pavo (sin piel),carne,,100,1,0,0
+Ternera (magro),carne,,100,1,0,0
+Seitan,carne,trigo,90,1,0,0
+Lata de pollo al natural frango,carne,,1,1,0,0
+Pechuga de pollo frango,carne,,60,1,0,0
+Jamón Cocido,carne,,100,1,0,0
+Jamón de York Light,carne,,100,1,0,0
+Hamburguesa de Pollo/Pavo,carne,,1,1,0,0
+Lomo de cerdo (magro),carne,,90,1,0,0
+Lomo embuchado,carne,,50,1,0,0
+Hígado de cerdo,carne,,90,1,0,0
+Hígado de pollo,carne,,90,1,0,0
+Hígado de vaca,carne,,90,1,0,0
+Embutido 90% mínimo de carne,carne,,90,1,0,0
+Muslo de pollo,carne,,2,1,0,0
+Alitas de pollo,carne,,2,1,0,0
+Pierna de pollo,carne,,1,1,0,0
+Huevo entero XL,carne,huevos,1,1,0,0
+Ternera (con grasa),carne,,70,1,0,0
+Cerdo,carne,,60,1,0,0
+Jamón serrano,carne,,50,1,0,0
+Embutidos,carne,,40,1,0,0
+Conejo,carne,,110,1,0,0
+Cordero,carne,,50,1,0,0
+Carne de Kebap,carne,,50,1,0,0
+Banco,carne,,30,1,0,0
+Chicharrón/cortezas de cerdo,carne,,20,1,0,0
+Tofu,carne,soja,100,1,0,0
+Paté hígado light,carne,,70,1,0,0
+Salmón,pescado,pescado,50,1,0,0
+Anchoa,pescado,pescado,50,1,0,0
+Merluza,pescado,pescado,100,1,0,0
+Pescadilla,pescado,pescado,120,1,0,0
+Boquerón,pescado,pescado,70,1,0,0
+Bonito,pescado,pescado,70,1,0,0
+Caballa,pescado,pescado,70,1,0,0
+Trucha,pescado,pescado,70,1,0,0
+Corvina,pescado,pescado,70,1,0,0
+Lubina,pescado,pescado,100,1,0,0
+Lenguado,pescado,pescado,100,1,0,0
+Rape,pescado,pescado,100,1,0,0
+Sardina,pescado,pescado,50,1,0,0
+Palitos de Cangrejo,pescado,marisco,100,1,0,0
+Cefalópodos,pescado,marisco,120,1,0,0
+Crustáceos,pescado,marisco,120,1,0,0
+Gambas,pescado,marisco,120,1,0,0
+Lata de atún natural,pescado,pescado,2,1,0,0
+Lata de atún con aceite,pescado,pescado,1,1,0,0
+Caviar,pescado,pescado,40,1,0,0
+Frutos secos,grasa,frutos secos,15,0,0,1
+Pipas o semillas,grasa,,32,0,0,1
+Cacao desgrasado en polvo,grasa,,30,0,0,1
+Chocolate negro 85%,grasa,leche,20,0,0,1
+Aceite de oliva,grasa,,10,0,0,1
+Aceite de coco,grasa,,10,0,0,1
+Aceite de aguacate,grasa,,10,0,0,1
+Aceite de girasol,grasa,,10,0,0,1
+Aceite de palma,grasa,,10,0,0,1
+Mantequilla,grasa,leche,15,0,0,1
+Mayonesa light,grasa,huevos,30,0,0,1
+Crema cacahuete,grasa,frutos secos,15,0,0,1
+Coco,grasa,,30,0,0,1
+Aguacate,grasa,,50,0,0,1
+Aceitunas sin hueso,grasa,,60,0,0,1
+Yema de huevo,grasa,huevos,2,0,0,1
+Gazpacho,grasa,,250,0,0,1
+Salmorejo,grasa,,120,0,0,1
+Patatas fritas,grasa,,20,0,0,1
+Mermelada (0% azúcares añadidos),carbohidratos,frutas,263,0,1,0
+Leche condensada,carbohidratos,leche,20,0,1,0
+Dulce de leche,carbohidratos,leche,30,0,1,0
+Salsa de soja,carbohidratos,soja,200,0,1,0
+Miel natural,carbohidratos,,30,0,1,0
+Agave,carbohidratos,,30,0,1,0
+Salsas típicas,carbohidratos,,100,0,1,0
+Salsa cesar,carbohidratos,huevos,30,0,1,0
+Tomate Frito zero azúcares añadidos,carbohidratos,verduras,150,0,1,0
+Golosinas,carbohidratos,,20,0,1,0
+Helado de Tarrina,carbohidratos,leche,40,0,1,0
+Helado light,carbohidratos,leche,70,0,1,0
+Dulces de todo tipo de variedad,carbohidratos,,20,0,1,0
+Cruasanes,carbohidratos,trigo,20,0,1,0
+Ensaimadas,carbohidratos,leche,20,0,1,0
+Magdalenas,carbohidratos,trigo,20,0,1,0
+Bollos,carbohidratos,trigo,20,0,1,0
+Donut,carbohidratos,trigo,20,0,1,0
+Galletas,carbohidratos,trigo,20,0,1,0
+Azúcar normal,carbohidratos,,25,0,1,0
+Azúcar moreno,carbohidratos,,25,0,1,0
+Gelatina,carbohidratos,,120,0,1,0
+Plátano maduro,carbohidratos,frutas,90,0,1,0
+Cereales para el desayuno,carbohidratos,trigo,25,0,1,0
+Pasta,carbohidratos,trigo,30,0,1,0
+Quinoa,carbohidratos,,25,0,1,0
+Arroz,carbohidratos,,30,0,1,0
+Maíz,carbohidratos,,30,0,1,0
+Avena,carbohidratos,,30,0,1,0
+Patata (cruda),carbohidratos,verduras,100,0,1,0
+Puré de patata,carbohidratos,verduras,30,0,1,0
+Boniato,carbohidratos,verduras,100,0,1,0
+Papa,carbohidratos,verduras,100,0,1,0
+Tortillas de maíz mexicanas,carbohidratos,trigo,2,0,1,0
+Legumbres (crudas),carbohidratos,legumbres,30,0,1,0
+Legumbres cocidas en bote,carbohidratos,legumbres,100,0,1,0
+Anitines,carbohidratos,trigo,17,0,1,0
+Fideos o sopas instantáneas,carbohidratos,trigo,4,0,1,0
+Fabada,carbohidratos,legumbres,70,0,1,0
+Lentejas a la Rioja,carbohidratos,legumbres,80,0,1,0
+Lentejas a la jardinera,carbohidratos,legumbres,150,0,1,0
+Cocido madrileño,carbohidratos,legumbres,90,0,1,0
+Alubia a la jardinera,carbohidratos,legumbres,120,0,1,0
+Garbanzos a la jardinera,carbohidratos,legumbres,130,0,1,0
+Albóndigas en salsa,proteina,,70,1,0,0
+Albóndigas de pollo,proteina,,90,1,0,0
+Callos,proteina,,70,1,0,0
+Tortilla de patatas,carbohidratos,huevos,60,0,1,0
+Gnocchi,carbohidratos,trigo,70,0,1,0
+Pisto de verduras,carbohidratos,verduras,170,0,1,0
+Parrilla de verduras,carbohidratos,verduras,200,0,1,0
+Tempura de verduras,carbohidratos,verduras,50,0,1,0
+Kebab (pollo frango),carne,,50,1,0,0
+Salteado de pollo,carne,,100,1,0,0
+Salteado de patata y salchicha,grasa,,70,0,0,1
+Risotto con champiñones,carbohidratos,,100,0,1,0
+Arroz negro,carbohidratos,,90,0,1,0
+Salteado de gambas,marisco,marisco,250,1,0,0
+Queso,lácteos,leche,25,1,0,0
+Queso Havirti ligth,lácteos,leche,40,1,0,0
+Requesón desnatado,lácteos,leche,150,1,0,0
+Queso fresco batido 0%,lácteos,leche,250,1,0,0
+Yogurt desnatado,lácteos,leche,2,1,0,0
+Leche desnatada,lácteos,leche,300,1,0,0
+Leche entera,lácteos,leche,200,1,0,0
+Leche semi,lácteos,leche,240,1,0,0
+Yogurt griego,lácteos,leche,100,1,0,0
+Yogurt cualquier tipo,lácteos,leche,120,1,0,0
+Leche de proteínas Hacendado,lácteos,leche,200,1,0,0
+Leche suprema asturiana,lácteos,leche,200,1,0,0
+Arroz con leche,lácteos,leche,70,0,1,0
+Cuajada,lácteos,leche,120,0,1,0
+Natillas de cualquier sabor,lácteos,leche,90,0,1,0
+Queso de Burgos desnatado,lácteos,leche,150,1,0,0
+Yogur Proteico Natural,lácteos,leche,250,1,0,0
+Yogurt líquido Proteico,lácteos,leche,2,1,0,0
+Yogurt Proteico de cualquier tipo,lácteos,leche,120,1,0,0
+Leche proteica,lácteos,leche,180,1,0,0
+Mandarina,fruta,frutas,1,1,0,0
+Naranja,fruta,frutas,1,1,0,0
+Melon,fruta,frutas,3,1,0,0
+Uva,fruta,frutas,100,1,0,0
