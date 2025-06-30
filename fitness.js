@@ -527,3 +527,14 @@ function formatearNombre(nombre) {
         .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1))
         .join(' ');
 }
+
+// =====================
+// Borrar todos los clientes
+// =====================
+document.getElementById('borrarTodos').addEventListener('click', function() {
+    if (confirm('¿Seguro que quieres borrar todos los clientes?')) {
+        clientes.length = 0;
+        localStorage.removeItem('clientes');
+        renderTabla();
+    }
+});
