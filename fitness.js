@@ -39,9 +39,26 @@ function calcularCampos({ altura, peso, edad, grasa, actividad, objetivo }) {
 // =====================
 // Renderizado
 // =====================
+document.addEventListener('DOMContentLoaded', function () {
+    renderTabla();
+});
+
 function renderTabla() {
     const tbody = document.querySelector('#clientesTable tbody');
     tbody.innerHTML = '';
+    if (clientes.length === 0) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td colspan="14" class="text-center">
+                <div class="alert alert-info m-0 py-2" style="font-size:1.1rem;">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    <strong>No hay clientes registrados</strong>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(row);
+        return;
+    }
     clientes.forEach((cliente, idx) => {
         const row = document.createElement('tr');
         row.innerHTML = `
