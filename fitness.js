@@ -210,8 +210,18 @@ window.borrarCliente = function (idx) {
     if (confirm('Confirmar borrado del cliente?')) {
         clientes.splice(idx, 1);
         renderTabla();
+        mostrarToast('Cliente borrado correctamente', 'danger');
     }
 }
+
+// Borrar todos los clientes
+document.getElementById('borrarTodos').addEventListener('click', function() {
+    if (confirm('¿Seguro que quieres borrar todos los clientes?')) {
+        clientes.length = 0;
+        localStorage.removeItem('clientes');
+        renderTabla();
+    }
+});
 
 // =====================
 // Editar cliente (modal)
@@ -291,6 +301,7 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
     };
     clientes.push(cliente);
     renderTabla();
+    mostrarToast('Cliente añadido correctamente', 'success');
     setTimeout(() => {
         this.reset();
         document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
@@ -445,9 +456,22 @@ if (formEditarCliente) {
             
         };
         renderTabla();
+        mostrarToast('Cliente editado correctamente', 'info');
         const modal = bootstrap.Modal.getInstance(document.getElementById('editarClienteModal'));
         modal.hide();
     });
+}
+
+// =====================
+// Mostrar toasts
+// =====================
+function mostrarToast(mensaje, tipo = 'success') {
+    const toastEl = document.getElementById('toastConfirmacion');
+    const toastMsg = document.getElementById('toastMensaje');
+    toastMsg.textContent = mensaje;
+    toastEl.className = `toast align-items-center text-bg-${tipo} border-0 shadow-lg rounded-4`;
+    const toast = new bootstrap.Toast(toastEl, { delay: 1500 }); // 1,5 segundos
+    toast.show();
 }
 
 // =====================
@@ -626,13 +650,4 @@ function formatearNombre(nombre) {
         .join(' ');
 }
 
-// =====================
-// Borrar todos los clientes
-// =====================
-document.getElementById('borrarTodos').addEventListener('click', function() {
-    if (confirm('¿Seguro que quieres borrar todos los clientes?')) {
-        clientes.length = 0;
-        localStorage.removeItem('clientes');
-        renderTabla();
-    }
-});
+
