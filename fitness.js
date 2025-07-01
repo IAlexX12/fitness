@@ -77,9 +77,18 @@ function renderTabla() {
             <td>${(cliente.alergias || []).join(', ')}</td>
             <td>${cliente.fechaAlta || '-'}</td>
             <td>
-                <button class="btn btn-informe btn-sm me-1" onclick="generarInforme(${idx})">Generar informe</button>
-                <button class="btn btn-warning btn-sm me-1" onclick="abrirEditarCliente(${idx})">Editar</button>
-                <button class="btn btn-danger btn-sm" onclick="borrarCliente(${idx})">Borrar</button>
+            <button class="btn btn-outline-info btn-sm me-1" title="Informe" onclick="generarInforme(${idx})">
+                <i class="bi bi-file-earmark-text"></i>
+                <span class="d-none d-md-inline">Informe</span>
+            </button>
+            <button class="btn btn-outline-warning btn-sm me-1" title="Editar" onclick="abrirEditarCliente(${idx})">
+                <i class="bi bi-pencil"></i>
+                <span class="d-none d-md-inline">Editar</span>
+            </button>
+            <button class="btn btn-outline-danger btn-sm" title="Borrar" onclick="borrarCliente(${idx})">
+                <i class="bi bi-trash"></i>
+                <span class="d-none d-md-inline">Borrar</span>
+            </button>
             </td>
         `;
         tbody.appendChild(row);
