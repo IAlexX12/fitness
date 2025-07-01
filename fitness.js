@@ -49,7 +49,7 @@ function renderTabla() {
     if (clientes.length === 0) {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td colspan="14" class="text-center">
+            <td colspan="16" class="text-center">
                 <div class="alert alert-info m-0 py-2" style="font-size:1.1rem;">
                     <i class="bi bi-info-circle-fill me-2"></i>
                     <strong>No hay clientes registrados</strong>
@@ -75,6 +75,7 @@ function renderTabla() {
             <td>${cliente.actividad}</td>
             <td>${cliente.objetivo}</td>
             <td>${(cliente.alergias || []).join(', ')}</td>
+            <td>${cliente.fechaAlta || '-'}</td>
             <td>
                 <button class="btn btn-informe btn-sm me-1" onclick="generarInforme(${idx})">Generar informe</button>
                 <button class="btn btn-warning btn-sm me-1" onclick="abrirEditarCliente(${idx})">Editar</button>
@@ -90,7 +91,7 @@ function renderTabla() {
 // =====================
 function importarDesdeCSV(text) {
     const lines = text.trim().split('\n');
-    const headers = lines[0].split(',').map(h => h.trim());
+    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
     const map = {
         'nombre': 'nombre',
         'altura': 'altura',
@@ -104,7 +105,8 @@ function importarDesdeCSV(text) {
         'calorías objetivo': 'caloriasObjetivo',
         'actividad': 'actividad',
         'objetivo': 'objetivo',
-        'alergias': 'alergias'
+        'alergias': 'alergias',
+        'fecha alta': 'fechaAlta'
     };
     clientes.length = 0;
     lines.slice(1).forEach(line => {
@@ -112,7 +114,7 @@ function importarDesdeCSV(text) {
         const values = line.split(',');
         const cliente = {};
         headers.forEach((header, idx) => {
-            const key = map[header.trim().toLowerCase()];
+            const key = map[header];
             if (!key) return;
             if (key === 'alergias') {
                 cliente.alergias = values[idx] ? values[idx].split(';').map(a => a.trim()).filter(a => a) : [];
@@ -197,6 +199,7 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
     const alimentos = Array.from(alimentosSelect.selectedOptions).map(opt => opt.text);
 
     const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo });
+    const fechaActual = new Date().toLocaleString();
     const cliente = {
         nombre: formatearNombre(nombre), altura, peso, edad, grasa,
         masaMagra: calculos.masaMagra,
@@ -207,7 +210,8 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
         actividad: actividadTxt,
         objetivo: objetivoTxt,
         alergias: alergias,
-        alimentos: alimentos
+        alimentos: alimentos,
+        fechaAlta: fechaActual,
     };
     clientes.push(cliente);
     renderTabla();
@@ -220,7 +224,7 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
 
 // Exportar a CSV
 document.getElementById('exportarCSV').addEventListener('click', function () {
-    let csv = 'Nombre,Altura,Peso,Edad,% Graso,M. Magra,M. Grasa,IMC,MB,Calorías Objetivo,Actividad,Objetivo,Alergias\n';
+    let csv = 'Nombre,Altura,Peso,Edad,% Graso,M. Magra,M. Grasa,IMC,MB,Calorías Objetivo,Actividad,Objetivo,Alergias,Fecha alta\n';
     clientes.forEach(cliente => {
         const altura = Number(cliente.altura);
         const peso = Number(cliente.peso);
@@ -250,7 +254,8 @@ document.getElementById('exportarCSV').addEventListener('click', function () {
             cliente.caloriasObjetivo,
             cliente.actividad,
             cliente.objetivo,
-            (cliente.alergias || "").join(';')
+            (cliente.alergias || "").join(';'),
+            cliente.fechaAlta || '-'
         ].join(',') + '\n';
     });
     const blob = new Blob([csv], { type: 'text/csv' });
@@ -329,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // =====================
-// Guardar cambios del modal de edición - Función modificada
+// Guardar cambios del modal de edición
 // =====================
 const formEditarCliente = document.getElementById('formEditarCliente');
 if (formEditarCliente) {
@@ -354,14 +359,14 @@ if (formEditarCliente) {
         // alergias
         const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo });
         clientes[idx] = {
+            ...clientes[idx], // mantiene fechaAlta y otros campos
             nombre: formatearNombre(nombre), altura, peso, edad, grasa, actividad, objetivo,
             masaMagra: calculos.masaMagra,
             masaGrasa: calculos.masaGrasa,
             imc: calculos.imc,
             mb: calculos.mb,
             caloriasObjetivo: calculos.caloriasObjetivo,
-            alergias: clientes[idx].alergias, // mantiene las alergias originales
-            alimentos: clientes[idx].alimentos || [] // mantiene los alimentos originales
+            
         };
         renderTabla();
         const modal = bootstrap.Modal.getInstance(document.getElementById('editarClienteModal'));
