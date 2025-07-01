@@ -2,6 +2,8 @@
 // Variables globales
 // =====================
 window.clientes = [];
+let ordenColumna = null;
+let ordenAscendente = true;
 
 // =====================
 // Utilidades
@@ -39,8 +41,11 @@ function calcularCampos({ altura, peso, edad, grasa, actividad, objetivo }) {
 // =====================
 // Renderizado
 // =====================
+// Primer render
 document.addEventListener('DOMContentLoaded', function () {
     renderTabla();
+    configurarOrdenTabla();
+    actualizarIconosOrden();
 });
 
 function renderTabla() {
@@ -92,6 +97,62 @@ function renderTabla() {
             </td>
         `;
         tbody.appendChild(row);
+    });
+}
+
+// Orden de la tabla (ASC/DESC)
+function configurarOrdenTabla() {
+    document.querySelectorAll('#clientesTable th[data-sort]').forEach(th => {
+        th.style.cursor = 'pointer';
+        th.addEventListener('click', function() {
+            const columna = th.getAttribute('data-sort');
+            if (ordenColumna === columna) {
+                ordenAscendente = !ordenAscendente;
+            } else {
+                ordenColumna = columna;
+                ordenAscendente = true;
+            }
+            ordenarClientes(columna, ordenAscendente);
+            renderTabla();
+            actualizarIconosOrden();
+        });
+    });
+}
+
+// Ordena clientes
+function ordenarClientes(columna, asc) {
+    clientes.sort((a, b) => {
+        let valA = a[columna];
+        let valB = b[columna];
+        if (columna === 'fechaAlta') {
+            valA = new Date(valA);
+            valB = new Date(valB);
+        }
+        if (!isNaN(valA) && !isNaN(valB) && valA !== '' && valB !== '') {
+            valA = Number(valA);
+            valB = Number(valB);
+        }
+        if (valA < valB) return asc ? -1 : 1;
+        if (valA > valB) return asc ? 1 : -1;
+        return 0;
+    });
+}
+
+function actualizarIconosOrden() {
+    document.querySelectorAll('#clientesTable th[data-sort]').forEach(th => {
+        const icon = th.querySelector('.sort-icon');
+        const columna = th.getAttribute('data-sort');
+        th.classList.remove('table-active');
+        if (columna === ordenColumna) {
+            th.classList.add('table-active');
+            if (ordenAscendente) {
+                icon.className = 'bi bi-arrow-up ms-1 sort-icon';
+            } else {
+                icon.className = 'bi bi-arrow-down ms-1 sort-icon';
+            }
+        } else {
+            icon.className = 'bi bi-arrow-down-up ms-1 sort-icon';
+        }
     });
 }
 
