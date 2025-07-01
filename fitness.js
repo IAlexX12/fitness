@@ -14,7 +14,7 @@ function pad(n) {
 
 function obtenerFechaHoraActual() {
     const now = new Date();
-    return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}.${pad(now.getHours())}.${pad(now.getMinutes())}.${pad(now.getSeconds())}`;
+    return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}:${pad(now.getHours())}.${pad(now.getMinutes())}.${pad(now.getSeconds())}`;
 }
 
 // =====================
@@ -285,7 +285,7 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
     const alimentos = Array.from(alimentosSelect.selectedOptions).map(opt => opt.text);
 
     const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo });
-    const fechaActual = new Date().toLocaleString();
+    const fechaActual = new Date().toLocaleDateString('es-ES');
     const cliente = {
         nombre: formatearNombre(nombre), altura, peso, edad, grasa,
         masaMagra: calculos.masaMagra,
@@ -350,7 +350,7 @@ document.getElementById('exportarCSV').addEventListener('click', function () {
     const a = document.createElement('a');
     a.href = url;
     const fecha = obtenerFechaHoraActual();
-    a.download = `clientes+${fecha}.csv`;
+    a.download = `clientes_${fecha}.csv`;
     a.click();
     URL.revokeObjectURL(url);
 });
