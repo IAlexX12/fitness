@@ -41,6 +41,7 @@ function calcularCampos({ altura, peso, edad, grasa, actividad, objetivo }) {
 // =====================
 // Renderizado
 // =====================
+
 // Primer render
 document.addEventListener('DOMContentLoaded', function () {
     renderTabla();
@@ -138,6 +139,7 @@ function ordenarClientes(columna, asc) {
     });
 }
 
+// Actualizar iconos de ordenado
 function actualizarIconosOrden() {
     document.querySelectorAll('#clientesTable th[data-sort]').forEach(th => {
         const icon = th.querySelector('.sort-icon');
