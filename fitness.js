@@ -52,6 +52,10 @@ document.addEventListener('DOMContentLoaded', function () {
 function renderTabla() {
     const tbody = document.querySelector('#clientesTable tbody');
     tbody.innerHTML = '';
+    // Actualiza el contador clientes
+    const contador = document.getElementById('contadorClientesBadge');
+    if (contador) contador.textContent = clientes.length;
+    // Mostrar mensaje de no hay clientes
     if (clientes.length === 0) {
         const row = document.createElement('tr');
         row.innerHTML = `
