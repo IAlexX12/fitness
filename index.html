@@ -45,7 +45,12 @@
 
       <div class="col-md-3">
         <label class="form-label">% Graso</label>
-        <input type="text" class="form-control" id="grasa" required placeholder="Ej: 10">
+        <div class="input-group">
+          <input type="text" class="form-control" id="grasa" required placeholder="Ej: 10">
+          <button class="btn btn-outline-secondary" type="button" id="abrirCalculadoraGrasa" title="Calcular % graso">
+            <i class="bi bi-calculator"></i>
+          </button>
+        </div>
         <div class="invalid-feedback grasa-feedback"></div>
       </div>
       <div class="col-md-3">
@@ -216,6 +221,46 @@
       </div>
     </div>
 
+    <!-- Modal calculadora % graso -->
+    <div class="modal fade" id="calculadoraGrasaModal" tabindex="-1" aria-labelledby="calculadoraGrasaLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form id="formCalculadoraGrasa">
+            <div class="modal-header">
+              <h5 class="modal-title" id="calculadoraGrasaLabel">Calculadora % Graso (YMCA)</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-2">
+                <label class="form-label">Sexo</label>
+                <select class="form-select" id="sexoYMCA" required>
+                  <option value="hombre">Hombre</option>
+                  <option value="mujer">Mujer</option>
+                </select>
+              </div>
+              <div class="mb-2">
+                <label class="form-label">Altura (cm)</label>
+                <input type="number" class="form-control" id="alturaYMCA" required>
+              </div>
+              <div class="mb-2">
+                <label class="form-label">Peso (kg)</label>
+                <input type="number" class="form-control" id="pesoYMCA" required>
+              </div>
+              <div class="mb-2">
+                <label class="form-label">Perímetro cintura (cm)</label>
+                <input type="number" class="form-control" id="cinturaYMCA" required>
+              </div>
+              <div id="resultadoYMCA" class="alert alert-info d-none"></div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Calcular</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
 <script src="fitness.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -223,6 +268,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 <script src="informe.js"></script>
 <script src="cargaCSV.js"></script>
+<script src="calculadora.js"></script>
 </body>
 
 </html>
