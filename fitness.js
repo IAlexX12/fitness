@@ -85,6 +85,7 @@ function renderTabla() {
             <td>${cliente.actividad}</td>
             <td>${cliente.objetivo}</td>
             <td>${(cliente.alergias || []).join(', ')}</td>
+            <td>${(cliente.alimentos || []).join(', ')}</td> <!-- Añade esta línea -->
             <td>${cliente.fechaAlta || '-'}</td>
             <td>
             <button class="btn btn-outline-info btn-sm me-1" title="Informe" onclick="generarInforme(${idx})">
@@ -182,6 +183,7 @@ function importarDesdeCSV(text) {
         'actividad': 'actividad',
         'objetivo': 'objetivo',
         'alergias': 'alergias',
+        'alimentos': 'alimentos', // <-- Añade esta línea
         'fecha alta': 'fechaAlta'
     };
     clientes.length = 0;
@@ -194,6 +196,8 @@ function importarDesdeCSV(text) {
             if (!key) return;
             if (key === 'alergias') {
                 cliente.alergias = values[idx] ? values[idx].split(';').map(a => a.trim()).filter(a => a) : [];
+            } else if (key === 'alimentos') {
+                cliente.alimentos = values[idx] ? values[idx].split(';').map(a => a.trim()).filter(a => a) : [];
             } else {
                 cliente[key] = values[idx];
             }
@@ -236,7 +240,22 @@ window.abrirEditarCliente = function (idx) {
     document.getElementById('editGrasa').value = cliente.grasa;
     document.getElementById('editActividad').value = cliente.actividad;
     document.getElementById('editObjetivo').value = cliente.objetivo;
-    // alergias
+
+    // Seleccionar alergias
+    const editAlergias = document.getElementById('editAlergias');
+    Array.from(editAlergias.options).forEach(opt => {
+        opt.selected = (cliente.alergias || []).includes(opt.text);
+    });
+
+    // Seleccionar alimentos
+    const editAlimentos = document.getElementById('editAlimentos');
+    Array.from(editAlimentos.options).forEach(opt => {
+        opt.selected = (cliente.alimentos || []).includes(opt.text);
+    });
+
+    // Si usas Choices.js, actualiza:
+    if (editAlergias.choices) editAlergias.choices.setChoiceByValue(cliente.alergias || []);
+    if (editAlimentos.choices) editAlimentos.choices.setChoiceByValue(cliente.alimentos || []);
 
     // Limpiar estados de validación al abrir el modal
     document.querySelectorAll('#editNombre, #editAltura, #editPeso, #editEdad, #editGrasa').forEach(input => {
@@ -278,9 +297,11 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
     const actividad = Number(document.getElementById('actividad').value);
     const objetivoTxt = document.getElementById('objetivo').selectedOptions[0].text;
     const objetivo = document.getElementById('objetivo').value;
-    
+
     const alergiasSelect = document.getElementById('alergias');
     const alergias = Array.from(alergiasSelect.selectedOptions).map(opt => opt.text);
+
+    // Así recoges los alimentos seleccionados del select múltiple
     const alimentosSelect = document.getElementById('alimentos');
     const alimentos = Array.from(alimentosSelect.selectedOptions).map(opt => opt.text);
 
@@ -296,7 +317,7 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
         actividad: actividadTxt,
         objetivo: objetivoTxt,
         alergias: alergias,
-        alimentos: alimentos,
+        alimentos: alimentos, // <-- aquí se guarda el array de alimentos seleccionados
         fechaAlta: fechaActual,
     };
     clientes.push(cliente);
@@ -443,6 +464,14 @@ if (formEditarCliente) {
         const actividad = document.getElementById('editActividad').value;
         const objetivoTxt = document.getElementById('editObjetivo').selectedOptions[0].text;
         const objetivo = document.getElementById('editObjetivo').value;
+
+        // Recoger alergias y alimentos seleccionados del modal
+        const editAlergias = document.getElementById('editAlergias');
+        const alergias = Array.from(editAlergias.selectedOptions).map(opt => opt.text);
+
+        const editAlimentos = document.getElementById('editAlimentos');
+        const alimentos = Array.from(editAlimentos.selectedOptions).map(opt => opt.text);
+
         // alergias
         const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo });
         clientes[idx] = {
@@ -453,7 +482,8 @@ if (formEditarCliente) {
             imc: calculos.imc,
             mb: calculos.mb,
             caloriasObjetivo: calculos.caloriasObjetivo,
-            
+            alergias: alergias,      // <-- añade esto
+            alimentos: alimentos     // <-- y esto
         };
         renderTabla();
         mostrarToast('Cliente editado correctamente', 'info');
@@ -582,22 +612,57 @@ function validarFormularioCompleto() {
     }
   });
 
+  // Validar alergias
+  const alergias = document.getElementById('alergias');
+  if (!alergias.selectedOptions.length) {
+    alergias.classList.add('is-invalid');
+    valido = false;
+  } else {
+    alergias.classList.remove('is-invalid');
+  }
+
+  // Validar alimentos
+  const alimentos = document.getElementById('alimentos');
+  if (!alimentos.selectedOptions.length) {
+    alimentos.classList.add('is-invalid');
+    valido = false;
+  } else {
+    alimentos.classList.remove('is-invalid');
+  }
+
   return valido;
 }
 
-// Función para validar todo el formulario de edición
 function validarFormularioEdicionCompleto() {
-    let valido = true;
-    const campos = ['editNombre', 'editAltura', 'editPeso', 'editEdad', 'editGrasa'];
+  let valido = true;
+  const campos = ['editNombre', 'editAltura', 'editPeso', 'editEdad', 'editGrasa'];
 
-    campos.forEach(id => {
-        const input = document.getElementById(id);
-        if (!validarCampoEdicion(input)) {
-            valido = false;
-        }
-    });
+  campos.forEach(id => {
+    const input = document.getElementById(id);
+    if (!validarCampoEdicion(input)) {
+      valido = false;
+    }
+  });
 
-    return valido;
+  // Validar alergias edición
+  const editAlergias = document.getElementById('editAlergias');
+  if (!editAlergias.selectedOptions.length) {
+    editAlergias.classList.add('is-invalid');
+    valido = false;
+  } else {
+    editAlergias.classList.remove('is-invalid');
+  }
+
+  // Validar alimentos edición
+  const editAlimentos = document.getElementById('editAlimentos');
+  if (!editAlimentos.selectedOptions.length) {
+    editAlimentos.classList.add('is-invalid');
+    valido = false;
+  } else {
+    editAlimentos.classList.remove('is-invalid');
+  }
+
+  return valido;
 }
 
 // =====================
@@ -649,5 +714,24 @@ function formatearNombre(nombre) {
         .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1))
         .join(' ');
 }
+
+// =====================
+// Choices.js
+// =====================
+document.addEventListener('DOMContentLoaded', function () {
+    // Choices para el alta
+    new Choices('#alergias', { removeItemButton: true, searchEnabled: false });
+    new Choices('#alimentos', { removeItemButton: true, searchEnabled: false });
+
+    // Choices para el modal de edición
+    new Choices('#editAlergias', { removeItemButton: true, searchEnabled: false });
+    new Choices('#editAlimentos', { removeItemButton: true, searchEnabled: false });
+});
+
+window.addEventListener('beforeunload', function (e) {
+  // Personaliza el mensaje si quieres, pero la mayoría de navegadores mostrarán su propio texto
+  e.preventDefault();
+  e.returnValue = '¿Estás seguro de que quieres recargar? Se perderán los cambios no guardados.';
+});
 
 

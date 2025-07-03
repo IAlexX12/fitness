@@ -1,4 +1,4 @@
-window.generarInforme = function(idx) {
+window.generarInforme = async function(idx) {
     if (!window.clientes || !window.clientes[idx]) {
         alert('No se encontró el cliente.');
         return;
@@ -30,6 +30,7 @@ window.generarInforme = function(idx) {
     doc.setFontSize(11);
     doc.setTextColor(0);
     const datos = [
+        [`Fecha de alta:`, cliente.fechaAlta],
         [`Nombre:`, cliente.nombre],
         [`Edad:`, `${cliente.edad} años`],
         [`Altura:`, `${cliente.altura} cm`],
@@ -313,29 +314,80 @@ window.generarInforme = function(idx) {
     y += 8;
 
     // ---------- DATOS DE PRUEBA PARA ALIMENTOS ----------
-    const alimentos = [
-        // nombre, categoria, gramaje, esproteico, escarbohidrato, esgrasa
-        { nombre: "Muslo de pollo", categoria: "carne", gramaje: 100, esproteico: 1, escarbohidrato: 0, esgrasa: 0 },
-        { nombre: "Claras de huevo", categoria: "huevo", gramaje: 200, esproteico: 1, escarbohidrato: 0, esgrasa: 0 },
-        { nombre: "Arroz crudo", categoria: "cereal", gramaje: 30, esproteico: 0, escarbohidrato: 1, esgrasa: 0 },
-        { nombre: "Patata", categoria: "tubérculo", gramaje: 100, esproteico: 0, escarbohidrato: 1, esgrasa: 0 },
-        { nombre: "Aceite de oliva", categoria: "aceite", gramaje: 10, esproteico: 0, escarbohidrato: 0, esgrasa: 1 },
-        { nombre: "Nueces", categoria: "fruto seco", gramaje: 15, esproteico: 0, escarbohidrato: 0, esgrasa: 1 }
-    ];
 
-    // Filtrar por tipo
-    const proteinas = alimentos.filter(a => a.esproteico);
-    const carbohidratos = alimentos.filter(a => a.escarbohidrato);
-    const grasas = alimentos.filter(a => a.esgrasa);
+    // Función para parsear CSV a array de objetos
+    function parseCSV(csv) {
+        const lines = csv.trim().split('\n');
+        const headers = lines[0].replace('\r', '').split(',');
+        return lines.slice(1).map(line => {
+            const values = line.replace('\r', '').split(',');
+            const obj = {};
+            headers.forEach((h, i) => {
+                obj[h.trim()] = values[i] ? values[i].trim() : '';
+            });
+            // Convertir campos numéricos y booleanos
+            obj.gramaje = Number(obj.gramaje);
+            obj.esproteico = obj.esproteico === '1';
+            obj.escarbohidrato = obj.escarbohidrato === '1';
+            obj.esgrasa = obj.esgrasa === '1';
+            obj.alergenos = obj.alergenos ? obj.alergenos.split(';').map(a => a.trim().toLowerCase()) : [];
+            obj.categoria = obj.categoria ? obj.categoria.trim().toLowerCase() : '';
+            return obj;
+        });
+    }
+
+    // Cambia la obtención del CSV por una ruta relativa y usa fetch
+    async function cargarAlimentosCSV() {
+        // Ruta relativa desde el HTML principal
+        const ruta = 'Data/alimentos.csv';
+        try {
+            const resp = await fetch(ruta);
+            if (!resp.ok) throw new Error('No se pudo cargar el archivo de alimentos.');
+            return await resp.text();
+        } catch (e) {
+            alert('No se pudo cargar el archivo de alimentos.');
+            return '';
+        }
+    }
+
+    // Cargar el CSV de alimentos usando ruta relativa
+    const alimentosCSV = await cargarAlimentosCSV();
+    if (!alimentosCSV) return;
+    const alimentos = parseCSV(alimentosCSV);
+
+    // Filtrar por alergias
+    const alergiasCliente = (cliente.alergias || []).map(a => a.toLowerCase());
+    const alimentosFiltrados = alimentos.filter(alim => {
+        // Si el alimento tiene algún alérgeno que está en las alergias del cliente, lo excluimos
+        if (!alim.alergenos || alim.alergenos.length === 0) return true;
+        return !alim.alergenos.some(al => alergiasCliente.includes(al));
+    });
+
+    // Filtrar por categorías seleccionadas si cliente.alimentos tiene algo
+    let categoriasSeleccionadas = (cliente.alimentos || []).map(c => c.toLowerCase()).filter(Boolean);
+    let alimentosFinal = alimentosFiltrados;
+    if (categoriasSeleccionadas.length > 0 && !categoriasSeleccionadas.includes('todos')) {
+        alimentosFinal = alimentosFiltrados.filter(alim => categoriasSeleccionadas.includes(alim.categoria));
+    }
+
+    // Separar por tipo
+    const proteinas = alimentosFinal.filter(a => a.esproteico);
+    const carbohidratos = alimentosFinal.filter(a => a.escarbohidrato);
+    const grasas = alimentosFinal.filter(a => a.esgrasa);
 
     // ---------- CABECERO DE SECCIÓN DE TABLAS DE ALIMENTOS ----------
-    y += 15;
+    doc.addPage();
+    y = 30;
     doc.setFontSize(16);
     doc.setTextColor(40, 60, 100);
     doc.text("Tablas de Alimentos por Porción", 15, y);
-    y += 15;
+    doc.text(`(Los alimentos disponibles son: ${cliente.alimentos})`, 15, y + 7);
+    doc.text(`(${alimentosFinal.length} alimentos)`, 15, y + 14);
+    y += 25;
+
 
     // ---------- TABLA DE PROTEÍNAS (PÁGINA NUEVA) ----------
+    
     doc.setFontSize(14);
     doc.setTextColor(40, 60, 100);
     doc.text("Porciones de Proteína (1 porción = gramaje indicado)", 15, y);
@@ -343,28 +395,7 @@ window.generarInforme = function(idx) {
     doc.autoTable({
         startY: y,
         head: [['Alimento', 'Porción']],
-        body: [
-            ["Pollo, pavo (sin piel)", "100g"],
-            ["Ternera (magro)", "100g"],
-            ["Seitan", "90g"],
-            ["Pechuga de pollo/Frango", "60g"],
-            ["Jamón cocido/York light", "100g"],
-            ["Hamburguesa pollo/pavo", "1 unidad"],
-            ["Lomo de cerdo (magro)", "90g"],
-            ["Hígado (cerdo/pollo/vaca)", "90g"],
-            ["Embutido (mínimo 90% carne)", "90g"],
-            ["Clara de huevo", "200g"],
-            ["Huevo entero XL", "1 unidad"],
-            ["Tofu", "100g"],
-            ["Soja texturizada", "30g"],
-            ["Gelatina proteica", "250g"],
-            ["Yogurt proteico natural", "250g"],
-            ["Queso fresco batido 0%", "250g"],
-            ["Requesón desnatado", "150g"],
-            ["Leche proteica Hacendado", "200ml"],
-            ["Yogurt proteico (cualquier tipo)", "120g"],
-            ["Bebida de soja proteica", "200ml"]
-        ],
+        body: proteinas.map(a => [a.nombre, a.gramaje ? `${a.gramaje}${a.categoria === 'lácteos' ? 'ml' : 'g'}` : '']),
         styles: { fontSize: 10, cellPadding: 4 },
         headStyles: { fillColor: [40, 60, 100], textColor: 255 },
         alternateRowStyles: { fillColor: [245, 245, 245] },
@@ -382,28 +413,7 @@ window.generarInforme = function(idx) {
     doc.autoTable({
         startY: y,
         head: [['Alimento', 'Porción']],
-        body: [
-            ["Arroz crudo", "30g"],
-            ["Patata", "100g"],
-            ["Avena", "25g"],
-            ["Pasta cruda", "30g"],
-            ["Pan integral", "30g"],
-            ["Tortilla de trigo/maíz", "1 unidad pequeña"],
-            ["Quinoa cruda", "30g"],
-            ["Batata", "80g"],
-            ["Maíz dulce", "60g"],
-            ["Galletas de arroz", "3 unidades"],
-            ["Plátano", "80g"],
-            ["Manzana", "120g"],
-            ["Uvas", "80g"],
-            ["Miel", "25g"],
-            ["Dátiles", "30g"],
-            ["Lentejas cocidas", "60g"],
-            ["Garbanzos cocidos", "60g"],
-            ["Judías cocidas", "60g"],
-            ["Cuscús crudo", "30g"],
-            ["Pan de centeno", "30g"]
-        ],
+        body: carbohidratos.map(a => [a.nombre, a.gramaje ? `${a.gramaje}${a.categoria === 'lácteos' ? 'ml' : 'g'}` : '']),
         styles: { fontSize: 10, cellPadding: 4 },
         headStyles: { fillColor: [40, 60, 100], textColor: 255 },
         alternateRowStyles: { fillColor: [245, 245, 245] },
@@ -421,28 +431,7 @@ window.generarInforme = function(idx) {
     doc.autoTable({
         startY: y,
         head: [['Alimento', 'Porción']],
-        body: [
-            ["Aceite de oliva", "10g"],
-            ["Nueces", "15g"],
-            ["Almendras", "15g"],
-            ["Aguacate", "50g"],
-            ["Mantequilla", "10g"],
-            ["Cacahuetes", "15g"],
-            ["Anacardos", "15g"],
-            ["Pistachos", "15g"],
-            ["Semillas de chía", "15g"],
-            ["Semillas de lino", "15g"],
-            ["Semillas de calabaza", "15g"],
-            ["Queso curado", "20g"],
-            ["Chocolate negro (+85%)", "15g"],
-            ["Mayonesa", "15g"],
-            ["Tahin (pasta de sésamo)", "15g"],
-            ["Aceitunas", "30g"],
-            ["Coco rallado", "10g"],
-            ["Crema de cacahuete", "15g"],
-            ["Margarina", "10g"],
-            ["Pipas de girasol", "15g"]
-        ],
+        body: grasas.map(a => [a.nombre, a.gramaje ? `${a.gramaje}${a.categoria === 'lácteos' ? 'ml' : 'g'}` : '']),
         styles: { fontSize: 10, cellPadding: 4 },
         headStyles: { fillColor: [40, 60, 100], textColor: 255 },
         alternateRowStyles: { fillColor: [245, 245, 245] },

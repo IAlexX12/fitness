@@ -69,7 +69,7 @@
       <!-- Modificarlo y hacerlo bien -->
       <div class="form-group col-md-6">
         <label for="alergias">Selecciona tus alergias:</label>
-        <select name="alergias" id="alergias" class="form-control" multiple>
+        <select name="alergias" id="alergias" class="form-control" multiple required>
           <option value="Ninguna">Ninguna</option>
           <option value="leche">Leche</option>
           <option value="huevos">Huevos</option>
@@ -86,7 +86,7 @@
       <!-- hacer lo mismo que el de arriba -->
       <div class="form-group col-md-6">
         <label for="alimentos">Alimentos Disponibles:</label>
-        <select name="alimentos" id="alimentos" class="form-control" multiple>
+        <select name="alimentos" id="alimentos" class="form-control" multiple required>
           <option value="todos">Todos</option>
           <option value="carne">Carne</option>
           <option value="vegetales">Vegetales</option>
@@ -123,6 +123,7 @@
             <th data-sort="actividad">Actividad <i class="bi bi-arrow-down-up ms-1 sort-icon"></i></th>
             <th data-sort="objetivo">Objetivo <i class="bi bi-arrow-down-up ms-1 sort-icon"></i></th>
             <th data-sort="alergias">Alergias <i class="bi bi-arrow-down-up ms-1 sort-icon"></i></th>
+            <th data-sort="alimentos">Alimentos <i class="bi bi-arrow-down-up ms-1 sort-icon"></i></th> <!-- NUEVA COLUMNA -->
             <th data-sort="fechaAlta">Fecha alta <i class="bi bi-arrow-down-up ms-1 sort-icon"></i></th>
             <th>Acciones</th>
           </tr>
@@ -186,6 +187,32 @@
                   <option value="deficit">Déficit</option>
                   <option value="volumen">Volumen</option>
                   <option value="recomposicion">Recomposición</option>
+                </select>
+              </div>
+              <div class="form-group col-md-6">
+                <label for="editAlergias">Selecciona tus alergias:</label>
+                <select name="editAlergias" id="editAlergias" class="form-control" multiple required>
+                  <option value="Ninguna">Ninguna</option>
+                  <option value="leche">Leche</option>
+                  <option value="huevos">Huevos</option>
+                  <option value="pescado">Pescado</option>
+                  <option value="mariscos">Mariscos</option>
+                  <option value="frutos secos">Frutos secos</option>
+                  <option value="legumbres">Legumbres</option>
+                  <option value="frutas">Frutas</option>
+                  <option value="verduras">Verduras</option>
+                  <option value="soja">Soja</option>
+                  <option value="trigo">Trigo</option>
+                </select>
+              </div>
+              <div class="form-group col-md-6">
+                <label for="editAlimentos">Alimentos Disponibles:</label>
+                <select name="editAlimentos" id="editAlimentos" class="form-control" multiple required>
+                  <option value="todos">Todos</option>
+                  <option value="carne">Carne</option>
+                  <option value="vegetales">Vegetales</option>
+                  <option value="pescado">Pescado</option>
+                  <option value="marisco">Mariscos</option>
                 </select>
               </div>
               <div class="col-12">
