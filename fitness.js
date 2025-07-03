@@ -20,15 +20,32 @@ function obtenerFechaHoraActual() {
 // =====================
 // Cálculos
 // =====================
-function calcularCampos({ altura, peso, edad, grasa, actividad, objetivo }) {
+function calcularCampos({ altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo }) {
     const masaGrasa = peso * (grasa / 100);
     const masaMagra = peso - masaGrasa;
     const imc = peso / Math.pow(altura / 100, 2);
     const mb = 88.36 + (13.4 * peso) + (4.8 * altura) - (5.7 * edad);
     const caloriasMantenimiento = mb * actividad;
     let caloriasObjetivo = caloriasMantenimiento;
-    if (objetivo === 'deficit') caloriasObjetivo -= 400;
-    if (objetivo === 'volumen') caloriasObjetivo += 300;
+    const factor = porcentajeObjetivo / 100;
+
+    switch(objetivo){
+        case 'deficit':
+            caloriasObjetivo -= caloriasMantenimiento * factor;
+            break;
+        case 'volumen':
+            caloriasObjetivo += caloriasMantenimiento * factor;
+            break;
+        case 'mantenimiento':
+            caloriasObjetivo = caloriasMantenimiento;
+            break;
+        case 'recomposicion':
+            caloriasObjetivo -= caloriasMantenimiento * (factor / 2);
+            break;
+        default:
+            caloriasObjetivo = caloriasMantenimiento;
+    }
+
     return {
         masaMagra: masaMagra.toFixed(1),
         masaGrasa: masaGrasa.toFixed(1),
@@ -84,6 +101,7 @@ function renderTabla() {
             <td>${cliente.caloriasObjetivo}</td>
             <td>${cliente.actividad}</td>
             <td>${cliente.objetivo}</td>
+            <td>${cliente.porcentajeObjetivo}</td>
             <td>${(cliente.alergias || []).join(', ')}</td>
             <td>${(cliente.alimentos || []).join(', ')}</td> <!-- Añade esta línea -->
             <td>${cliente.fechaAlta || '-'}</td>
@@ -182,6 +200,7 @@ function importarDesdeCSV(text) {
         'calorías objetivo': 'caloriasObjetivo',
         'actividad': 'actividad',
         'objetivo': 'objetivo',
+        '% objetivo': 'porcentajeObjetivo',
         'alergias': 'alergias',
         'alimentos': 'alimentos', // <-- Añade esta línea
         'fecha alta': 'fechaAlta'
@@ -240,6 +259,7 @@ window.abrirEditarCliente = function (idx) {
     document.getElementById('editGrasa').value = cliente.grasa;
     document.getElementById('editActividad').value = cliente.actividad;
     document.getElementById('editObjetivo').value = cliente.objetivo;
+    document.getElementById('editPorcentajeObjetivo').value = cliente.porcentajeObjetivo;
 
     // Seleccionar alergias
     const editAlergias = document.getElementById('editAlergias');
@@ -258,11 +278,13 @@ window.abrirEditarCliente = function (idx) {
     if (editAlimentos.choices) editAlimentos.choices.setChoiceByValue(cliente.alimentos || []);
 
     // Limpiar estados de validación al abrir el modal
-    document.querySelectorAll('#editNombre, #editAltura, #editPeso, #editEdad, #editGrasa').forEach(input => {
+    document.querySelectorAll('#editNombre, #editAltura, #editPeso, #editEdad, #editGrasa, #editPorcentajeObjetivo').forEach(input => {
         input.classList.remove('is-invalid');
         const feedback = document.querySelector(`.${input.id}-feedback`);
         if (feedback) feedback.textContent = '';
     });
+
+    toggleEditPorcentajeObjetivo();
 
     const modal = new bootstrap.Modal(document.getElementById('editarClienteModal'));
     modal.show();
@@ -297,6 +319,7 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
     const actividad = Number(document.getElementById('actividad').value);
     const objetivoTxt = document.getElementById('objetivo').selectedOptions[0].text;
     const objetivo = document.getElementById('objetivo').value;
+    const porcentajeObjetivo = Number(document.getElementById('porcentajeObjetivo').value) || 0;
 
     const alergiasSelect = document.getElementById('alergias');
     const alergias = Array.from(alergiasSelect.selectedOptions).map(opt => opt.text);
@@ -305,7 +328,7 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
     const alimentosSelect = document.getElementById('alimentos');
     const alimentos = Array.from(alimentosSelect.selectedOptions).map(opt => opt.text);
 
-    const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo });
+    const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo });
     const fechaActual = new Date().toLocaleDateString('es-ES');
     const cliente = {
         nombre: formatearNombre(nombre), altura, peso, edad, grasa,
@@ -316,6 +339,7 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
         caloriasObjetivo: calculos.caloriasObjetivo,
         actividad: actividadTxt,
         objetivo: objetivoTxt,
+        porcentajeObjetivo: porcentajeObjetivo,
         alergias: alergias,
         alimentos: alimentos, // <-- aquí se guarda el array de alimentos seleccionados
         fechaAlta: fechaActual,
@@ -332,23 +356,24 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
 
 // Exportar a CSV
 document.getElementById('exportarCSV').addEventListener('click', function () {
-    let csv = 'Nombre,Altura,Peso,Edad,% Graso,M. Magra,M. Grasa,IMC,MB,Calorías Objetivo,Actividad,Objetivo,Alergias,Fecha alta\n';
+    let csv = 'Nombre,Altura,Peso,Edad,% Graso,M. Magra,M. Grasa,IMC,MB,Calorías Objetivo,Actividad,Objetivo,% Objetivo,Alergias,Fecha alta\n';
     clientes.forEach(cliente => {
         const altura = Number(cliente.altura);
         const peso = Number(cliente.peso);
         const edad = Number(cliente.edad);
         const grasa = Number(cliente.grasa);
         let actividad = cliente.actividad;
+        const porcentajeObjetivo = Number(cliente.porcentajeObjetivo);
         if (isNaN(Number(actividad))) {
             actividad = 1.2;
         } else {
             actividad = Number(actividad);
         }
         let objetivo = cliente.objetivo;
-        if (!['deficit', 'volumen', 'recomposicion'].includes(objetivo)) {
+        if (!['deficit', 'volumen', 'recomposicion','mantenimiento'].includes(objetivo)) {
             objetivo = 'deficit';
         }
-        const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo });
+        const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo });
         csv += [
             cliente.nombre,
             cliente.altura,
@@ -362,6 +387,7 @@ document.getElementById('exportarCSV').addEventListener('click', function () {
             cliente.caloriasObjetivo,
             cliente.actividad,
             cliente.objetivo,
+            cliente.porcentajeObjetivo,
             (cliente.alergias || "").join(';'),
             cliente.fechaAlta || '-'
         ].join(',') + '\n';
@@ -399,6 +425,14 @@ document.getElementById('fileInput').addEventListener('change', function (e) {
 document.addEventListener('DOMContentLoaded', function () {
     configurarValidaciones();
     configurarValidacionesEdicion();
+
+    togglePorcentajeObjetivo(); 
+    toggleEditPorcentajeObjetivo(); 
+    
+    document.getElementById('objetivo').addEventListener('change', togglePorcentajeObjetivo);
+    document.getElementById('editObjetivo').addEventListener('change', toggleEditPorcentajeObjetivo);
+
+
     // Importar CSV desde localStorage
     const csv = localStorage.getItem('clientesCSV');
     if (csv) {
@@ -440,6 +474,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 });
+
+function togglePorcentajeObjetivo() {
+const objetivo = document.getElementById('objetivo').value;
+const porcentajeGroup = document.getElementById('porcentajeObjetivo').parentElement;
+
+if (objetivo === 'mantenimiento') {
+    porcentajeGroup.style.display = 'none';
+} else {
+    porcentajeGroup.style.display = 'block';
+}
+}
+
+function toggleEditPorcentajeObjetivo() {
+    const objetivo = document.getElementById('editObjetivo').value;
+    const porcentajeGroup = document.getElementById('editPorcentajeObjetivo').parentElement;
+    
+    if (objetivo === 'mantenimiento') {
+        porcentajeGroup.style.display = 'none';
+    } else {
+        porcentajeGroup.style.display = 'block';
+    }
+}
 
 // =====================
 // Guardar cambios del modal de edición
@@ -515,7 +571,8 @@ const configValidacion = {
   altura: { min: 100, max: 250, mensaje: 'Debe ser entre 100 y 250 cm' },
   peso: { min: 30, max: 300, mensaje: 'Debe ser entre 30 y 300 kg' },
   edad: { min: 15, max: 120, mensaje: 'Debe ser entre 15 y 120 años' },
-  grasa: { min: 1, max: 60, mensaje: 'Debe ser entre 1% y 60%' }
+  grasa: { min: 1, max: 60, mensaje: 'Debe ser entre 1% y 60%' },
+  porcentajeObjetivo: { min: 0, max: 30, mensaje : 'El porcentaje debe estar entre 0% y 30%'}
 };
 
 // =====================
@@ -540,6 +597,19 @@ function validarCampo(input) {
   if (id === 'nombre') {
     if (!configValidacion.nombre.regex.test(valor)) {
       feedback.textContent = configValidacion.nombre.mensaje;
+      input.classList.add('is-invalid');
+      return false;
+    }
+    return true;
+  }
+
+  // Validación para porcentaje objetivo
+  if (id === 'porcentajeObjetivo' || id === 'editPorcentajeObjetivo') {
+    const numero = parseInt(valor);
+    const config = configValidacion.porcentajeObjetivo;
+    
+    if (isNaN(numero) || numero < config.min || numero > config.max) {
+      feedback.textContent = config.mensaje;
       input.classList.add('is-invalid');
       return false;
     }
@@ -603,7 +673,7 @@ function validarCampoEdicion(input) {
 
 function validarFormularioCompleto() {
   let valido = true;
-  const campos = ['nombre', 'altura', 'peso', 'edad', 'grasa'];
+  const campos = ['nombre', 'altura', 'peso', 'edad', 'grasa', 'porcentajeObjetivo'];
 
   campos.forEach(id => {
     const input = document.getElementById(id);
@@ -635,7 +705,7 @@ function validarFormularioCompleto() {
 
 function validarFormularioEdicionCompleto() {
   let valido = true;
-  const campos = ['editNombre', 'editAltura', 'editPeso', 'editEdad', 'editGrasa'];
+  const campos = ['editNombre', 'editAltura', 'editPeso', 'editEdad', 'editGrasa', 'editPorcentajeObjetivo'];
 
   campos.forEach(id => {
     const input = document.getElementById(id);
@@ -670,7 +740,7 @@ function validarFormularioEdicionCompleto() {
 // =====================
 function configurarValidaciones() {
   // Validación en tiempo real
-  document.querySelectorAll('#nombre, #altura, #peso, #edad, #grasa').forEach(input => {
+  document.querySelectorAll('#nombre, #altura, #peso, #edad, #grasa, #porcentajeObjetivo').forEach(input => {
     input.addEventListener('input', function() {
       if (this.id !== 'nombre') {
         this.value = this.value.replace(/\D/g, ''); // Solo números
@@ -688,7 +758,7 @@ function configurarValidaciones() {
 // Configurar eventos de validación para edición
 // =====================
 function configurarValidacionesEdicion() {
-    document.querySelectorAll('#editNombre, #editAltura, #editPeso, #editEdad, #editGrasa').forEach(input => {
+    document.querySelectorAll('#editNombre, #editAltura, #editPeso, #editEdad, #editGrasa, #editPorcentajeObjetivo').forEach(input => {
         input.addEventListener('input', function() {
             if (this.id !== 'editNombre') {
                 this.value = this.value.replace(/\D/g, ''); // Solo números

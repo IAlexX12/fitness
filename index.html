@@ -2,13 +2,13 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión Fitness</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="fitness.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión Fitness</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="fitness.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
 </head>
 
 <body>
@@ -63,13 +63,19 @@
           <option value="1.9">Muy intensa</option>
         </select>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-2">
         <label class="form-label">Objetivo</label>
         <select class="form-select" id="objetivo" required>
           <option value="deficit">Déficit</option>
           <option value="volumen">Volumen</option>
           <option value="recomposicion">Recomposición</option>
+          <option value="mantenimiento">Mantenimiento</option>
         </select>
+      </div>
+      <div class="col-md-1">
+        <label class="form-label">% Objetivo</label>
+        <input type="text" class="form-control" id="porcentajeObjetivo" required value="0" placeholder="Ej: 10">
+        <div class="invalid-feedback porcentajeObjetivo-feedback"></div>
       </div>
       <!-- Modificarlo y hacerlo bien -->
       <div class="form-group col-md-6">
@@ -127,8 +133,10 @@
             <th data-sort="caloriasObjetivo">Calorías Objetivo <i class="bi bi-arrow-down-up ms-1 sort-icon"></i></th>
             <th data-sort="actividad">Actividad <i class="bi bi-arrow-down-up ms-1 sort-icon"></i></th>
             <th data-sort="objetivo">Objetivo <i class="bi bi-arrow-down-up ms-1 sort-icon"></i></th>
+            <th data-sort="porcentajeObjetivo">% Objetivo <i class="bi bi-arrow-down-up ms-1 sort-icon"></i></th>
             <th data-sort="alergias">Alergias <i class="bi bi-arrow-down-up ms-1 sort-icon"></i></th>
-            <th data-sort="alimentos">Alimentos <i class="bi bi-arrow-down-up ms-1 sort-icon"></i></th> <!-- NUEVA COLUMNA -->
+            <th data-sort="alimentos">Alimentos <i class="bi bi-arrow-down-up ms-1 sort-icon"></i></th>
+            <!-- NUEVA COLUMNA -->
             <th data-sort="fechaAlta">Fecha alta <i class="bi bi-arrow-down-up ms-1 sort-icon"></i></th>
             <th>Acciones</th>
           </tr>
@@ -166,12 +174,12 @@
                 <input type="text" class="form-control" id="editPeso" required>
                 <div class="invalid-feedback editPeso-feedback"></div>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-2">
                 <label class="form-label">Edad</label>
                 <input type="text" class="form-control" id="editEdad" required>
                 <div class="invalid-feedback editEdad-feedback"></div>
               </div>
-              <div class="col-md-3">
+              <div class="col-md-2">
                 <label class="form-label">% Graso</label>
                 <input type="text" class="form-control" id="editGrasa" required>
                 <div class="invalid-feedback editGrasa-feedback"></div>
@@ -192,7 +200,13 @@
                   <option value="deficit">Déficit</option>
                   <option value="volumen">Volumen</option>
                   <option value="recomposicion">Recomposición</option>
+                  <option value="mantenimiento">Mantenimiento</option>
                 </select>
+              </div>
+              <div class="col-md-2">
+                <label class="form-label">% Objetivo</label>
+                <input type="text" class="form-control" id="editPorcentajeObjetivo" required>
+                <div class="invalid-feedback editPorcentajeObjetivo-feedback"></div>
               </div>
               <div class="form-group col-md-6">
                 <label for="editAlergias">Selecciona tus alergias:</label>
@@ -288,14 +302,14 @@
       </div>
     </div>
 
-<script src="fitness.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-<script src="informe.js"></script>
-<script src="cargaCSV.js"></script>
-<script src="calculadora.js"></script>
+    <script src="fitness.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="informe.js"></script>
+    <script src="cargaCSV.js"></script>
+    <script src="calculadora.js"></script>
 </body>
 
 </html>
