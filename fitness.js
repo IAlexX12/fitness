@@ -520,6 +520,7 @@ if (formEditarCliente) {
         const actividad = document.getElementById('editActividad').value;
         const objetivoTxt = document.getElementById('editObjetivo').selectedOptions[0].text;
         const objetivo = document.getElementById('editObjetivo').value;
+        const porcentajeObjetivo = document.getElementById('editPorcentajeObjetivo').value;
 
         // Recoger alergias y alimentos seleccionados del modal
         const editAlergias = document.getElementById('editAlergias');
@@ -529,10 +530,10 @@ if (formEditarCliente) {
         const alimentos = Array.from(editAlimentos.selectedOptions).map(opt => opt.text);
 
         // alergias
-        const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo });
+        const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo });
         clientes[idx] = {
             ...clientes[idx], // mantiene fechaAlta y otros campos
-            nombre: formatearNombre(nombre), altura, peso, edad, grasa, actividad, objetivo,
+            nombre: formatearNombre(nombre), altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo,
             masaMagra: calculos.masaMagra,
             masaGrasa: calculos.masaGrasa,
             imc: calculos.imc,
@@ -603,18 +604,6 @@ function validarCampo(input) {
     return true;
   }
 
-  // Validación para porcentaje objetivo
-  if (id === 'porcentajeObjetivo' || id === 'editPorcentajeObjetivo') {
-    const numero = parseInt(valor);
-    const config = configValidacion.porcentajeObjetivo;
-    
-    if (isNaN(numero) || numero < config.min || numero > config.max) {
-      feedback.textContent = config.mensaje;
-      input.classList.add('is-invalid');
-      return false;
-    }
-    return true;
-  }
 
   const numero = parseInt(valor);
   const config = configValidacion[id];
@@ -642,7 +631,7 @@ function validarCampoEdicion(input) {
     input.classList.remove('is-invalid');
 
     // Validar campo vacío
-    if (valor === '') {
+    if (input.required && valor === '') {
         feedback.textContent = 'Este campo es obligatorio';
         input.classList.add('is-invalid');
         return false;
@@ -661,10 +650,19 @@ function validarCampoEdicion(input) {
     const numero = parseInt(valor);
     const config = configValidacion[idOriginal];
 
-    if (isNaN(numero) || numero < config.min || numero > config.max) {
-        feedback.textContent = config.mensaje;
-        input.classList.add('is-invalid');
-        return false;
+    if (config) {
+        if (numero < config.min || numero > config.max) {
+            feedback.textContent = config.mensaje;
+            input.classList.add('is-invalid');
+            return false;
+        }
+    }
+    else if (idOriginal === 'porcentajeobjetivo') {
+        if (numero < 0 || numero > 30) {
+            feedback.textContent = 'El porcentaje debe estar entre 0% y 30%';
+            input.classList.add('is-invalid');
+            return false;
+        }
     }
 
     return true;
@@ -713,6 +711,14 @@ function validarFormularioEdicionCompleto() {
       valido = false;
     }
   });
+
+    const objetivo = document.getElementById('editObjetivo').value;
+    if (objetivo !== 'mantenimiento') {
+        const porcentajeInput = document.getElementById('editPorcentajeObjetivo');
+        if (!validarCampoEdicion(porcentajeInput)) {
+            valido = false;
+        }
+    }
 
   // Validar alergias edición
   const editAlergias = document.getElementById('editAlergias');
