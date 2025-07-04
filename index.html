@@ -54,7 +54,13 @@
         <div class="invalid-feedback grasa-feedback"></div>
       </div>
       <div class="col-md-3">
-        <label class="form-label">Actividad Física</label>
+        <label class="form-label d-flex align-items-center">
+          Actividad Física
+          <button type="button" class="btn btn-link p-0 ms-2" data-bs-toggle="modal"
+            data-bs-target="#infoActividadFisicaModal" title="Información sobre actividad física">
+            <i class="bi bi-info-circle"></i>
+          </button>
+        </label>
         <select class="form-select" id="actividad" required>
           <option value="1.2">Sedentario</option>
           <option value="1.375">Ligera</option>
@@ -252,18 +258,21 @@
 
     <!-- Toast de confirmación -->
     <div class="position-fixed bottom-0 start-50 translate-middle-x p-3" style="z-index: 1055; min-width:320px;">
-      <div id="toastConfirmacion" class="toast align-items-center text-bg-success border-0 shadow-lg rounded-4" role="alert" aria-live="assertive" aria-atomic="true">
+      <div id="toastConfirmacion" class="toast align-items-center text-bg-success border-0 shadow-lg rounded-4"
+        role="alert" aria-live="assertive" aria-atomic="true">
         <div class="d-flex align-items-center">
           <div class="toast-body flex-grow-1" id="toastMensaje">
             ¡Operación realizada con éxito!
           </div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+            aria-label="Cerrar"></button>
         </div>
       </div>
     </div>
 
     <!-- Modal calculadora % graso -->
-    <div class="modal fade" id="calculadoraGrasaModal" tabindex="-1" aria-labelledby="calculadoraGrasaLabel" aria-hidden="true">
+    <div class="modal fade" id="calculadoraGrasaModal" tabindex="-1" aria-labelledby="calculadoraGrasaLabel"
+      aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <form id="formCalculadoraGrasa">
@@ -302,6 +311,89 @@
       </div>
     </div>
 
+    <!-- Modal Información Actividad Física -->
+    <div class="modal fade" id="infoActividadFisicaModal" tabindex="-1" aria-labelledby="infoActividadFisicaModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-lg"> <!-- Usé modal-lg para más espacio -->
+        <div class="modal-content rounded-3">
+          <div class="modal-header">
+            <h5 class="modal-title" id="infoActividadFisicaModalLabel">Información sobre Actividad Física</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <div>
+              <h6>🔹 1.2 – Sedentario</h6>
+              <p><strong>Perfil:</strong> Personas que realizan muy poca o ninguna actividad física diaria.</p>
+              <p><strong>Características:</strong></p>
+              <ul>
+                <li>Trabajo de oficina o desde casa, sentado la mayor parte del día.</li>
+                <li>No realizan ejercicio regularmente.</li>
+                <li>Se desplazan en vehículo, usan ascensores, etc.</li>
+              </ul>
+              <p><strong>Ejemplo:</strong> Contador, programador, escritor, estudiante que no hace ejercicio.</p>
+            </div>
+            <hr>
+            <div>
+              <h6>🔹 1.375 – Actividad ligera</h6>
+              <p><strong>Perfil:</strong> Personas que hacen algo de actividad física ligera 1–3 veces por semana.</p>
+              <p><strong>Características:</strong></p>
+              <ul>
+                <li>Caminatas esporádicas.</li>
+                <li>Algunas tareas domésticas, caminar al trabajo, uso ocasional de bicicleta.</li>
+                <li>Ejercicio suave ocasional (yoga, pilates, caminata rápida).</li>
+              </ul>
+              <p><strong>Ejemplo:</strong> Maestro de escuela, recepcionista que camina algo en el día, persona que
+                camina media hora 2-3 veces por semana.</p>
+            </div>
+            <hr>
+            <div>
+              <h6>🔹 1.55 – Actividad moderada</h6>
+              <p><strong>Perfil:</strong> Personas activas que hacen ejercicio regular 3–5 días por semana.</p>
+              <p><strong>Características:</strong></p>
+              <ul>
+                <li>Entrenamientos regulares (pesas, cardio, deportes recreativos).</li>
+                <li>Rutina física más estructurada.</li>
+                <li>Movilidad durante el trabajo y en casa.</li>
+              </ul>
+              <p><strong>Ejemplo:</strong> Empleado que entrena en el gimnasio 4 veces por semana, jugador de fútbol
+                amateur, repartidor en bicicleta.</p>
+            </div>
+            <hr>
+            <div>
+              <h6>🔹 1.725 – Actividad intensa</h6>
+              <p><strong>Perfil:</strong> Personas muy activas que hacen ejercicio físico fuerte 6–7 días por semana.
+              </p>
+              <p><strong>Características:</strong></p>
+              <ul>
+                <li>Ejercicio estructurado de alta intensidad.</li>
+                <li>Puede incluir doble sesión o deportes exigentes.</li>
+                <li>Trabajo físicamente demandante.</li>
+              </ul>
+              <p><strong>Ejemplo:</strong> Entrenador personal, obrero de construcción, deportista de alto rendimiento
+                aficionado.</p>
+            </div>
+            <hr>
+            <div>
+              <h6>🔹 1.9 – Actividad muy intensa</h6>
+              <p><strong>Perfil:</strong> Atletas profesionales o personas con rutinas físicas muy exigentes todos los
+                días.</p>
+              <p><strong>Características:</strong></p>
+              <ul>
+                <li>Entrenamiento 2 veces al día o sesiones largas de más de 2 horas.</li>
+                <li>Exigencia física diaria.</li>
+                <li>Alta demanda energética.</li>
+              </ul>
+              <p><strong>Ejemplo:</strong> Futbolista profesional, soldado en entrenamiento activo, triatleta de élite,
+                bailarín profesional.</p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <script src="fitness.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
