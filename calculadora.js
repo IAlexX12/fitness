@@ -8,10 +8,32 @@ document.getElementById('abrirCalculadoraGrasa').addEventListener('click', funct
     document.getElementById('alturaYMCA').value = document.getElementById('altura').value || '';
     document.getElementById('pesoYMCA').value = document.getElementById('peso').value || '';
     document.getElementById('cinturaYMCA').value = '';
+    document.getElementById('cuelloYMCA').value = '';
+    if(document.getElementById('caderaYMCA')) {
+        document.getElementById('caderaYMCA').value = '';
+        document.getElementById('caderaYMCA').removeAttribute('required');
+    }
     document.getElementById('sexoYMCA').value = 'hombre';
     document.getElementById('resultadoYMCA').classList.add('d-none');
+    document.getElementById('caderaYMCAContainer').classList.add('d-none');
     new bootstrap.Modal(document.getElementById('calculadoraGrasaModal')).show();
 });
+
+// Mostrar/ocultar campo cadera según sexo
+const sexoYMCA = document.getElementById('sexoYMCA');
+if (sexoYMCA) {
+    sexoYMCA.addEventListener('change', function () {
+        const caderaContainer = document.getElementById('caderaYMCAContainer');
+        const caderaInput = document.getElementById('caderaYMCA');
+        if (this.value === 'mujer') {
+            caderaContainer.classList.remove('d-none');
+            caderaInput.setAttribute('required', 'required');
+        } else {
+            caderaContainer.classList.add('d-none');
+            caderaInput.removeAttribute('required');
+        }
+    });
+}
 
 // =====================
 // Manejador del formulario de la calculadora de % graso YMCA
@@ -20,17 +42,21 @@ document.getElementById('formCalculadoraGrasa').addEventListener('submit', funct
     e.preventDefault();
     const sexo = document.getElementById('sexoYMCA').value;
     const altura = parseFloat(document.getElementById('alturaYMCA').value);
-    const peso = parseFloat(document.getElementById('pesoYMCA').value);
     const cintura = parseFloat(document.getElementById('cinturaYMCA').value);
+    const cuello = parseFloat(document.getElementById('cuelloYMCA').value);
+    let cadera = 0;
+    if (sexo === 'mujer') {
+        cadera = parseFloat(document.getElementById('caderaYMCA').value);
+    }
 
-    if (isNaN(altura) || isNaN(peso) || isNaN(cintura)) return;
+    if (isNaN(altura) || isNaN(cintura) || isNaN(cuello) || (sexo === 'mujer' && isNaN(cadera))) return;
 
-    // Fórmula YMCA para calcular el % graso
+    // Fórmulas de % graso
     let grasa = 0;
     if (sexo === 'hombre') {
-        grasa = ( ( (cintura * 0.74) - (peso * 0.082 + 44.74) ) / peso ) * 100;
+        grasa = 86.01 * Math.log10(cintura - cuello) - 70.041 * Math.log10(altura) + 36.76;
     } else {
-        grasa = ( ( (cintura * 0.74) - (peso * 0.082 + 34.89) ) / peso ) * 100;
+        grasa = 163.205 * Math.log10(cintura + cadera - cuello) - 97.684 * Math.log10(altura) - 78.387;
     }
     grasa = Math.max(0, Math.round(grasa * 10) / 10);
 
