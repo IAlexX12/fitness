@@ -10,23 +10,31 @@
 </head>
 <body>
 <div class="container pantalla-carga">
-    <h2 class="mb-4">Bienvenido</h2>
-    <p class="mb-3">Por favor, carga los archivos CSV requeridos para continuar.</p>
-    <div class="mb-3" style="max-width:300px;">
-        <label for="csvInicialInput" class="form-label">CSV de clientes</label>
-        <input type="file" id="csvInicialInput" accept=".csv" class="form-control mb-1">
-        <div id="csvError" class="text-danger mb-2"></div>
-        <span id="csvTick" style="display:none;color:green;font-size:1.2em;">✔️</span>
-        <span id="csvCross" style="display:none;color:red;font-size:1.2em;">❌</span>
+    <h2 class="mb-4 text-center">Bienvenido a la Gestión Fitness</h2>
+    <div class="alert alert-info text-center mx-auto" style="max-width: 600px;" role="alert">
+      <strong>¡Importante!</strong> Para comenzar a usar la aplicación, <span class="text-danger">solo es obligatorio cargar el archivo <b>CSV de alimentos</b></span>.<br>
+      El archivo de <b>clientes</b> es <span class="text-success">opcional</span> y podrás agregar clientes manualmente más adelante si lo prefieres.
     </div>
-    <div class="mb-3" style="max-width:300px;">
-        <label for="clasificadosCSV" class="form-label">CSV de alimentos</label>
-        <input type="file" id="clasificadosCSV" accept=".csv" class="form-control mb-1">
-        <div id="clasificadosError" class="text-danger mb-2"></div>
-        <span id="clasificadosTick" style="display:none;color:green;font-size:1.2em;">✔️</span>
-        <span id="clasificadosCross" style="display:none;color:red;font-size:1.2em;">❌</span>
+    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: vh;">
+      <div class="mb-4 w-100" style="max-width:350px;">
+          <label for="csvInicialInput" class="form-label fw-bold">CSV de clientes (opcional)</label>
+          <input type="file" id="csvInicialInput" accept=".csv" class="form-control mb-1">
+          <div id="csvError" class="text-danger mb-2"></div>
+          <span id="csvTick" style="display:none;color:green;font-size:1.2em;">✔️</span>
+          <span id="csvCross" style="display:none;color:red;font-size:1.2em;">❌</span>
+          <div class="form-text">Puedes cargar clientes ahora o agregarlos manualmente más adelante.</div>
+      </div>
+      <div class="mb-4 w-100" style="max-width:350px;">
+          <label for="clasificadosCSV" class="form-label fw-bold">CSV de alimentos <span class="text-danger">*</span></label>
+          <input type="file" id="clasificadosCSV" accept=".csv" class="form-control mb-1" required>
+          <div id="clasificadosError" class="text-danger mb-2"></div>
+          <span id="clasificadosTick" style="display:none;color:green;font-size:1.2em;">✔️</span>
+          <span id="clasificadosCross" style="display:none;color:red;font-size:1.2em;">❌</span>
+      </div>
+      <div class="text-center w-100">
+        <button id="continuarBtn" class="btn btn-success px-4" style="display:none;">Continuar</button>
+      </div>
     </div>
-    <button id="continuarBtn" class="btn btn-success" style="display:none;">Continuar</button>
 </div>
 
 <script>

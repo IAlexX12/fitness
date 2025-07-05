@@ -107,11 +107,13 @@ class CargaCSV {
     }
 
     updateContinueBtn(continuarBtn) {
-        continuarBtn.style.display = (this.csvClientesValido && this.csvClasificadosValido) ? '' : 'none';
+        // Solo el CSV de alimentos es obligatorio
+        continuarBtn.style.display = this.csvClasificadosValido ? '' : 'none';
     }
 
     handleContinue() {
-        if (this.csvClientesValido && this.csvClasificadosValido) {
+        // Solo el CSV de alimentos es obligatorio
+        if (this.csvClasificadosValido) {
             window.location.href = 'index.html';
         }
     }
