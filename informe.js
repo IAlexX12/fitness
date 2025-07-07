@@ -7,25 +7,27 @@ window.generarInforme = async function(idx) {
     const cliente = window.clientes[idx];
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const marginX = 15;
+    let y = 20;
 
     // ---------- TÍTULO PRINCIPAL ----------
     doc.setFontSize(18);
     doc.setTextColor(40, 40, 100);
-    doc.text("Informe Personalizado de Cliente", 15, 20);
-
+    doc.text("Informe Personalizado de Cliente", marginX, y);
+    y += 8;
     doc.setLineWidth(0.5);
     doc.setDrawColor(180);
-    doc.line(15, 23, 195, 23);
+    doc.line(marginX, y, pageWidth - marginX, y);
+    y += 10;
 
     // ---------- DATOS PERSONALES CENTRADOS ----------
-    let y = 30;
     doc.setFontSize(14);
     doc.setTextColor(40, 60, 100);
     const tituloDatos = "Datos personales";
-    const pageWidth = doc.internal.pageSize.getWidth();
     let textWidth = doc.getTextWidth(tituloDatos);
     doc.text(tituloDatos, (pageWidth - textWidth) / 2, y);
-    y += 10;
+    y += 8;
 
     doc.setFontSize(11);
     doc.setTextColor(0);
@@ -49,70 +51,74 @@ window.generarInforme = async function(idx) {
         const texto = `${label} ${value}`;
         textWidth = doc.getTextWidth(texto);
         doc.text(texto, (pageWidth - textWidth) / 2, y);
-        y += 7;
+        y += 6;
     });
-    y += 5;
+    y += 6;
 
-    // ---------- QUÉ ES UNA PORCIÓN ----------
+    // ---------- ¿QUÉ ES UNA PORCIÓN? ----------
     doc.setFontSize(15);
     doc.setTextColor(40, 60, 100);
-    doc.text("¿Qué es una porción?", 15, y);
+    doc.text("¿Qué es una porción?", marginX, y);
     y += 8;
 
     doc.setFontSize(11);
     doc.setTextColor(0);
-    doc.text("Una porción es una unidad de medida que se utiliza para organizar y equilibrar tu alimentación.", 15, y);
+    doc.text("Una porción es una unidad de medida que se utiliza para organizar y equilibrar tu alimentación.", marginX, y);
     y += 6;
-    doc.text("En este sistema, una porción equivale a 100 kilocalorías (kcal). Así, puedes saber cuánto estás", 15, y);
+    doc.text("En este sistema, una porción equivale a 100 kilocalorías (kcal). Así, puedes saber cuánto estás", marginX, y);
     y += 6;
-    doc.text("comiendo sin necesidad de contar calorías constantemente.", 15, y);
+    doc.text("comiendo sin necesidad de contar calorías constantemente.", marginX, y);
     y += 10;
 
     doc.setFontSize(12);
     doc.setTextColor(40, 60, 100);
-    doc.text("Por ejemplo:", 15, y);
+    doc.text("Por ejemplo:", marginX, y);
     y += 7;
 
     doc.setFontSize(11);
     doc.setTextColor(0);
-    doc.text("100 gramos de pollo = 1 porción de proteína", 20, y);
+    doc.text("100 gramos de pollo = 1 porción de proteína", marginX + 5, y);
     y += 6;
-    doc.text("30 gramos de arroz crudo = 1 porción de carbohidratos", 20, y);
+    doc.text("30 gramos de arroz crudo = 1 porción de carbohidratos", marginX + 5, y);
     y += 6;
-    doc.text("10 gramos de aceite de oliva = 1 porción de grasa", 20, y);
+    doc.text("10 gramos de aceite de oliva = 1 porción de grasa", marginX + 5, y);
     y += 10;
 
     // ---------- ¿PARA QUÉ SIRVEN LAS PORCIONES? ----------
     doc.setFontSize(12);
     doc.setTextColor(40, 60, 100);
-    doc.text("¿Para qué sirven las porciones?", 15, y);
+    doc.text("¿Para qué sirven las porciones?", marginX, y);
     y += 7;
 
     doc.setFontSize(11);
     doc.setTextColor(0);
-    doc.text("Usar porciones es una forma práctica y visual de:", 15, y);
+    doc.text("Usar porciones es una forma práctica y visual de:", marginX, y);
     y += 6;
-    doc.text("• Controlar la cantidad de comida que consumes", 20, y);
+    doc.text("• Controlar la cantidad de comida que consumes", marginX + 5, y);
     y += 6;
-    doc.text("• Equilibrar los nutrientes que tu cuerpo necesita", 20, y);
+    doc.text("• Equilibrar los nutrientes que tu cuerpo necesita", marginX + 5, y);
     y += 6;
-    doc.text("• Adaptar tu alimentación a tus objetivos (bajar de peso, ganar masa muscular, mantenerte saludable)", 20, y);
-    if (y > 180) { // Si no hay espacio suficiente
-    doc.addPage();
-    y = 20;
-    }
+    doc.text("• Adaptar tu alimentación a tus objetivos (bajar de peso, ganar masa muscular, mantenerte saludable)", marginX + 5, y);
+    y += 8;
+
     // ---------- ¿CÓMO SE DIVIDEN LOS ALIMENTOS EN PORCIONES? ----------
+    if (y > 180) {
+        doc.addPage();
+        y = 20;
+    }
     doc.setFontSize(12);
     doc.setTextColor(40, 60, 100);
-    doc.text("¿Cómo se dividen los alimentos en porciones?", 15, y);
+    
+    doc.text("¿Cómo se dividen los alimentos en porciones?", marginX, y);
     y += 7;
 
     doc.setFontSize(11);
     doc.setTextColor(0);
-    doc.text("Los alimentos se agrupan según el macronutriente principal que aportan:", 15, y);
+    doc.text("Los alimentos se agrupan según el macronutriente principal que aportan:", marginX, y);
     y += 7;
 
     // Tabla de grupos de alimentos
+    
     doc.autoTable({
         startY: y,
         head: [['Grupo de alimentos', 'Qué aportan principalmente', 'Ejemplo de porción']],
@@ -121,91 +127,69 @@ window.generarInforme = async function(idx) {
             ['Carbohidratos', 'Energía rápida y sostenida', '30g de avena o 100g de patata'],
             ['Grasas', 'Energía, salud hormonal, absorción de vitaminas', '10g de aceite de oliva o 15g de nueces']
         ],
-        styles: {
-            fontSize: 10,
-            cellPadding: 3
-        },
-        headStyles: {
-            fillColor: [40, 60, 100],
-            textColor: 255
-        },
+        styles: { fontSize: 10, cellPadding: 3 },
+        headStyles: { fillColor: [40, 60, 100], textColor: 255 },
         alternateRowStyles: { fillColor: [245, 245, 245] },
-        margin: { left: 15, right: 15 }
+        margin: { left: marginX, right: marginX }
     });
-    y = doc.lastAutoTable.finalY + 5;
+    y = doc.lastAutoTable.finalY + 8;
+    
 
     doc.setFontSize(11);
     doc.setTextColor(0);
-    doc.text("Cada porción aporta unas 100 kcal.", 15, y);
+    doc.text("Cada porción aporta unas 100 kcal.", marginX, y);
     y += 10;
 
     // ---------- ¿CÓMO SE USAN? (EJEMPLO PRÁCTICO) ----------
     doc.setFontSize(12);
     doc.setTextColor(40, 60, 100);
-    doc.text("¿Cómo se usan? (Ejemplo práctico)", 15, y);
+    doc.text("¿Cómo se usan? (Ejemplo práctico)", marginX, y);
     y += 7;
 
     doc.setFontSize(11);
     doc.setTextColor(0);
-    doc.text("Supongamos que tu plan diario es consumir:", 15, y);
+    doc.text("Supongamos que tu plan diario es consumir:", marginX, y);
     y += 6;
-    doc.text("4 porciones de proteína", 20, y);
+    doc.text("4 porciones de proteína", marginX + 5, y);
     y += 6;
-    doc.text("3 porciones de carbohidratos", 20, y);
+    doc.text("3 porciones de carbohidratos", marginX + 5, y);
     y += 6;
-    doc.text("2 porciones de grasas", 20, y);
+    doc.text("2 porciones de grasas", marginX + 5, y);
     y += 8;
 
-    doc.text("Esto podría verse así en un plato:", 15, y);
+    doc.text("Esto podría verse así en un plato:", marginX, y);
     y += 6;
 
-    // Dividir el texto largo en varias líneas para evitar cortes
-    const ejemploProte = [
+    [
         "Proteína: 100g de pollo (1 porción) + 1 huevo XL (1 porción)",
-        "+ 200g de claras (1 porción) + 100g de yogur proteico (1 porción)"
-    ];
-    ejemploProte.forEach(linea => {
-        doc.text(linea, 20, y);
-        y += 6;
-    });
-
-    const ejemploCarbo = [
+        "+ 200g de claras (1 porción) + 100g de yogur proteico (1 porción)",
         "Carbohidrato: 30g de arroz (1 porción) + 100g de patata (1 porción)",
-        "+ 25g de avena (1 porción)"
-    ];
-    ejemploCarbo.forEach(linea => {
-        doc.text(linea, 20, y);
-        y += 6;
-    });
-
-    const ejemploGrasa = [
+        "+ 25g de avena (1 porción)",
         "Grasa: 10g de aceite de oliva (1 porción) + 15g de almendras (1 porción)"
-    ];
-    ejemploGrasa.forEach(linea => {
-        doc.text(linea, 20, y);
+    ].forEach(linea => {
+        doc.text(linea, marginX + 5, y);
         y += 6;
     });
 
     y += 4;
     doc.setFont("helvetica", "italic");
-    doc.text("Así, comes lo que necesitas sin estar pesando todo el día ni contando calorías una por una.", 15, y);
+    doc.text("Así, comes lo que necesitas sin estar pesando todo el día ni contando calorías una por una.", marginX, y);
     doc.setFont("helvetica", "normal");
     y += 12;
 
     // ---------- RESUMEN NUTRICIONAL EN LA MISMA PÁGINA ----------
-    if (y > 180) { // Si no hay espacio suficiente
-    doc.addPage();
-    y = 20;
+    if (y > 180) {
+        doc.addPage();
+        y = 20;
     }
     doc.setFontSize(16);
     doc.setTextColor(40, 60, 100);
-    doc.text("Resumen Nutricional Diario", 15, y);
+    doc.text("Resumen Nutricional Diario", marginX, y);
     y += 10;
 
     doc.setFontSize(12);
     doc.setTextColor(0);
-    doc.text(`Calorías Objetivo: ${cliente.caloriasObjetivo} kcal`, 15, y);
-
+    doc.text(`Calorías Objetivo: ${cliente.caloriasObjetivo} kcal`, marginX, y);
     y += 10;
 
     // ---------- INFORMACIÓN DE PORCIONES TOTALES Y VALOR DE PORCIÓN ----------
@@ -214,18 +198,17 @@ window.generarInforme = async function(idx) {
 
     doc.setFontSize(12);
     doc.setTextColor(40, 60, 100);
-    doc.text("Información de porciones diarias", 15, y);
+    doc.text("Información de porciones diarias", marginX, y);
     y += 8;
 
     doc.setFontSize(11);
     doc.setTextColor(0);
-    doc.text(`• Calorías objetivo: ${cliente.caloriasObjetivo} kcal`, 15, y);
+    doc.text(`• Calorías objetivo: ${cliente.caloriasObjetivo} kcal`, marginX, y);
     y += 6;
-    doc.text(`• 1 porción equivale a ${valorPorcion} kcal`, 15, y);
+    doc.text(`• 1 porción equivale a ${valorPorcion} kcal`, marginX, y);
     y += 6;
-    doc.text(`• Porciones totales recomendadas al día: ${totalPorciones}`, 15, y);
+    doc.text(`• Porciones totales recomendadas al día: ${totalPorciones}`, marginX, y);
     y += 10;
-    
 
     // ---------- MACROS SEGÚN OBJETIVO ----------
     let macros;
@@ -262,83 +245,85 @@ window.generarInforme = async function(idx) {
     }
 
     const kcalPorGramo = { 'Proteína': 4, 'Carbohidrato': 4, 'Grasa': 9 };
-    const rows = macros.map(macro => {
+    function redondearPorciones(valor) {
+        const entero = Math.floor(valor);
+        const decimal = valor - entero;
+        if (decimal < 0.35) {
+            return entero;
+        } else if (decimal > 0.85) {
+            return entero + 1;
+        } else {
+            return entero + 0.5;
+        }
+    }
+
+        const rows = macros.map(macro => {
         const kcal = (cliente.caloriasObjetivo * macro.porcentaje) / 100;
         const gramos = kcal / kcalPorGramo[macro.nombre];
-        const porciones = Math.ceil(kcal / valorPorcion); // Redondea hacia arriba
+        const porcionesRaw = kcal / valorPorcion;
+        const porciones = redondearPorciones(porcionesRaw);
         return [
             macro.nombre,
             `${macro.porcentaje}%`,
             `~${Math.round(kcal)} kcal`,
-            `${gramos.toFixed(0)} g`,
             `${porciones} porciones`
         ];
     });
 
     doc.autoTable({
         startY: y,
-        head: [['Macronutriente', '% kcal aprox', 'Kcal', 'Gramos', 'Porciones']],
+        head: [['Macronutriente', '% kcal aprox', 'Kcal', 'Porciones (100 kcal c/u)']],
         body: rows,
-        styles: {
-            halign: 'center',
-            fontSize: 11,
-            cellPadding: 5
-        },
-        headStyles: {
-            fillColor: [40, 60, 100],
-            textColor: 255
-        },
+        styles: { halign: 'center', fontSize: 11, cellPadding: 5 },
+        headStyles: { fillColor: [40, 60, 100], textColor: 255 },
         alternateRowStyles: { fillColor: [245, 245, 245] },
-        margin: { left: 15, right: 15 }
+        margin: { left: marginX, right: marginX }
     });
-    y = doc.lastAutoTable.finalY + 10;
+    y = doc.lastAutoTable.finalY + 8;
+
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.text(
+        'Nota: Los gramos indicados son la suma total de alimentos del grupo correspondiente. Consulta la tabla de porciones', marginX, y
+    );
+    doc.text(
+        'para ver equivalencias.', marginX, y+5
+    );
+
+    y += 15;
 
     // ---------- EXPLICACIÓN DEL MÉTODO ----------
+    if (y > 180) {
+        doc.addPage();
+        y = 20;
+    }
     doc.setFontSize(12);
     doc.setTextColor(40, 60, 100);
-    doc.text("¿Cómo funciona este método?", 15, y);
+    doc.text("¿Cómo funciona este método?", marginX, y);
     y += 8;
     doc.setFontSize(11);
     doc.setTextColor(0);
-    const explicacion = [
+    [
         "Puedes elegir los alimentos que prefieras de cada grupo (proteínas, carbohidratos y grasas),",
         "siempre que no superes el número de porciones recomendadas para tu objetivo.",
         "Esto te da flexibilidad y variedad, permitiéndote adaptar tu dieta a tus gustos y necesidades.",
         "Recuerda: 1 porción equivale a 100 kcal. Suma las porciones de los alimentos elegidos y asegúrate",
         "de no sobrepasar el total diario recomendado para cada macronutriente."
-    ];
-    explicacion.forEach(linea => {
-        doc.text(linea, 15, y);
+    ].forEach(linea => {
+        doc.text(linea, marginX, y);
         y += 6;
     });
     y += 8;
 
-    // ---------- DATOS DE PRUEBA PARA ALIMENTOS ----------
+    // ---------- TABLAS DE ALIMENTOS POR PORCIÓN ----------
+    doc.addPage();
+    y = 30;
+    doc.setFontSize(16);
+    doc.setTextColor(40, 60, 100);
+    doc.text("Tablas de Alimentos por Porción", marginX, y);
 
-    // Función para parsear CSV a array de objetos
-    function parseCSV(csv) {
-        const lines = csv.trim().split('\n');
-        const headers = lines[0].replace('\r', '').split(',');
-        return lines.slice(1).map(line => {
-            const values = line.replace('\r', '').split(',');
-            const obj = {};
-            headers.forEach((h, i) => {
-                obj[h.trim()] = values[i] ? values[i].trim() : '';
-            });
-            // Convertir campos numéricos y booleanos
-            obj.gramaje = Number(obj.gramaje);
-            obj.esproteico = obj.esproteico === '1';
-            obj.escarbohidrato = obj.escarbohidrato === '1';
-            obj.esgrasa = obj.esgrasa === '1';
-            obj.alergenos = obj.alergenos ? obj.alergenos.split(';').map(a => a.trim().toLowerCase()) : [];
-            obj.categoria = obj.categoria ? obj.categoria.trim().toLowerCase() : '';
-            return obj;
-        });
-    }
-
-    // Cambia la obtención del CSV por una ruta relativa y usa fetch
+    // Cargar alimentos
     async function cargarAlimentosCSV() {
-        // Ruta relativa desde el HTML principal
         const ruta = 'Data/alimentos.csv';
         try {
             const resp = await fetch(ruta);
@@ -350,7 +335,25 @@ window.generarInforme = async function(idx) {
         }
     }
 
-    // Cargar el CSV de alimentos usando ruta relativa
+    function parseCSV(csv) {
+        const lines = csv.trim().split('\n');
+        const headers = lines[0].replace('\r', '').split(',');
+        return lines.slice(1).map(line => {
+            const values = line.replace('\r', '').split(',');
+            const obj = {};
+            headers.forEach((h, i) => {
+                obj[h.trim()] = values[i] ? values[i].trim() : '';
+            });
+            obj.gramaje = Number(obj.gramaje);
+            obj.esproteico = obj.esproteico === '1';
+            obj.escarbohidrato = obj.escarbohidrato === '1';
+            obj.esgrasa = obj.esgrasa === '1';
+            obj.alergenos = obj.alergenos ? obj.alergenos.split(';').map(a => a.trim().toLowerCase()) : [];
+            obj.categoria = obj.categoria ? obj.categoria.trim().toLowerCase() : '';
+            return obj;
+        });
+    }
+
     const alimentosCSV = await cargarAlimentosCSV();
     if (!alimentosCSV) return;
     const alimentos = parseCSV(alimentosCSV);
@@ -358,7 +361,6 @@ window.generarInforme = async function(idx) {
     // Filtrar por alergias
     const alergiasCliente = (cliente.alergias || []).map(a => a.toLowerCase());
     const alimentosFiltrados = alimentos.filter(alim => {
-        // Si el alimento tiene algún alérgeno que está en las alergias del cliente, lo excluimos
         if (!alim.alergenos || alim.alergenos.length === 0) return true;
         return !alim.alergenos.some(al => alergiasCliente.includes(al));
     });
@@ -375,69 +377,90 @@ window.generarInforme = async function(idx) {
     const carbohidratos = alimentosFinal.filter(a => a.escarbohidrato);
     const grasas = alimentosFinal.filter(a => a.esgrasa);
 
-    // ---------- CABECERO DE SECCIÓN DE TABLAS DE ALIMENTOS ----------
-    doc.addPage();
-    y = 30;
-    doc.setFontSize(16);
-    doc.setTextColor(40, 60, 100);
-    doc.text("Tablas de Alimentos por Porción", 15, y);
-    doc.text(`(Los alimentos disponibles son: ${cliente.alimentos})`, 15, y + 7);
-    doc.text(`(${alimentosFinal.length} alimentos)`, 15, y + 14);
-    y += 25;
-
-
-    // ---------- TABLA DE PROTEÍNAS (PÁGINA NUEVA) ----------
-    
+    // ---------- TABLA DE PROTEÍNAS ----------
+    y += 15;
     doc.setFontSize(14);
     doc.setTextColor(40, 60, 100);
-    doc.text("Porciones de Proteína (1 porción = gramaje indicado)", 15, y);
+    doc.text("Porciones de Proteína (1 porción = gramaje indicado)", marginX, y);
     y += 10;
     doc.autoTable({
         startY: y,
         head: [['Alimento', 'Porción']],
-        body: proteinas.map(a => [a.nombre, a.gramaje ? `${a.gramaje}${a.categoria === 'lácteos' ? 'ml' : 'g'}` : '']),
+        body: proteinas.map(a => {
+            if (!a.gramaje) return [a.nombre, ''];
+            let unidad = '';
+            if (a.categoria === 'lácteos') {
+                unidad = 'ml';
+            } else if (a.gramaje < 10) {
+                unidad = 'unidades';
+            } else {
+                unidad = 'g';
+            }
+            return [a.nombre, `${a.gramaje}${unidad}`];
+        }),
         styles: { fontSize: 10, cellPadding: 4 },
         headStyles: { fillColor: [40, 60, 100], textColor: 255 },
         alternateRowStyles: { fillColor: [245, 245, 245] },
-        margin: { left: 15, right: 15 }
+        margin: { left: marginX, right: marginX }
     });
     y = doc.lastAutoTable.finalY + 15;
 
-    // ---------- NUEVA PÁGINA PARA CARBOHIDRATOS ----------
+    // ---------- TABLA DE CARBOHIDRATOS ----------
     doc.addPage();
     y = 30;
     doc.setFontSize(14);
     doc.setTextColor(40, 60, 100);
-    doc.text("Porciones de Carbohidratos (1 porción = gramaje indicado)", 15, y);
+    doc.text("Porciones de Carbohidratos (1 porción = gramaje indicado)", marginX, y);
     y += 10;
     doc.autoTable({
         startY: y,
         head: [['Alimento', 'Porción']],
-        body: carbohidratos.map(a => [a.nombre, a.gramaje ? `${a.gramaje}${a.categoria === 'lácteos' ? 'ml' : 'g'}` : '']),
+        body: carbohidratos.map(a => {
+            if (!a.gramaje) return [a.nombre, ''];
+            let unidad = '';
+            if (a.categoria === 'lácteos') {
+                unidad = 'ml';
+            } else if (a.gramaje < 10) {
+                unidad = 'unidades';
+            } else {
+                unidad = 'g';
+            }
+            return [a.nombre, `${a.gramaje}${unidad}`];
+        }),
         styles: { fontSize: 10, cellPadding: 4 },
         headStyles: { fillColor: [40, 60, 100], textColor: 255 },
         alternateRowStyles: { fillColor: [245, 245, 245] },
-        margin: { left: 15, right: 15 }
+        margin: { left: marginX, right: marginX }
     });
     y = doc.lastAutoTable.finalY + 15;
 
-    // ---------- NUEVA PÁGINA PARA GRASAS ----------
+    // ---------- TABLA DE GRASAS ----------
     doc.addPage();
     y = 30;
     doc.setFontSize(14);
     doc.setTextColor(40, 60, 100);
-    doc.text("Porciones de Grasas (1 porción = gramaje indicado)", 15, y);
+    doc.text("Porciones de Grasas (1 porción = gramaje indicado)", marginX, y);
     y += 10;
     doc.autoTable({
         startY: y,
         head: [['Alimento', 'Porción']],
-        body: grasas.map(a => [a.nombre, a.gramaje ? `${a.gramaje}${a.categoria === 'lácteos' ? 'ml' : 'g'}` : '']),
+        body: grasas.map(a => {
+            if (!a.gramaje) return [a.nombre, ''];
+            let unidad = '';
+            if (a.categoria === 'lácteos') {
+                unidad = 'ml';
+            } else if (a.gramaje < 10) {
+                unidad = 'unidades';
+            } else {
+                unidad = 'g';
+            }
+            return [a.nombre, `${a.gramaje}${unidad}`];
+        }),
         styles: { fontSize: 10, cellPadding: 4 },
         headStyles: { fillColor: [40, 60, 100], textColor: 255 },
         alternateRowStyles: { fillColor: [245, 245, 245] },
-        margin: { left: 15, right: 15 }
+        margin: { left: marginX, right: marginX }
     });
-    y = doc.lastAutoTable.finalY + 15;
 
     // ---------- GUARDAR ----------
     doc.save(`informe_${cliente.nombre}.pdf`);
