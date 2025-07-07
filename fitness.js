@@ -824,3 +824,26 @@ window.addEventListener('beforeunload', function (e) {
     e.preventDefault();
     e.returnValue = '¿Estás seguro de que quieres recargar? Se perderán los cambios no guardados.';
 });
+
+// Manejo de errores de Choices.js
+function marcarChoicesInvalido(selectId, feedbackClass, mensaje) {
+    const select = document.getElementById(selectId);
+    const container = select.closest('.choices');
+    const feedback = document.querySelector('.' + feedbackClass);
+    if (container) container.classList.add('is-invalid');
+    if (feedback) {
+        feedback.style.display = 'block';
+        feedback.textContent = mensaje;
+    }
+}
+
+function limpiarChoicesInvalido(selectId, feedbackClass) {
+    const select = document.getElementById(selectId);
+    const container = select.closest('.choices');
+    const feedback = document.querySelector('.' + feedbackClass);
+    if (container) container.classList.remove('is-invalid');
+    if (feedback) {
+        feedback.style.display = '';
+        feedback.textContent = '';
+    }
+}
