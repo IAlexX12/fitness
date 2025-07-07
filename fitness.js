@@ -823,5 +823,3 @@ window.addEventListener('beforeunload', function (e) {
     e.preventDefault();
     e.returnValue = '¿Estás seguro de que quieres recargar? Se perderán los cambios no guardados.';
 });
-
-
