@@ -29,7 +29,7 @@ function calcularCampos({ altura, peso, edad, grasa, actividad, objetivo, porcen
     let caloriasObjetivo = caloriasMantenimiento;
     const factor = porcentajeObjetivo / 100;
 
-    switch(objetivo){
+    switch (objetivo) {
         case 'deficit':
             caloriasObjetivo -= caloriasMantenimiento * factor;
             break;
@@ -38,6 +38,7 @@ function calcularCampos({ altura, peso, edad, grasa, actividad, objetivo, porcen
             break;
         case 'mantenimiento':
             caloriasObjetivo = caloriasMantenimiento;
+            porcentajeObjetivo = 0;
             break;
         case 'recomposicion':
             caloriasObjetivo -= caloriasMantenimiento * (factor / 2);
@@ -51,7 +52,8 @@ function calcularCampos({ altura, peso, edad, grasa, actividad, objetivo, porcen
         masaGrasa: masaGrasa.toFixed(1),
         imc: imc.toFixed(1),
         mb: mb.toFixed(0),
-        caloriasObjetivo: Math.round(caloriasObjetivo)
+        caloriasObjetivo: Math.round(caloriasObjetivo),
+        porcentajeObjetivo: objetivo === 'mantenimiento' ? 0 : porcentajeObjetivo
     };
 }
 
@@ -128,7 +130,7 @@ function renderTabla() {
 function configurarOrdenTabla() {
     document.querySelectorAll('#clientesTable th[data-sort]').forEach(th => {
         th.style.cursor = 'pointer';
-        th.addEventListener('click', function() {
+        th.addEventListener('click', function () {
             const columna = th.getAttribute('data-sort');
             if (ordenColumna === columna) {
                 ordenAscendente = !ordenAscendente;
@@ -238,7 +240,7 @@ window.borrarCliente = function (idx) {
 }
 
 // Borrar todos los clientes
-document.getElementById('borrarTodos').addEventListener('click', function() {
+document.getElementById('borrarTodos').addEventListener('click', function () {
     if (confirm('¿Seguro que quieres borrar todos los clientes?')) {
         clientes.length = 0;
         localStorage.removeItem('clientes');
@@ -319,7 +321,7 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
     const actividad = Number(document.getElementById('actividad').value);
     const objetivoTxt = document.getElementById('objetivo').selectedOptions[0].text;
     const objetivo = document.getElementById('objetivo').value;
-    const porcentajeObjetivo = Number(document.getElementById('porcentajeObjetivo').value) || 0;
+    const porcentajeObjetivo = objetivo === 'mantenimiento' ? 0 : document.getElementById('porcentajeObjetivo').value;
 
     const alergiasSelect = document.getElementById('alergias');
     const alergias = Array.from(alergiasSelect.selectedOptions).map(opt => opt.text);
@@ -370,7 +372,7 @@ document.getElementById('exportarCSV').addEventListener('click', function () {
             actividad = Number(actividad);
         }
         let objetivo = cliente.objetivo;
-        if (!['deficit', 'volumen', 'recomposicion','mantenimiento'].includes(objetivo)) {
+        if (!['deficit', 'volumen', 'recomposicion', 'mantenimiento'].includes(objetivo)) {
             objetivo = 'deficit';
         }
         const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo });
@@ -426,11 +428,19 @@ document.addEventListener('DOMContentLoaded', function () {
     configurarValidaciones();
     configurarValidacionesEdicion();
 
-    togglePorcentajeObjetivo(); 
-    toggleEditPorcentajeObjetivo(); 
+    document.getElementById('objetivo').addEventListener('change', function() {
+        togglePorcentajeObjetivo();
+        // Forzar recálculo si hay un formulario abierto
+        if(document.getElementById('fitnessForm').checkValidity()) {
+            document.getElementById('fitnessForm').dispatchEvent(new Event('submit'));
+        }
+    });
     
-    document.getElementById('objetivo').addEventListener('change', togglePorcentajeObjetivo);
-    document.getElementById('editObjetivo').addEventListener('change', toggleEditPorcentajeObjetivo);
+    document.getElementById('editObjetivo').addEventListener('change', function() {
+        toggleEditPorcentajeObjetivo();
+        // Forzar validación
+        validarCampoEdicion(document.getElementById('editPorcentajeObjetivo'));
+    });
 
 
     // Importar CSV desde localStorage
@@ -476,22 +486,26 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function togglePorcentajeObjetivo() {
-const objetivo = document.getElementById('objetivo').value;
-const porcentajeGroup = document.getElementById('porcentajeObjetivo').parentElement;
+    const objetivo = document.getElementById('objetivo').value;
+    const porcentajeGroup = document.getElementById('porcentajeObjetivo').parentElement;
 
-if (objetivo === 'mantenimiento') {
-    porcentajeGroup.style.display = 'none';
-} else {
-    porcentajeGroup.style.display = 'block';
-}
+    if (objetivo === 'mantenimiento') {
+        porcentajeGroup.value = 0;
+        porcentajeGroup.dispatchEvent(new Event('input'));
+        porcentajeGroup.style.display = objetivo === 'mantenimiento' ? 'none' : 'block';
+    } else {
+        porcentajeGroup.style.display = 'block';
+    }
 }
 
 function toggleEditPorcentajeObjetivo() {
     const objetivo = document.getElementById('editObjetivo').value;
     const porcentajeGroup = document.getElementById('editPorcentajeObjetivo').parentElement;
-    
+
     if (objetivo === 'mantenimiento') {
-        porcentajeGroup.style.display = 'none';
+        porcentajeGroup.value = 0;
+        porcentajeGroup.dispatchEvent(new Event('input'));
+        porcentajeGroup.style.display = objetivo === 'mantenimiento' ? 'none' : 'block';
     } else {
         porcentajeGroup.style.display = 'block';
     }
@@ -520,7 +534,7 @@ if (formEditarCliente) {
         const actividad = document.getElementById('editActividad').value;
         const objetivoTxt = document.getElementById('editObjetivo').selectedOptions[0].text;
         const objetivo = document.getElementById('editObjetivo').value;
-        const porcentajeObjetivo = document.getElementById('editPorcentajeObjetivo').value;
+        const porcentajeObjetivo = objetivo === 'mantenimiento' ? 0 : document.getElementById('editPorcentajeObjetivo').value;
 
         // Recoger alergias y alimentos seleccionados del modal
         const editAlergias = document.getElementById('editAlergias');
@@ -565,56 +579,56 @@ function mostrarToast(mensaje, tipo = 'success') {
 // Configuración de validación
 // =====================
 const configValidacion = {
-  nombre: {
-    regex: /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, 
-    mensaje: 'Solo se permiten letras y espacios (sin números ni símbolos)'
-  },
-  altura: { min: 100, max: 250, mensaje: 'Debe ser entre 100 y 250 cm' },
-  peso: { min: 30, max: 300, mensaje: 'Debe ser entre 30 y 300 kg' },
-  edad: { min: 15, max: 120, mensaje: 'Debe ser entre 15 y 120 años' },
-  grasa: { min: 1, max: 60, mensaje: 'Debe ser entre 1% y 60%' },
-  porcentajeObjetivo: { min: 0, max: 30, mensaje : 'El porcentaje debe estar entre 0% y 30%'}
+    nombre: {
+        regex: /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
+        mensaje: 'Solo se permiten letras y espacios (sin números ni símbolos)'
+    },
+    altura: { min: 100, max: 250, mensaje: 'Debe ser entre 100 y 250 cm' },
+    peso: { min: 30, max: 300, mensaje: 'Debe ser entre 30 y 300 kg' },
+    edad: { min: 15, max: 120, mensaje: 'Debe ser entre 15 y 120 años' },
+    grasa: { min: 1, max: 60, mensaje: 'Debe ser entre 1% y 60%' },
+    porcentajeObjetivo: { min: 0, max: 30, mensaje: 'El porcentaje debe estar entre 0% y 30%' }
 };
 
 // =====================
 // Funciones de validación
 // =====================
 function validarCampo(input) {
-  const id = input.id;
-  const valor = input.value.trim();
-  const feedback = document.querySelector(`.${id}-feedback`);
-  
-  feedback.textContent = '';
-  input.classList.remove('is-invalid');
+    const id = input.id;
+    const valor = input.value.trim();
+    const feedback = document.querySelector(`.${id}-feedback`);
 
-  // Validar campo vacío
-  if (valor === '') {
-    feedback.textContent = 'Este campo es obligatorio';
-    input.classList.add('is-invalid');
-    return false;
-  }
+    feedback.textContent = '';
+    input.classList.remove('is-invalid');
 
-  // Validación especial para nombre
-  if (id === 'nombre') {
-    if (!configValidacion.nombre.regex.test(valor)) {
-      feedback.textContent = configValidacion.nombre.mensaje;
-      input.classList.add('is-invalid');
-      return false;
+    // Validar campo vacío
+    if (valor === '') {
+        feedback.textContent = 'Este campo es obligatorio';
+        input.classList.add('is-invalid');
+        return false;
     }
+
+    // Validación especial para nombre
+    if (id === 'nombre') {
+        if (!configValidacion.nombre.regex.test(valor)) {
+            feedback.textContent = configValidacion.nombre.mensaje;
+            input.classList.add('is-invalid');
+            return false;
+        }
+        return true;
+    }
+
+
+    const numero = parseInt(valor);
+    const config = configValidacion[id];
+
+    if (numero < config.min || numero > config.max) {
+        feedback.textContent = config.mensaje;
+        input.classList.add('is-invalid');
+        return false;
+    }
+
     return true;
-  }
-
-
-  const numero = parseInt(valor);
-  const config = configValidacion[id];
-
-  if (numero < config.min || numero > config.max) {
-    feedback.textContent = config.mensaje;
-    input.classList.add('is-invalid');
-    return false;
-  }
-
-  return true;
 }
 
 // =====================
@@ -624,9 +638,9 @@ function validarCampoEdicion(input) {
     const idOriginal = input.id.replace('edit', '').toLowerCase();
     const valor = input.value.trim();
     const feedback = document.querySelector(`.${input.id}-feedback`);
-    
+
     if (!feedback) return true; // Si no hay elemento de feedback, continuar
-    
+
     feedback.textContent = '';
     input.classList.remove('is-invalid');
 
@@ -670,47 +684,47 @@ function validarCampoEdicion(input) {
 
 
 function validarFormularioCompleto() {
-  let valido = true;
-  const campos = ['nombre', 'altura', 'peso', 'edad', 'grasa', 'porcentajeObjetivo'];
+    let valido = true;
+    const campos = ['nombre', 'altura', 'peso', 'edad', 'grasa', 'porcentajeObjetivo'];
 
-  campos.forEach(id => {
-    const input = document.getElementById(id);
-    if (!validarCampo(input)) {
-      valido = false;
+    campos.forEach(id => {
+        const input = document.getElementById(id);
+        if (!validarCampo(input)) {
+            valido = false;
+        }
+    });
+
+    // Validar alergias
+    const alergias = document.getElementById('alergias');
+    if (!alergias.selectedOptions.length) {
+        alergias.classList.add('is-invalid');
+        valido = false;
+    } else {
+        alergias.classList.remove('is-invalid');
     }
-  });
 
-  // Validar alergias
-  const alergias = document.getElementById('alergias');
-  if (!alergias.selectedOptions.length) {
-    alergias.classList.add('is-invalid');
-    valido = false;
-  } else {
-    alergias.classList.remove('is-invalid');
-  }
+    // Validar alimentos
+    const alimentos = document.getElementById('alimentos');
+    if (!alimentos.selectedOptions.length) {
+        alimentos.classList.add('is-invalid');
+        valido = false;
+    } else {
+        alimentos.classList.remove('is-invalid');
+    }
 
-  // Validar alimentos
-  const alimentos = document.getElementById('alimentos');
-  if (!alimentos.selectedOptions.length) {
-    alimentos.classList.add('is-invalid');
-    valido = false;
-  } else {
-    alimentos.classList.remove('is-invalid');
-  }
-
-  return valido;
+    return valido;
 }
 
 function validarFormularioEdicionCompleto() {
-  let valido = true;
-  const campos = ['editNombre', 'editAltura', 'editPeso', 'editEdad', 'editGrasa', 'editPorcentajeObjetivo'];
+    let valido = true;
+    const campos = ['editNombre', 'editAltura', 'editPeso', 'editEdad', 'editGrasa', 'editPorcentajeObjetivo'];
 
-  campos.forEach(id => {
-    const input = document.getElementById(id);
-    if (!validarCampoEdicion(input)) {
-      valido = false;
-    }
-  });
+    campos.forEach(id => {
+        const input = document.getElementById(id);
+        if (!validarCampoEdicion(input)) {
+            valido = false;
+        }
+    });
 
     const objetivo = document.getElementById('editObjetivo').value;
     if (objetivo !== 'mantenimiento') {
@@ -720,44 +734,44 @@ function validarFormularioEdicionCompleto() {
         }
     }
 
-  // Validar alergias edición
-  const editAlergias = document.getElementById('editAlergias');
-  if (!editAlergias.selectedOptions.length) {
-    editAlergias.classList.add('is-invalid');
-    valido = false;
-  } else {
-    editAlergias.classList.remove('is-invalid');
-  }
+    // Validar alergias edición
+    const editAlergias = document.getElementById('editAlergias');
+    if (!editAlergias.selectedOptions.length) {
+        editAlergias.classList.add('is-invalid');
+        valido = false;
+    } else {
+        editAlergias.classList.remove('is-invalid');
+    }
 
-  // Validar alimentos edición
-  const editAlimentos = document.getElementById('editAlimentos');
-  if (!editAlimentos.selectedOptions.length) {
-    editAlimentos.classList.add('is-invalid');
-    valido = false;
-  } else {
-    editAlimentos.classList.remove('is-invalid');
-  }
+    // Validar alimentos edición
+    const editAlimentos = document.getElementById('editAlimentos');
+    if (!editAlimentos.selectedOptions.length) {
+        editAlimentos.classList.add('is-invalid');
+        valido = false;
+    } else {
+        editAlimentos.classList.remove('is-invalid');
+    }
 
-  return valido;
+    return valido;
 }
 
 // =====================
 // Configurar eventos
 // =====================
 function configurarValidaciones() {
-  // Validación en tiempo real
-  document.querySelectorAll('#nombre, #altura, #peso, #edad, #grasa, #porcentajeObjetivo').forEach(input => {
-    input.addEventListener('input', function() {
-      if (this.id !== 'nombre') {
-        this.value = this.value.replace(/\D/g, ''); // Solo números
-      }
-      validarCampo(this);
-    });
+    // Validación en tiempo real
+    document.querySelectorAll('#nombre, #altura, #peso, #edad, #grasa, #porcentajeObjetivo').forEach(input => {
+        input.addEventListener('input', function () {
+            if (this.id !== 'nombre') {
+                this.value = this.value.replace(/\D/g, ''); // Solo números
+            }
+            validarCampo(this);
+        });
 
-    input.addEventListener('blur', function() {
-      validarCampo(this);
+        input.addEventListener('blur', function () {
+            validarCampo(this);
+        });
     });
-  });
 }
 
 // =====================
@@ -765,14 +779,14 @@ function configurarValidaciones() {
 // =====================
 function configurarValidacionesEdicion() {
     document.querySelectorAll('#editNombre, #editAltura, #editPeso, #editEdad, #editGrasa, #editPorcentajeObjetivo').forEach(input => {
-        input.addEventListener('input', function() {
+        input.addEventListener('input', function () {
             if (this.id !== 'editNombre') {
                 this.value = this.value.replace(/\D/g, ''); // Solo números
             }
             validarCampoEdicion(this);
         });
 
-        input.addEventListener('blur', function() {
+        input.addEventListener('blur', function () {
             validarCampoEdicion(this);
         });
     });
@@ -805,9 +819,9 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 window.addEventListener('beforeunload', function (e) {
-  // Personaliza el mensaje si quieres, pero la mayoría de navegadores mostrarán su propio texto
-  e.preventDefault();
-  e.returnValue = '¿Estás seguro de que quieres recargar? Se perderán los cambios no guardados.';
+    // Personaliza el mensaje si quieres, pero la mayoría de navegadores mostrarán su propio texto
+    e.preventDefault();
+    e.returnValue = '¿Estás seguro de que quieres recargar? Se perderán los cambios no guardados.';
 });
 
 
