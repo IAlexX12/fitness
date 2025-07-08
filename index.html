@@ -95,7 +95,7 @@
           Selecciona tus alergias:
           <span class="campo-obligatorio">(obligatorio)</span>
         </label>
-        <select name="alergias" id="alergias" class="form-control" multiple required>
+        <select name="alergias" id="alergias" class="form-control" multiple>
           <option value="Ninguna">Ninguna</option>
           <option value="leche">Leche</option>
           <option value="huevos">Huevos</option>
@@ -108,19 +108,21 @@
           <option value="soja">Soja</option>
           <option value="trigo">Trigo</option>
         </select>
+        <div class="invalid-feedback alergias-feedback"></div>
       </div>
       <div class="form-group col-md-6">
          <label for="alimentos">
           Alimentos Disponibles:
           <span class="campo-obligatorio">(obligatorio)</span>
         </label>
-        <select name="alimentos" id="alimentos" class="form-control" multiple required>
+        <select name="alimentos" id="alimentos" class="form-control" multiple>
           <option value="todos">Todos</option>
           <option value="carne">Carne</option>
           <option value="vegetales">Vegetales</option>
           <option value="pescado">Pescado</option>
           <option value="marisco">Mariscos</option>
         </select>
+        <div class="invalid-feedback alimentos-feedback"></div>
       </div>
       <div class="col-12 d-flex justify-content-between align-items-center mt-4">
         <button type="submit" class="btn btn-primary">Añadir Cliente</button>

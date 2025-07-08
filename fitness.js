@@ -362,32 +362,41 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
     const objetivo = document.getElementById('objetivo').value;
     const porcentajeObjetivo = objetivo === 'mantenimiento' ? 0 : document.getElementById('porcentajeObjetivo').value;
 
+    // Validación manual de alergias
     const alergiasSelect = document.getElementById('alergias');
-    let alergias = Array.from(alergiasSelect.selectedOptions).map(opt => opt.text);
+    const alergias = Array.from(alergiasSelect.selectedOptions).map(opt => opt.text);
+    const alergiasFeedback = document.querySelector('.alergias-feedback');
     if (alergias.length === 0) {
-        // Selección por defecto
-        alergias = ['Ninguna'];
-        // Si Choices.js está activo, selecciónalo visualmente
-        if (alergiasSelect.choices) {
-            alergiasSelect.choices.setChoiceByValue('Ninguna');
-        } else {
-            Array.from(alergiasSelect.options).forEach(opt => {
-                opt.selected = (opt.text === 'Ninguna');
-            });
+        alergiasSelect.classList.add('is-invalid');
+        if (alergiasFeedback) {
+            alergiasFeedback.textContent = 'Debes seleccionar al menos una alergia.';
+            alergiasFeedback.style.display = 'block';
+        }
+        return;
+    } else {
+        alergiasSelect.classList.remove('is-invalid');
+        if (alergiasFeedback) {
+            alergiasFeedback.textContent = '';
+            alergiasFeedback.style.display = '';
         }
     }
 
-    // Así recoges los alimentos seleccionados del select múltiple
+    // Validación manual de alimentos
     const alimentosSelect = document.getElementById('alimentos');
-    let alimentos = Array.from(alimentosSelect.selectedOptions).map(opt => opt.text);
+    const alimentos = Array.from(alimentosSelect.selectedOptions).map(opt => opt.text);
+    const alimentosFeedback = document.querySelector('.alimentos-feedback');
     if (alimentos.length === 0) {
-        alimentos = ['Todos'];
-        if (alimentosSelect.choices) {
-            alimentosSelect.choices.setChoiceByValue('Todos');
-        } else {
-            Array.from(alimentosSelect.options).forEach(opt => {
-                opt.selected = (opt.text === 'Todos');
-            });
+        alimentosSelect.classList.add('is-invalid');
+        if (alimentosFeedback) {
+            alimentosFeedback.textContent = 'Debes seleccionar al menos un alimento.';
+            alimentosFeedback.style.display = 'block';
+        }
+        return;
+    } else {
+        alimentosSelect.classList.remove('is-invalid');
+        if (alimentosFeedback) {
+            alimentosFeedback.textContent = '';
+            alimentosFeedback.style.display = '';
         }
     }
 
