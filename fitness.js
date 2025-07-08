@@ -207,6 +207,7 @@ function importarDesdeCSV(text) {
         'alimentos': 'alimentos',
         'fecha alta': 'fechaAlta'
     };
+    
     // Mapeo de actividad numérica a texto
     const actividadMap = {
         '1.2': 'Sedentario',
@@ -275,21 +276,15 @@ window.abrirEditarCliente = function (idx) {
     document.getElementById('editObjetivo').value = cliente.objetivo;
     document.getElementById('editPorcentajeObjetivo').value = cliente.porcentajeObjetivo;
 
-    // Seleccionar alergias
+    // Limpiar todas las selecciones de alergias
     const editAlergias = document.getElementById('editAlergias');
-    Array.from(editAlergias.options).forEach(opt => {
-        opt.selected = (cliente.alergias || []).includes(opt.text);
-    });
+    Array.from(editAlergias.options).forEach(opt => { opt.selected = false; });
+    if (editAlergias.choices) editAlergias.choices.removeActiveItems();
 
-    // Seleccionar alimentos
+    // Limpiar todas las selecciones de alimentos
     const editAlimentos = document.getElementById('editAlimentos');
-    Array.from(editAlimentos.options).forEach(opt => {
-        opt.selected = (cliente.alimentos || []).includes(opt.text);
-    });
-
-    // Si usas Choices.js, actualiza:
-    if (editAlergias.choices) editAlergias.choices.setChoiceByValue(cliente.alergias || []);
-    if (editAlimentos.choices) editAlimentos.choices.setChoiceByValue(cliente.alimentos || []);
+    Array.from(editAlimentos.options).forEach(opt => { opt.selected = false; });
+    if (editAlimentos.choices) editAlimentos.choices.removeActiveItems();
 
     // Limpiar estados de validación al abrir el modal
     document.querySelectorAll('#editNombre, #editAltura, #editPeso, #editEdad, #editGrasa, #editPorcentajeObjetivo').forEach(input => {
