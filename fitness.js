@@ -18,6 +18,46 @@ function obtenerFechaHoraActual() {
 }
 
 // =====================
+// Cálculos
+// =====================
+function calcularCampos({ altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo }) {
+    const masaGrasa = peso * (grasa / 100);
+    const masaMagra = peso - masaGrasa;
+    const imc = peso / Math.pow(altura / 100, 2);
+    const mb = 88.36 + (13.4 * peso) + (4.8 * altura) - (5.7 * edad);
+    const caloriasMantenimiento = mb * actividad;
+    let caloriasObjetivo = caloriasMantenimiento;
+    const factor = porcentajeObjetivo / 100;
+
+    switch (objetivo) {
+        case 'deficit':
+            caloriasObjetivo -= caloriasMantenimiento * factor;
+            break;
+        case 'volumen':
+            caloriasObjetivo += caloriasMantenimiento * factor;
+            break;
+        case 'mantenimiento':
+            caloriasObjetivo = caloriasMantenimiento;
+            porcentajeObjetivo = 0;
+            break;
+        case 'recomposicion':
+            caloriasObjetivo -= caloriasMantenimiento * (factor / 2);
+            break;
+        default:
+            caloriasObjetivo = caloriasMantenimiento;
+    }
+
+    return {
+        masaMagra: masaMagra.toFixed(1),
+        masaGrasa: masaGrasa.toFixed(1),
+        imc: imc.toFixed(1),
+        mb: mb.toFixed(0),
+        caloriasObjetivo: Math.round(caloriasObjetivo),
+        porcentajeObjetivo: objetivo === 'mantenimiento' ? 0 : porcentajeObjetivo
+    };
+}
+
+// =====================
 // Renderizado
 // =====================
 
@@ -164,17 +204,8 @@ function importarDesdeCSV(text) {
         'objetivo': 'objetivo',
         '% objetivo': 'porcentajeObjetivo',
         'alergias': 'alergias',
-        'alimentos': 'alimentos',
+        'alimentos': 'alimentos', // <-- Añade esta línea
         'fecha alta': 'fechaAlta'
-    };
-    
-    // Mapeo de actividad numérica a texto
-    const actividadMap = {
-        '1.2': 'Sedentario',
-        '1.375': 'Ligera',
-        '1.55': 'Moderada',
-        '1.725': 'Intensa',
-        '1.9': 'Muy intensa'
     };
     clientes.length = 0;
     lines.slice(1).forEach(line => {
@@ -188,10 +219,6 @@ function importarDesdeCSV(text) {
                 cliente.alergias = values[idx] ? values[idx].split(';').map(a => a.trim()).filter(a => a) : [];
             } else if (key === 'alimentos') {
                 cliente.alimentos = values[idx] ? values[idx].split(';').map(a => a.trim()).filter(a => a) : [];
-            } else if (key === 'actividad') {
-                // Si es un número conocido, lo mapeamos a texto
-                const act = values[idx] ? values[idx].trim() : '';
-                cliente.actividad = actividadMap[act] || act;
             } else {
                 cliente[key] = values[idx];
             }
@@ -236,15 +263,21 @@ window.abrirEditarCliente = function (idx) {
     document.getElementById('editObjetivo').value = cliente.objetivo;
     document.getElementById('editPorcentajeObjetivo').value = cliente.porcentajeObjetivo;
 
-    // Limpiar todas las selecciones de alergias
+    // Seleccionar alergias
     const editAlergias = document.getElementById('editAlergias');
-    Array.from(editAlergias.options).forEach(opt => { opt.selected = false; });
-    if (editAlergias.choices) editAlergias.choices.removeActiveItems();
+    Array.from(editAlergias.options).forEach(opt => {
+        opt.selected = (cliente.alergias || []).includes(opt.text);
+    });
 
-    // Limpiar todas las selecciones de alimentos
+    // Seleccionar alimentos
     const editAlimentos = document.getElementById('editAlimentos');
-    Array.from(editAlimentos.options).forEach(opt => { opt.selected = false; });
-    if (editAlimentos.choices) editAlimentos.choices.removeActiveItems();
+    Array.from(editAlimentos.options).forEach(opt => {
+        opt.selected = (cliente.alimentos || []).includes(opt.text);
+    });
+
+    // Si usas Choices.js, actualiza:
+    if (editAlergias.choices) editAlergias.choices.setChoiceByValue(cliente.alergias || []);
+    if (editAlimentos.choices) editAlimentos.choices.setChoiceByValue(cliente.alimentos || []);
 
     // Limpiar estados de validación al abrir el modal
     document.querySelectorAll('#editNombre, #editAltura, #editPeso, #editEdad, #editGrasa, #editPorcentajeObjetivo').forEach(input => {
@@ -257,38 +290,6 @@ window.abrirEditarCliente = function (idx) {
 
     const modal = new bootstrap.Modal(document.getElementById('editarClienteModal'));
     modal.show();
-
-    // Mapeo para actividad 
-    const actividadMap = {
-        'Sedentario': '1.2',
-        'Ligera': '1.375',
-        'Moderada': '1.55',
-        'Intensa': '1.725',
-        'Muy intensa': '1.9',
-        '1.2': '1.2',
-        '1.375': '1.375',
-        '1.55': '1.55',
-        '1.725': '1.725',
-        '1.9': '1.9'
-    };
-    let actividadValue = actividadMap[cliente.actividad] || cliente.actividad;
-    document.getElementById('editActividad').value = actividadValue;
-
-    // Mapeo para objetivo
-    const objetivoMap = {
-        'Déficit': 'deficit',
-        'Deficit': 'deficit',
-        'Volumen': 'volumen',
-        'Recomposición': 'recomposicion',
-        'Recomposicion': 'recomposicion',
-        'Mantenimiento': 'mantenimiento',
-        'deficit': 'deficit',
-        'volumen': 'volumen',
-        'recomposicion': 'recomposicion',
-        'mantenimiento': 'mantenimiento'
-    };
-    let objetivoValue = objetivoMap[cliente.objetivo] || cliente.objetivo;
-    document.getElementById('editObjetivo').value = objetivoValue;
 }
 
 // =====================
@@ -303,7 +304,7 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
     document.getElementById('infoMessage').style.display = 'none';
 
     // Validar antes de procesar
-    if (!Validacion.validarFormularioCompleto()) {
+    if (!validarFormularioCompleto()) {
         document.getElementById('infoMessage').textContent = 'Por favor corrige los errores marcados';
         document.getElementById('infoMessage').style.display = 'block';
         document.getElementById('infoMessage').classList.add('alert-danger');
@@ -322,45 +323,14 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
     const objetivo = document.getElementById('objetivo').value;
     const porcentajeObjetivo = objetivo === 'mantenimiento' ? 0 : document.getElementById('porcentajeObjetivo').value;
 
-    // Validación manual de alergias
     const alergiasSelect = document.getElementById('alergias');
     const alergias = Array.from(alergiasSelect.selectedOptions).map(opt => opt.text);
-    const alergiasFeedback = document.querySelector('.alergias-feedback');
-    if (alergias.length === 0) {
-        alergiasSelect.classList.add('is-invalid');
-        if (alergiasFeedback) {
-            alergiasFeedback.textContent = 'Debes seleccionar al menos una alergia.';
-            alergiasFeedback.style.display = 'block';
-        }
-        return;
-    } else {
-        alergiasSelect.classList.remove('is-invalid');
-        if (alergiasFeedback) {
-            alergiasFeedback.textContent = '';
-            alergiasFeedback.style.display = '';
-        }
-    }
 
-    // Validación manual de alimentos
+    // Así recoges los alimentos seleccionados del select múltiple
     const alimentosSelect = document.getElementById('alimentos');
     const alimentos = Array.from(alimentosSelect.selectedOptions).map(opt => opt.text);
-    const alimentosFeedback = document.querySelector('.alimentos-feedback');
-    if (alimentos.length === 0) {
-        alimentosSelect.classList.add('is-invalid');
-        if (alimentosFeedback) {
-            alimentosFeedback.textContent = 'Debes seleccionar al menos un alimento.';
-            alimentosFeedback.style.display = 'block';
-        }
-        return;
-    } else {
-        alimentosSelect.classList.remove('is-invalid');
-        if (alimentosFeedback) {
-            alimentosFeedback.textContent = '';
-            alimentosFeedback.style.display = '';
-        }
-    }
 
-    const calculos = Calculos.calcularCampos({ altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo });
+    const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo });
     const fechaActual = new Date().toLocaleDateString('es-ES');
     const cliente = {
         nombre: formatearNombre(nombre), altura, peso, edad, grasa,
@@ -373,7 +343,7 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
         objetivo: objetivoTxt,
         porcentajeObjetivo: porcentajeObjetivo,
         alergias: alergias,
-        alimentos: alimentos,
+        alimentos: alimentos, // <-- aquí se guarda el array de alimentos seleccionados
         fechaAlta: fechaActual,
     };
     clientes.push(cliente);
@@ -388,7 +358,7 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
 
 // Exportar a CSV
 document.getElementById('exportarCSV').addEventListener('click', function () {
-    let csv = 'Nombre,Altura,Peso,Edad,% Graso,M. Magra,M. Grasa,IMC,MB,Calorías Objetivo,Actividad,Objetivo,% Objetivo,Alergias,Alimentos,Fecha alta\n';
+    let csv = 'Nombre,Altura,Peso,Edad,% Graso,M. Magra,M. Grasa,IMC,MB,Calorías Objetivo,Actividad,Objetivo,% Objetivo,Alergias,Fecha alta\n';
     clientes.forEach(cliente => {
         const altura = Number(cliente.altura);
         const peso = Number(cliente.peso);
@@ -405,7 +375,7 @@ document.getElementById('exportarCSV').addEventListener('click', function () {
         if (!['deficit', 'volumen', 'recomposicion', 'mantenimiento'].includes(objetivo)) {
             objetivo = 'deficit';
         }
-        const calculos = Calculos.calcularCampos({ altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo });
+        const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo });
         csv += [
             cliente.nombre,
             cliente.altura,
@@ -421,7 +391,6 @@ document.getElementById('exportarCSV').addEventListener('click', function () {
             cliente.objetivo,
             cliente.porcentajeObjetivo,
             (cliente.alergias || "").join(';'),
-            (cliente.alimentos || "").join(';'),
             cliente.fechaAlta || '-'
         ].join(',') + '\n';
     });
@@ -461,10 +430,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('objetivo').addEventListener('change', function() {
         togglePorcentajeObjetivo();
+        // Forzar recálculo si hay un formulario abierto
+        if(document.getElementById('fitnessForm').checkValidity()) {
+            document.getElementById('fitnessForm').dispatchEvent(new Event('submit'));
+        }
     });
     
     document.getElementById('editObjetivo').addEventListener('change', function() {
         toggleEditPorcentajeObjetivo();
+        // Forzar validación
+        validarCampoEdicion(document.getElementById('editPorcentajeObjetivo'));
     });
 
 
@@ -506,6 +481,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+
+
 });
 
 function togglePorcentajeObjetivo() {
@@ -543,7 +520,7 @@ if (formEditarCliente) {
         e.preventDefault();
 
         // Validar el formulario completo antes de enviar
-        if (!Validacion.validarFormularioEdicionCompleto()) {
+        if (!validarFormularioEdicionCompleto()) {
             return;
         }
 
@@ -567,24 +544,17 @@ if (formEditarCliente) {
         const alimentos = Array.from(editAlimentos.selectedOptions).map(opt => opt.text);
 
         // alergias
-        const calculos = Calculos.calcularCampos({ altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo });
+        const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo });
         clientes[idx] = {
             ...clientes[idx], // mantiene fechaAlta y otros campos
-            nombre: formatearNombre(nombre),
-            altura,
-            peso,
-            edad,
-            grasa,
-            actividad: actividadTxt, // SIEMPRE texto
-            objetivo,
-            porcentajeObjetivo,
+            nombre: formatearNombre(nombre), altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo,
             masaMagra: calculos.masaMagra,
             masaGrasa: calculos.masaGrasa,
             imc: calculos.imc,
             mb: calculos.mb,
             caloriasObjetivo: calculos.caloriasObjetivo,
-            alergias: alergias,
-            alimentos: alimentos
+            alergias: alergias,      // <-- añade esto
+            alimentos: alimentos     // <-- y esto
         };
         renderTabla();
         mostrarToast('Cliente editado correctamente', 'info');
@@ -605,7 +575,185 @@ function mostrarToast(mensaje, tipo = 'success') {
     toast.show();
 }
 
+// =====================
+// Configuración de validación
+// =====================
+const configValidacion = {
+    nombre: {
+        regex: /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
+        mensaje: 'Solo se permiten letras y espacios (sin números ni símbolos)'
+    },
+    altura: { min: 100, max: 250, mensaje: 'Debe ser entre 100 y 250 cm' },
+    peso: { min: 30, max: 300, mensaje: 'Debe ser entre 30 y 300 kg' },
+    edad: { min: 15, max: 120, mensaje: 'Debe ser entre 15 y 120 años' },
+    grasa: { min: 1, max: 60, mensaje: 'Debe ser entre 1% y 60%' },
+    porcentajeObjetivo: { min: 0, max: 30, mensaje: 'El porcentaje debe estar entre 0% y 30%' }
+};
 
+// =====================
+// Funciones de validación
+// =====================
+function validarCampo(input) {
+    const id = input.id;
+    const valor = input.value.trim();
+    const feedback = document.querySelector(`.${id}-feedback`);
+
+    feedback.textContent = '';
+    input.classList.remove('is-invalid');
+
+    // Validar campo vacío
+    if (valor === '') {
+        feedback.textContent = 'Este campo es obligatorio';
+        input.classList.add('is-invalid');
+        return false;
+    }
+
+    // Validación especial para nombre
+    if (id === 'nombre') {
+        if (!configValidacion.nombre.regex.test(valor)) {
+            feedback.textContent = configValidacion.nombre.mensaje;
+            input.classList.add('is-invalid');
+            return false;
+        }
+        return true;
+    }
+
+
+    const numero = parseInt(valor);
+    const config = configValidacion[id];
+
+    if (numero < config.min || numero > config.max) {
+        feedback.textContent = config.mensaje;
+        input.classList.add('is-invalid');
+        return false;
+    }
+
+    return true;
+}
+
+// =====================
+// Validaciones para el formulario de edición
+// =====================
+function validarCampoEdicion(input) {
+    const idOriginal = input.id.replace('edit', '').toLowerCase();
+    const valor = input.value.trim();
+    const feedback = document.querySelector(`.${input.id}-feedback`);
+
+    if (!feedback) return true; // Si no hay elemento de feedback, continuar
+
+    feedback.textContent = '';
+    input.classList.remove('is-invalid');
+
+    // Validar campo vacío
+    if (input.required && valor === '') {
+        feedback.textContent = 'Este campo es obligatorio';
+        input.classList.add('is-invalid');
+        return false;
+    }
+
+    // Validación especial para nombre
+    if (idOriginal === 'nombre') {
+        if (!configValidacion.nombre.regex.test(valor)) {
+            feedback.textContent = configValidacion.nombre.mensaje;
+            input.classList.add('is-invalid');
+            return false;
+        }
+        return true;
+    }
+
+    const numero = parseInt(valor);
+    const config = configValidacion[idOriginal];
+
+    if (config) {
+        if (numero < config.min || numero > config.max) {
+            feedback.textContent = config.mensaje;
+            input.classList.add('is-invalid');
+            return false;
+        }
+    }
+    else if (idOriginal === 'porcentajeobjetivo') {
+        if (numero < 0 || numero > 30) {
+            feedback.textContent = 'El porcentaje debe estar entre 0% y 30%';
+            input.classList.add('is-invalid');
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+function validarFormularioCompleto() {
+    let valido = true;
+    const campos = ['nombre', 'altura', 'peso', 'edad', 'grasa', 'porcentajeObjetivo'];
+
+    campos.forEach(id => {
+        const input = document.getElementById(id);
+        if (!validarCampo(input)) {
+            valido = false;
+        }
+    });
+
+    // Validar alergias
+    const alergias = document.getElementById('alergias');
+    if (!alergias.selectedOptions.length) {
+        alergias.classList.add('is-invalid');
+        valido = false;
+    } else {
+        alergias.classList.remove('is-invalid');
+    }
+
+    // Validar alimentos
+    const alimentos = document.getElementById('alimentos');
+    if (!alimentos.selectedOptions.length) {
+        alimentos.classList.add('is-invalid');
+        valido = false;
+    } else {
+        alimentos.classList.remove('is-invalid');
+    }
+
+    return valido;
+}
+
+function validarFormularioEdicionCompleto() {
+    let valido = true;
+    const campos = ['editNombre', 'editAltura', 'editPeso', 'editEdad', 'editGrasa', 'editPorcentajeObjetivo'];
+
+    campos.forEach(id => {
+        const input = document.getElementById(id);
+        if (!validarCampoEdicion(input)) {
+            valido = false;
+        }
+    });
+
+    const objetivo = document.getElementById('editObjetivo').value;
+    if (objetivo !== 'mantenimiento') {
+        const porcentajeInput = document.getElementById('editPorcentajeObjetivo');
+        if (!validarCampoEdicion(porcentajeInput)) {
+            valido = false;
+        }
+    }
+
+    // Validar alergias edición
+    const editAlergias = document.getElementById('editAlergias');
+    if (!editAlergias.selectedOptions.length) {
+        editAlergias.classList.add('is-invalid');
+        valido = false;
+    } else {
+        editAlergias.classList.remove('is-invalid');
+    }
+
+    // Validar alimentos edición
+    const editAlimentos = document.getElementById('editAlimentos');
+    if (!editAlimentos.selectedOptions.length) {
+        editAlimentos.classList.add('is-invalid');
+        valido = false;
+    } else {
+        editAlimentos.classList.remove('is-invalid');
+    }
+
+    return valido;
+}
 
 // =====================
 // Configurar eventos
@@ -617,11 +765,11 @@ function configurarValidaciones() {
             if (this.id !== 'nombre') {
                 this.value = this.value.replace(/\D/g, ''); // Solo números
             }
-            Validacion.validarCampo(this);
+            validarCampo(this);
         });
 
         input.addEventListener('blur', function () {
-            Validacion.validarCampo(this);
+            validarCampo(this);
         });
     });
 }
@@ -635,11 +783,11 @@ function configurarValidacionesEdicion() {
             if (this.id !== 'editNombre') {
                 this.value = this.value.replace(/\D/g, ''); // Solo números
             }
-            Validacion.validarCampoEdicion(this);
+            validarCampoEdicion(this);
         });
 
         input.addEventListener('blur', function () {
-            Validacion.validarCampoEdicion(this);
+            validarCampoEdicion(this);
         });
     });
 }
@@ -670,31 +818,9 @@ document.addEventListener('DOMContentLoaded', function () {
     new Choices('#editAlimentos', { removeItemButton: true, searchEnabled: false });
 });
 
-
-// Manejo de errores de Choices.js
-function marcarChoicesInvalido(selectId, feedbackClass, mensaje) {
-    const select = document.getElementById(selectId);
-    const container = select.closest('.choices');
-    const feedback = document.querySelector('.' + feedbackClass);
-    if (container) container.classList.add('is-invalid');
-    if (feedback) {
-        feedback.style.display = 'block';
-        feedback.textContent = mensaje;
-    }
-}
-
-function limpiarChoicesInvalido(selectId, feedbackClass) {
-    const select = document.getElementById(selectId);
-    const container = select.closest('.choices');
-    const feedback = document.querySelector('.' + feedbackClass);
-    if (container) container.classList.remove('is-invalid');
-    if (feedback) {
-        feedback.style.display = '';
-        feedback.textContent = '';
-    }
-}
-
 window.addEventListener('beforeunload', function (e) {
     // Personaliza el mensaje si quieres, pero la mayoría de navegadores mostrarán su propio texto
     e.preventDefault();
+    e.returnValue = '¿Estás seguro de que quieres recargar? Se perderán los cambios no guardados.';
 });
+
