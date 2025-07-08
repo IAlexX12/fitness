@@ -358,6 +358,7 @@ document.getElementById('exportarCSV').addEventListener('click', function () {
             cliente.objetivo,
             cliente.porcentajeObjetivo,
             (cliente.alergias || "").join(';'),
+            (cliente.alergias || "").join(';'),
             cliente.fechaAlta || '-'
         ].join(',') + '\n';
     });
