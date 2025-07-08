@@ -512,8 +512,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-
-
 });
 
 function togglePorcentajeObjetivo() {
