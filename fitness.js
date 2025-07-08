@@ -207,6 +207,14 @@ function importarDesdeCSV(text) {
         'alimentos': 'alimentos',
         'fecha alta': 'fechaAlta'
     };
+    // Mapeo de actividad numérica a texto
+    const actividadMap = {
+        '1.2': 'Sedentario',
+        '1.375': 'Ligera',
+        '1.55': 'Moderada',
+        '1.725': 'Intensa',
+        '1.9': 'Muy intensa'
+    };
     clientes.length = 0;
     lines.slice(1).forEach(line => {
         if (!line.trim()) return;
@@ -219,6 +227,10 @@ function importarDesdeCSV(text) {
                 cliente.alergias = values[idx] ? values[idx].split(';').map(a => a.trim()).filter(a => a) : [];
             } else if (key === 'alimentos') {
                 cliente.alimentos = values[idx] ? values[idx].split(';').map(a => a.trim()).filter(a => a) : [];
+            } else if (key === 'actividad') {
+                // Si es un número conocido, lo mapeamos a texto
+                const act = values[idx] ? values[idx].trim() : '';
+                cliente.actividad = actividadMap[act] || act;
             } else {
                 cliente[key] = values[idx];
             }
