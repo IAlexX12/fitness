@@ -144,3 +144,9 @@ th.table-active .sort-icon {
 #toastConfirmacion {
   transition: box-shadow 0.3s;
 }
+
+.campo-obligatorio {
+  color: #555;
+  opacity: 0.7;
+  font-size: 0.95em;
+}

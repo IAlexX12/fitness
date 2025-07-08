@@ -207,6 +207,15 @@ function importarDesdeCSV(text) {
         'alimentos': 'alimentos',
         'fecha alta': 'fechaAlta'
     };
+    
+    // Mapeo de actividad numérica a texto
+    const actividadMap = {
+        '1.2': 'Sedentario',
+        '1.375': 'Ligera',
+        '1.55': 'Moderada',
+        '1.725': 'Intensa',
+        '1.9': 'Muy intensa'
+    };
     clientes.length = 0;
     lines.slice(1).forEach(line => {
         if (!line.trim()) return;
@@ -219,6 +228,10 @@ function importarDesdeCSV(text) {
                 cliente.alergias = values[idx] ? values[idx].split(';').map(a => a.trim()).filter(a => a) : [];
             } else if (key === 'alimentos') {
                 cliente.alimentos = values[idx] ? values[idx].split(';').map(a => a.trim()).filter(a => a) : [];
+            } else if (key === 'actividad') {
+                // Si es un número conocido, lo mapeamos a texto
+                const act = values[idx] ? values[idx].trim() : '';
+                cliente.actividad = actividadMap[act] || act;
             } else {
                 cliente[key] = values[idx];
             }
@@ -263,21 +276,15 @@ window.abrirEditarCliente = function (idx) {
     document.getElementById('editObjetivo').value = cliente.objetivo;
     document.getElementById('editPorcentajeObjetivo').value = cliente.porcentajeObjetivo;
 
-    // Seleccionar alergias
+    // Limpiar todas las selecciones de alergias
     const editAlergias = document.getElementById('editAlergias');
-    Array.from(editAlergias.options).forEach(opt => {
-        opt.selected = (cliente.alergias || []).includes(opt.text);
-    });
+    Array.from(editAlergias.options).forEach(opt => { opt.selected = false; });
+    if (editAlergias.choices) editAlergias.choices.removeActiveItems();
 
-    // Seleccionar alimentos
+    // Limpiar todas las selecciones de alimentos
     const editAlimentos = document.getElementById('editAlimentos');
-    Array.from(editAlimentos.options).forEach(opt => {
-        opt.selected = (cliente.alimentos || []).includes(opt.text);
-    });
-
-    // Si usas Choices.js, actualiza:
-    if (editAlergias.choices) editAlergias.choices.setChoiceByValue(cliente.alergias || []);
-    if (editAlimentos.choices) editAlimentos.choices.setChoiceByValue(cliente.alimentos || []);
+    Array.from(editAlimentos.options).forEach(opt => { opt.selected = false; });
+    if (editAlimentos.choices) editAlimentos.choices.removeActiveItems();
 
     // Limpiar estados de validación al abrir el modal
     document.querySelectorAll('#editNombre, #editAltura, #editPeso, #editEdad, #editGrasa, #editPorcentajeObjetivo').forEach(input => {
@@ -290,6 +297,38 @@ window.abrirEditarCliente = function (idx) {
 
     const modal = new bootstrap.Modal(document.getElementById('editarClienteModal'));
     modal.show();
+
+    // Mapeo para actividad 
+    const actividadMap = {
+        'Sedentario': '1.2',
+        'Ligera': '1.375',
+        'Moderada': '1.55',
+        'Intensa': '1.725',
+        'Muy intensa': '1.9',
+        '1.2': '1.2',
+        '1.375': '1.375',
+        '1.55': '1.55',
+        '1.725': '1.725',
+        '1.9': '1.9'
+    };
+    let actividadValue = actividadMap[cliente.actividad] || cliente.actividad;
+    document.getElementById('editActividad').value = actividadValue;
+
+    // Mapeo para objetivo
+    const objetivoMap = {
+        'Déficit': 'deficit',
+        'Deficit': 'deficit',
+        'Volumen': 'volumen',
+        'Recomposición': 'recomposicion',
+        'Recomposicion': 'recomposicion',
+        'Mantenimiento': 'mantenimiento',
+        'deficit': 'deficit',
+        'volumen': 'volumen',
+        'recomposicion': 'recomposicion',
+        'mantenimiento': 'mantenimiento'
+    };
+    let objetivoValue = objetivoMap[cliente.objetivo] || cliente.objetivo;
+    document.getElementById('editObjetivo').value = objetivoValue;
 }
 
 // =====================
@@ -323,12 +362,43 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
     const objetivo = document.getElementById('objetivo').value;
     const porcentajeObjetivo = objetivo === 'mantenimiento' ? 0 : document.getElementById('porcentajeObjetivo').value;
 
+    // Validación manual de alergias
     const alergiasSelect = document.getElementById('alergias');
     const alergias = Array.from(alergiasSelect.selectedOptions).map(opt => opt.text);
+    const alergiasFeedback = document.querySelector('.alergias-feedback');
+    if (alergias.length === 0) {
+        alergiasSelect.classList.add('is-invalid');
+        if (alergiasFeedback) {
+            alergiasFeedback.textContent = 'Debes seleccionar al menos una alergia.';
+            alergiasFeedback.style.display = 'block';
+        }
+        return;
+    } else {
+        alergiasSelect.classList.remove('is-invalid');
+        if (alergiasFeedback) {
+            alergiasFeedback.textContent = '';
+            alergiasFeedback.style.display = '';
+        }
+    }
 
-    // Así recoges los alimentos seleccionados del select múltiple
+    // Validación manual de alimentos
     const alimentosSelect = document.getElementById('alimentos');
     const alimentos = Array.from(alimentosSelect.selectedOptions).map(opt => opt.text);
+    const alimentosFeedback = document.querySelector('.alimentos-feedback');
+    if (alimentos.length === 0) {
+        alimentosSelect.classList.add('is-invalid');
+        if (alimentosFeedback) {
+            alimentosFeedback.textContent = 'Debes seleccionar al menos un alimento.';
+            alimentosFeedback.style.display = 'block';
+        }
+        return;
+    } else {
+        alimentosSelect.classList.remove('is-invalid');
+        if (alimentosFeedback) {
+            alimentosFeedback.textContent = '';
+            alimentosFeedback.style.display = '';
+        }
+    }
 
     const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo });
     const fechaActual = new Date().toLocaleDateString('es-ES');
@@ -548,14 +618,21 @@ if (formEditarCliente) {
         const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo });
         clientes[idx] = {
             ...clientes[idx], // mantiene fechaAlta y otros campos
-            nombre: formatearNombre(nombre), altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo,
+            nombre: formatearNombre(nombre),
+            altura,
+            peso,
+            edad,
+            grasa,
+            actividad: actividadTxt, // SIEMPRE texto
+            objetivo,
+            porcentajeObjetivo,
             masaMagra: calculos.masaMagra,
             masaGrasa: calculos.masaGrasa,
             imc: calculos.imc,
             mb: calculos.mb,
             caloriasObjetivo: calculos.caloriasObjetivo,
-            alergias: alergias,      // <-- añade esto
-            alimentos: alimentos     // <-- y esto
+            alergias: alergias,
+            alimentos: alimentos
         };
         renderTabla();
         mostrarToast('Cliente editado correctamente', 'info');
@@ -697,20 +774,38 @@ function validarFormularioCompleto() {
 
     // Validar alergias
     const alergias = document.getElementById('alergias');
+    const alergiasFeedback = document.querySelector('.alergias-feedback');
     if (!alergias.selectedOptions.length) {
         alergias.classList.add('is-invalid');
+        if (alergiasFeedback) {
+            alergiasFeedback.textContent = 'Debes seleccionar al menos una alergia.';
+            alergiasFeedback.style.display = 'block';
+        }
         valido = false;
     } else {
         alergias.classList.remove('is-invalid');
+        if (alergiasFeedback) {
+            alergiasFeedback.textContent = '';
+            alergiasFeedback.style.display = '';
+        }
     }
 
     // Validar alimentos
     const alimentos = document.getElementById('alimentos');
+    const alimentosFeedback = document.querySelector('.alimentos-feedback');
     if (!alimentos.selectedOptions.length) {
         alimentos.classList.add('is-invalid');
+        if (alimentosFeedback) {
+            alimentosFeedback.textContent = 'Debes seleccionar al menos un alimento.';
+            alimentosFeedback.style.display = 'block';
+        }
         valido = false;
     } else {
         alimentos.classList.remove('is-invalid');
+        if (alimentosFeedback) {
+            alimentosFeedback.textContent = '';
+            alimentosFeedback.style.display = '';
+        }
     }
 
     return valido;
@@ -735,22 +830,22 @@ function validarFormularioEdicionCompleto() {
         }
     }
 
-    // Validar alergias edición
+    // Validar alergias edición (Choices.js)
     const editAlergias = document.getElementById('editAlergias');
     if (!editAlergias.selectedOptions.length) {
-        editAlergias.classList.add('is-invalid');
+        marcarChoicesInvalido('editAlergias', 'editAlergias-feedback', 'Debes seleccionar al menos una alergia.');
         valido = false;
     } else {
-        editAlergias.classList.remove('is-invalid');
+        limpiarChoicesInvalido('editAlergias', 'editAlergias-feedback');
     }
 
-    // Validar alimentos edición
+    // Validar alimentos edición (Choices.js)
     const editAlimentos = document.getElementById('editAlimentos');
     if (!editAlimentos.selectedOptions.length) {
-        editAlimentos.classList.add('is-invalid');
+        marcarChoicesInvalido('editAlimentos', 'editAlimentos-feedback', 'Debes seleccionar al menos un alimento.');
         valido = false;
     } else {
-        editAlimentos.classList.remove('is-invalid');
+        limpiarChoicesInvalido('editAlimentos', 'editAlimentos-feedback');
     }
 
     return valido;
