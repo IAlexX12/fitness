@@ -618,14 +618,21 @@ if (formEditarCliente) {
         const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo });
         clientes[idx] = {
             ...clientes[idx], // mantiene fechaAlta y otros campos
-            nombre: formatearNombre(nombre), altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo,
+            nombre: formatearNombre(nombre),
+            altura,
+            peso,
+            edad,
+            grasa,
+            actividad: actividadTxt, // SIEMPRE texto
+            objetivo,
+            porcentajeObjetivo,
             masaMagra: calculos.masaMagra,
             masaGrasa: calculos.masaGrasa,
             imc: calculos.imc,
             mb: calculos.mb,
             caloriasObjetivo: calculos.caloriasObjetivo,
-            alergias: alergias,      // <-- añade esto
-            alimentos: alimentos     // <-- y esto
+            alergias: alergias,
+            alimentos: alimentos
         };
         renderTabla();
         mostrarToast('Cliente editado correctamente', 'info');
