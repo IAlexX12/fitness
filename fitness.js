@@ -363,11 +363,33 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
     const porcentajeObjetivo = objetivo === 'mantenimiento' ? 0 : document.getElementById('porcentajeObjetivo').value;
 
     const alergiasSelect = document.getElementById('alergias');
-    const alergias = Array.from(alergiasSelect.selectedOptions).map(opt => opt.text);
+    let alergias = Array.from(alergiasSelect.selectedOptions).map(opt => opt.text);
+    if (alergias.length === 0) {
+        // Selección por defecto
+        alergias = ['Ninguna'];
+        // Si Choices.js está activo, selecciónalo visualmente
+        if (alergiasSelect.choices) {
+            alergiasSelect.choices.setChoiceByValue('Ninguna');
+        } else {
+            Array.from(alergiasSelect.options).forEach(opt => {
+                opt.selected = (opt.text === 'Ninguna');
+            });
+        }
+    }
 
     // Así recoges los alimentos seleccionados del select múltiple
     const alimentosSelect = document.getElementById('alimentos');
-    const alimentos = Array.from(alimentosSelect.selectedOptions).map(opt => opt.text);
+    let alimentos = Array.from(alimentosSelect.selectedOptions).map(opt => opt.text);
+    if (alimentos.length === 0) {
+        alimentos = ['Todos'];
+        if (alimentosSelect.choices) {
+            alimentosSelect.choices.setChoiceByValue('Todos');
+        } else {
+            Array.from(alimentosSelect.options).forEach(opt => {
+                opt.selected = (opt.text === 'Todos');
+            });
+        }
+    }
 
     const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo });
     const fechaActual = new Date().toLocaleDateString('es-ES');
@@ -736,20 +758,38 @@ function validarFormularioCompleto() {
 
     // Validar alergias
     const alergias = document.getElementById('alergias');
+    const alergiasFeedback = document.querySelector('.alergias-feedback');
     if (!alergias.selectedOptions.length) {
         alergias.classList.add('is-invalid');
+        if (alergiasFeedback) {
+            alergiasFeedback.textContent = 'Debes seleccionar al menos una alergia.';
+            alergiasFeedback.style.display = 'block';
+        }
         valido = false;
     } else {
         alergias.classList.remove('is-invalid');
+        if (alergiasFeedback) {
+            alergiasFeedback.textContent = '';
+            alergiasFeedback.style.display = '';
+        }
     }
 
     // Validar alimentos
     const alimentos = document.getElementById('alimentos');
+    const alimentosFeedback = document.querySelector('.alimentos-feedback');
     if (!alimentos.selectedOptions.length) {
         alimentos.classList.add('is-invalid');
+        if (alimentosFeedback) {
+            alimentosFeedback.textContent = 'Debes seleccionar al menos un alimento.';
+            alimentosFeedback.style.display = 'block';
+        }
         valido = false;
     } else {
         alimentos.classList.remove('is-invalid');
+        if (alimentosFeedback) {
+            alimentosFeedback.textContent = '';
+            alimentosFeedback.style.display = '';
+        }
     }
 
     return valido;
