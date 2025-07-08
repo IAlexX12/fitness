@@ -301,10 +301,38 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
 
     // Limpiar errores previos
     document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+    document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
     document.getElementById('infoMessage').style.display = 'none';
 
     // Validar antes de procesar
+    let error = false;
     if (!validarFormularioCompleto()) {
+        error = true;
+    }
+
+    // Validación de alergias y alimentos
+    const alergiasSelect = document.getElementById('alergias');
+    const alergias = Array.from(alergiasSelect.selectedOptions).map(opt => opt.text);
+    const alergiasFeedback = document.querySelector('.alergias-feedback');
+    if (alergias.length === 0) {
+        if (alergiasFeedback) {
+            alergiasFeedback.textContent = 'Debes seleccionar al menos una alergia.';
+            alergiasFeedback.style.display = 'block';
+        }
+        error = true;
+    }
+    const alimentosSelect = document.getElementById('alimentos');
+    const alimentos = Array.from(alimentosSelect.selectedOptions).map(opt => opt.text);
+    const alimentosFeedback = document.querySelector('.alimentos-feedback');
+    if (alimentos.length === 0) {
+        if (alimentosFeedback) {
+            alimentosFeedback.textContent = 'Debes seleccionar al menos un alimento.';
+            alimentosFeedback.style.display = 'block';
+        }
+        error = true;
+    }
+
+    if (error) {
         document.getElementById('infoMessage').textContent = 'Por favor corrige los errores marcados';
         document.getElementById('infoMessage').style.display = 'block';
         document.getElementById('infoMessage').classList.add('alert-danger');
@@ -323,13 +351,6 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
     const objetivo = document.getElementById('objetivo').value;
     const porcentajeObjetivo = objetivo === 'mantenimiento' ? 0 : document.getElementById('porcentajeObjetivo').value;
 
-    const alergiasSelect = document.getElementById('alergias');
-    const alergias = Array.from(alergiasSelect.selectedOptions).map(opt => opt.text);
-
-    // Así recoges los alimentos seleccionados del select múltiple
-    const alimentosSelect = document.getElementById('alimentos');
-    const alimentos = Array.from(alimentosSelect.selectedOptions).map(opt => opt.text);
-
     const calculos = calcularCampos({ altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo });
     const fechaActual = new Date().toLocaleDateString('es-ES');
     const cliente = {
@@ -343,7 +364,7 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
         objetivo: objetivoTxt,
         porcentajeObjetivo: porcentajeObjetivo,
         alergias: alergias,
-        alimentos: alimentos, // <-- aquí se guarda el array de alimentos seleccionados
+        alimentos: alimentos,
         fechaAlta: fechaActual,
     };
     clientes.push(cliente);
@@ -430,16 +451,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('objetivo').addEventListener('change', function() {
         togglePorcentajeObjetivo();
-        // Forzar recálculo si hay un formulario abierto
-        if(document.getElementById('fitnessForm').checkValidity()) {
-            document.getElementById('fitnessForm').dispatchEvent(new Event('submit'));
-        }
     });
     
     document.getElementById('editObjetivo').addEventListener('change', function() {
         toggleEditPorcentajeObjetivo();
         // Forzar validación
-        validarCampoEdicion(document.getElementById('editPorcentajeObjetivo'));
+        // validarCampoEdicion(document.getElementById('editPorcentajeObjetivo'));
     });
 
 
