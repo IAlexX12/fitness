@@ -297,6 +297,38 @@ window.abrirEditarCliente = function (idx) {
 
     const modal = new bootstrap.Modal(document.getElementById('editarClienteModal'));
     modal.show();
+
+    // Mapeo para actividad 
+    const actividadMap = {
+        'Sedentario': '1.2',
+        'Ligera': '1.375',
+        'Moderada': '1.55',
+        'Intensa': '1.725',
+        'Muy intensa': '1.9',
+        '1.2': '1.2',
+        '1.375': '1.375',
+        '1.55': '1.55',
+        '1.725': '1.725',
+        '1.9': '1.9'
+    };
+    let actividadValue = actividadMap[cliente.actividad] || cliente.actividad;
+    document.getElementById('editActividad').value = actividadValue;
+
+    // Mapeo para objetivo
+    const objetivoMap = {
+        'Déficit': 'deficit',
+        'Deficit': 'deficit',
+        'Volumen': 'volumen',
+        'Recomposición': 'recomposicion',
+        'Recomposicion': 'recomposicion',
+        'Mantenimiento': 'mantenimiento',
+        'deficit': 'deficit',
+        'volumen': 'volumen',
+        'recomposicion': 'recomposicion',
+        'mantenimiento': 'mantenimiento'
+    };
+    let objetivoValue = objetivoMap[cliente.objetivo] || cliente.objetivo;
+    document.getElementById('editObjetivo').value = objetivoValue;
 }
 
 // =====================
