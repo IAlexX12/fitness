@@ -92,6 +92,15 @@ body, html {
     box-shadow: 0 4px 12px rgba(239,68,68,0.25);
 }
 
+.btn-informe, .btn-editar, .btn-borrar {
+  font-size: 0.85rem;
+  padding: 0.18rem 0.5rem;
+  min-width: unset;
+  line-height: 1.1;
+  border-radius: 0.3rem;
+  box-shadow: none;
+}
+
 .choiceslist--multiple .choicesitem {
   background-color: #4a6cf7;
   border: 1px solid #3a5bd9;
