@@ -259,8 +259,55 @@ window.abrirEditarCliente = function (idx) {
     document.getElementById('editPeso').value = cliente.peso;
     document.getElementById('editEdad').value = cliente.edad;
     document.getElementById('editGrasa').value = cliente.grasa;
-    document.getElementById('editActividad').value = cliente.actividad;
-    document.getElementById('editObjetivo').value = cliente.objetivo;
+
+    // --- Autorellenar actividad ---
+    const editActividad = document.getElementById('editActividad');
+    let actividadValue = cliente.actividad;
+    let foundActividad = false;
+    for (let opt of editActividad.options) {
+        if (opt.value === actividadValue) {
+            editActividad.value = actividadValue;
+            foundActividad = true;
+            break;
+        }
+    }
+    if (!foundActividad) {
+        for (let opt of editActividad.options) {
+            if (opt.text.trim().toLowerCase() === String(actividadValue).trim().toLowerCase()) {
+                editActividad.value = opt.value;
+                foundActividad = true;
+                break;
+            }
+        }
+    }
+    if (!foundActividad) {
+        editActividad.selectedIndex = 0;
+    }
+
+    // --- Autorellenar objetivo ---
+    const editObjetivo = document.getElementById('editObjetivo');
+    let objetivoValue = cliente.objetivo;
+    let foundObjetivo = false;
+    for (let opt of editObjetivo.options) {
+        if (opt.value === objetivoValue) {
+            editObjetivo.value = objetivoValue;
+            foundObjetivo = true;
+            break;
+        }
+    }
+    if (!foundObjetivo) {
+        for (let opt of editObjetivo.options) {
+            if (opt.text.trim().toLowerCase() === String(objetivoValue).trim().toLowerCase()) {
+                editObjetivo.value = opt.value;
+                foundObjetivo = true;
+                break;
+            }
+        }
+    }
+    if (!foundObjetivo) {
+        editObjetivo.selectedIndex = 0;
+    }
+
     document.getElementById('editPorcentajeObjetivo').value = cliente.porcentajeObjetivo;
 
     // Seleccionar alergias
@@ -570,7 +617,7 @@ if (formEditarCliente) {
             edad,
             grasa,
             actividad: actividadTxt,
-            objetivo,
+            objetivo: objetivoTxt,
             porcentajeObjetivo,
             masaMagra: calculos.masaMagra,
             masaGrasa: calculos.masaGrasa,
