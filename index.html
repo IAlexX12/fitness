@@ -231,7 +231,7 @@
                   Selecciona tus alergias:
                   <span class="campo-obligatorio">(obligatorio)</span>
                 </label>
-                <select name="editAlergias" id="editAlergias" class="form-control" multiple required>
+                <select name="editAlergias" id="editAlergias" class="form-control" multiple>
                   <option value="Ninguna">Ninguna</option>
                   <option value="leche">Leche</option>
                   <option value="huevos">Huevos</option>
@@ -244,19 +244,21 @@
                   <option value="soja">Soja</option>
                   <option value="trigo">Trigo</option>
                 </select>
+                <div class="invalid-feedback editAlergias-feedback"></div>
               </div>
               <div class="form-group col-md-6">
                 <label for="editAlimentos">
                   Alimentos Disponibles:
                   <span class="campo-obligatorio">(obligatorio)</span>
                 </label>
-                <select name="editAlimentos" id="editAlimentos" class="form-control" multiple required>
+                <select name="editAlimentos" id="editAlimentos" class="form-control" multiple>
                   <option value="todos">Todos</option>
                   <option value="carne">Carne</option>
                   <option value="vegetales">Vegetales</option>
                   <option value="pescado">Pescado</option>
                   <option value="marisco">Mariscos</option>
                 </select>
+                <div class="invalid-feedback editAlimentos-feedback"></div>
               </div>
               <div class="col-12">
                 <div class="alert alert-danger" id="editErrorMessage" style="display: none;"></div>

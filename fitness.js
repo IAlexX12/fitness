@@ -823,22 +823,22 @@ function validarFormularioEdicionCompleto() {
         }
     }
 
-    // Validar alergias edición
+    // Validar alergias edición (Choices.js)
     const editAlergias = document.getElementById('editAlergias');
     if (!editAlergias.selectedOptions.length) {
-        editAlergias.classList.add('is-invalid');
+        marcarChoicesInvalido('editAlergias', 'editAlergias-feedback', 'Debes seleccionar al menos una alergia.');
         valido = false;
     } else {
-        editAlergias.classList.remove('is-invalid');
+        limpiarChoicesInvalido('editAlergias', 'editAlergias-feedback');
     }
 
-    // Validar alimentos edición
+    // Validar alimentos edición (Choices.js)
     const editAlimentos = document.getElementById('editAlimentos');
     if (!editAlimentos.selectedOptions.length) {
-        editAlimentos.classList.add('is-invalid');
+        marcarChoicesInvalido('editAlimentos', 'editAlimentos-feedback', 'Debes seleccionar al menos un alimento.');
         valido = false;
     } else {
-        editAlimentos.classList.remove('is-invalid');
+        limpiarChoicesInvalido('editAlimentos', 'editAlimentos-feedback');
     }
 
     return valido;
