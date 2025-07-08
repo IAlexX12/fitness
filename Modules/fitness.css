@@ -94,12 +94,32 @@ body, html {
 
 /* Botones pequeños para informe, editar y borrar */
 .btn-informe, .btn-editar, .btn-borrar {
-  padding: 0.25rem 0.5rem !important;
-  font-size: 0.85rem !important;
-  min-width: 0 !important;
-  border-radius: 0.3rem !important;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  line-height: 1.2;
+  width: 32px !important;
+  min-width: 32px !important;
+  max-width: 32px !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  max-height: 32px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-informe i, .btn-editar i, .btn-borrar i,
+.btn-informe svg, .btn-editar svg, .btn-borrar svg {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  min-height: 16px !important;
+  max-width: 16px !important;
+  max-height: 16px !important;
+  vertical-align: middle !important;
+  line-height: 1 !important;
+  display: inline-block !important;
+  overflow: hidden !important;
+  box-sizing: content-box !important;
 }
 
 .choiceslist--multiple .choicesitem {
