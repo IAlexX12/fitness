@@ -159,3 +159,8 @@ th.table-active .sort-icon {
   opacity: 0.7;
   font-size: 0.95em;
 }
+
+#clientesTable td {
+  vertical-align: middle;
+  text-align: center;
+}
