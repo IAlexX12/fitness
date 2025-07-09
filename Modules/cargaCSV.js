@@ -47,7 +47,7 @@ class CargaCSV {
         reader.onload = (evt) => {
             try {
                 const lines = evt.target.result.trim().split('\n');
-                const expectedHeader = 'Nombre,Altura,Peso,Edad,% Graso,M. Magra,M. Grasa,IMC,MB,Calorías Objetivo,Actividad,Objetivo,Alergias,Alimentos,Fecha alta';
+                const expectedHeader = 'Nombre,Altura,Peso,Edad,% Graso,M. Magra,M. Grasa,IMC,MB,Calorías Objetivo,Actividad,Objetivo,% Objetivo,Alergias,Alimentos,Fecha alta';
                 const fileHeader = lines[0].trim();
                 if (fileHeader !== expectedHeader) {
                     throw new Error('El archivo CSV no tiene el formato esperado.');
