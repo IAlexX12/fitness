@@ -257,7 +257,7 @@ window.generarInforme = async function(idx) {
         }
     }
 
-        const rows = macros.map(macro => {
+    const rows = macros.map(macro => {
         const kcal = (cliente.caloriasObjetivo * macro.porcentaje) / 100;
         const gramos = kcal / kcalPorGramo[macro.nombre];
         const porcionesRaw = kcal / valorPorcion;
@@ -283,14 +283,10 @@ window.generarInforme = async function(idx) {
 
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
-    doc.text(
-        'Nota: Los gramos indicados son la suma total de alimentos del grupo correspondiente. Consulta la tabla de porciones', marginX, y
-    );
-    doc.text(
-        'para ver equivalencias.', marginX, y+5
-    );
-
-    y += 15;
+    doc.text('Nota: Los gramos indicados son la suma total de alimentos del grupo correspondiente.', marginX, y);
+    y += 5;
+    doc.text('Consulta la tabla de porciones para ver equivalencias.', marginX, y);
+    y += 10;
 
     // ---------- EXPLICACIÓN DEL MÉTODO ----------
     if (y > 180) {
@@ -324,6 +320,10 @@ window.generarInforme = async function(idx) {
 
     // Cargar alimentos
     async function cargarAlimentosCSV() {
+        // 1. Intenta cargar desde localStorage
+        const local = localStorage.getItem('clasificadosCSV');
+        if (local) return local;
+        // 2. Si no existe, intenta cargar desde el servidor (modo legacy)
         const ruta = 'Data/alimentos.csv';
         try {
             const resp = await fetch(ruta);

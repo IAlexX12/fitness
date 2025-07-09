@@ -379,13 +379,6 @@ if (formEditarCliente) {
         const objetivoTxt = document.getElementById('editObjetivo').selectedOptions[0].text;
         const objetivo = document.getElementById('editObjetivo').value;
         const porcentajeObjetivo = objetivo === 'mantenimiento' ? 0 : document.getElementById('editPorcentajeObjetivo').value;
-
-        // Recoger alergias y alimentos seleccionados del modal
-        const editAlergias = document.getElementById('editAlergias');
-        const alergias = Array.from(editAlergias.selectedOptions).map(opt => opt.text);
-
-        const editAlimentos = document.getElementById('editAlimentos');
-        const alimentos = Array.from(editAlimentos.selectedOptions).map(opt => opt.text);
         const calculos = Calculos.calcularCampos({ altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo });
         clientes[idx] = {
             ...clientes[idx],
