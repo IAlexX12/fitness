@@ -4,7 +4,7 @@
 // Este archivo gestiona toda la lógica de la aplicación Fitness:
 //
 // - Variables globales
-// - Renderizado dinámico de la tabla de clientes en la función renderTabla
+// - Renderizado dinámico de la tabla de clientes en la clase Taabla.js
 // - Ordenación de la tabla por columnas (ASC/DESC)
 // - Importación y exportación de clientes en formato CSV
 // - Alta, edición y borrado de clientes (incluyendo modal de edición)
