@@ -94,19 +94,24 @@
                 valido = false;
             }
         });
+        // Validar alergias y alimentos solo si existen en el formulario principal
         const alergias = document.getElementById('alergias');
-        if (!alergias.selectedOptions.length) {
-            alergias.classList.add('is-invalid');
-            valido = false;
-        } else {
-            alergias.classList.remove('is-invalid');
+        if (alergias) {
+            if (!alergias.selectedOptions.length) {
+                alergias.classList.add('is-invalid');
+                valido = false;
+            } else {
+                alergias.classList.remove('is-invalid');
+            }
         }
         const alimentos = document.getElementById('alimentos');
-        if (!alimentos.selectedOptions.length) {
-            alimentos.classList.add('is-invalid');
-            valido = false;
-        } else {
-            alimentos.classList.remove('is-invalid');
+        if (alimentos) {
+            if (!alimentos.selectedOptions.length) {
+                alimentos.classList.add('is-invalid');
+                valido = false;
+            } else {
+                alimentos.classList.remove('is-invalid');
+            }
         }
         return valido;
     }
@@ -126,20 +131,6 @@
             if (!validarCampoEdicion(porcentajeInput)) {
                 valido = false;
             }
-        }
-        const editAlergias = document.getElementById('editAlergias');
-        if (!editAlergias.selectedOptions.length) {
-            editAlergias.classList.add('is-invalid');
-            valido = false;
-        } else {
-            editAlergias.classList.remove('is-invalid');
-        }
-        const editAlimentos = document.getElementById('editAlimentos');
-        if (!editAlimentos.selectedOptions.length) {
-            editAlimentos.classList.add('is-invalid');
-            valido = false;
-        } else {
-            editAlimentos.classList.remove('is-invalid');
         }
         return valido;
     }

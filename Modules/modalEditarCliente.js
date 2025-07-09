@@ -61,22 +61,6 @@
 
         document.getElementById('editPorcentajeObjetivo').value = cliente.porcentajeObjetivo;
 
-        // Seleccionar alergias
-        const editAlergias = document.getElementById('editAlergias');
-        Array.from(editAlergias.options).forEach(opt => {
-            opt.selected = (cliente.alergias || []).includes(opt.text);
-        });
-
-        // Seleccionar alimentos
-        const editAlimentos = document.getElementById('editAlimentos');
-        Array.from(editAlimentos.options).forEach(opt => {
-            opt.selected = (cliente.alimentos || []).includes(opt.text);
-        });
-
-        // Si usas Choices.js, actualiza:
-        if (editAlergias.choices) editAlergias.choices.setChoiceByValue(cliente.alergias || []);
-        if (editAlimentos.choices) editAlimentos.choices.setChoiceByValue(cliente.alimentos || []);
-
         // Limpiar estados de validación al abrir el modal
         document.querySelectorAll('#editNombre, #editAltura, #editPeso, #editEdad, #editGrasa, #editPorcentajeObjetivo').forEach(input => {
             input.classList.remove('is-invalid');

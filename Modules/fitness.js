@@ -394,9 +394,7 @@ if (formEditarCliente) {
             masaGrasa: calculos.masaGrasa,
             imc: calculos.imc,
             mb: calculos.mb,
-            caloriasObjetivo: calculos.caloriasObjetivo,
-            alergias: alergias,
-            alimentos: alimentos
+            caloriasObjetivo: calculos.caloriasObjetivo
         };
         renderTabla();
         mostrarToast('Cliente editado correctamente', 'info');
