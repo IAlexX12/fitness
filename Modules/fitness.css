@@ -92,6 +92,35 @@ body, html {
     box-shadow: 0 4px 12px rgba(239,68,68,0.25);
 }
 
+.btn-informe, .btn-editar, .btn-borrar {
+  width: 32px !important;
+  min-width: 32px !important;
+  max-width: 32px !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  max-height: 32px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-informe i, .btn-editar i, .btn-borrar i,
+.btn-informe svg, .btn-editar svg, .btn-borrar svg {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  min-height: 16px !important;
+  max-width: 16px !important;
+  max-height: 16px !important;
+  vertical-align: middle !important;
+  line-height: 1 !important;
+  display: inline-block !important;
+  overflow: hidden !important;
+  box-sizing: content-box !important;
+}
+
 .choiceslist--multiple .choicesitem {
   background-color: #4a6cf7;
   border: 1px solid #3a5bd9;
@@ -149,4 +178,32 @@ th.table-active .sort-icon {
   color: #555;
   opacity: 0.7;
   font-size: 0.95em;
+}
+
+#clientesTable {
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+  background: #fff;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+#clientesTable thead th:first-child {
+  border-top-left-radius: 1rem;
+}
+#clientesTable thead th:last-child {
+  border-top-right-radius: 1rem;
+}
+#clientesTable tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 1rem;
+}
+#clientesTable tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 1rem;
+}
+#clientesTable td {
+  vertical-align: middle;
+  text-align: center;
+}
+#clientesTable th {
+  text-align: center;
 }

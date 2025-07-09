@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestión Fitness</title>
+  <link rel="stylesheet" href="Modules/fitness.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="fitness.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
 </head>
@@ -116,9 +116,10 @@
         <select name="alimentos" id="alimentos" class="form-control" multiple>
           <option value="todos">Todos</option>
           <option value="carne">Carne</option>
-          <option value="vegetales">Vegetales</option>
+          <option value="frutas">Fruta</option>
           <option value="pescado">Pescado</option>
           <option value="marisco">Mariscos</option>
+          <option value="lácteos">Lacteos</option>
         </select>
         <div class="invalid-feedback alimentos-feedback"></div>
       </div>
@@ -226,35 +227,11 @@
               </div>
               <div class="form-group col-md-6">
                 <label for="editAlergias">
-                  Selecciona tus alergias:
                 </label>
-                <select name="editAlergias" id="editAlergias" class="form-control" multiple>
-                  <option value="Ninguna">Ninguna</option>
-                  <option value="leche">Leche</option>
-                  <option value="huevos">Huevos</option>
-                  <option value="pescado">Pescado</option>
-                  <option value="mariscos">Mariscos</option>
-                  <option value="frutos secos">Frutos secos</option>
-                  <option value="legumbres">Legumbres</option>
-                  <option value="frutas">Frutas</option>
-                  <option value="verduras">Verduras</option>
-                  <option value="soja">Soja</option>
-                  <option value="trigo">Trigo</option>
-                </select>
-                <div class="invalid-feedback editAlergias-feedback"></div>
               </div>
               <div class="form-group col-md-6">
                 <label for="editAlimentos">
-                  Alimentos Disponibles:
                 </label>
-                <select name="editAlimentos" id="editAlimentos" class="form-control" multiple>
-                  <option value="todos">Todos</option>
-                  <option value="carne">Carne</option>
-                  <option value="vegetales">Vegetales</option>
-                  <option value="pescado">Pescado</option>
-                  <option value="marisco">Mariscos</option>
-                </select>
-                <div class="invalid-feedback editAlimentos-feedback"></div>
               </div>
               <div class="col-12">
                 <div class="alert alert-danger" id="editErrorMessage" style="display: none;"></div>
@@ -445,12 +422,16 @@
         </div>
       </div>
     </div>
-    <script src="fitness.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    <script src="informe.js"></script>
-    <script src="cargaCSV.js"></script>
-    <script src="calculadora.js"></script>
+    <script src="Modules/informe.js"></script>
+    <script src="Modules/cargaCSV.js"></script>
+    <script src="Modules/calculadora.js"></script>
+    <script src="Modules/calculos.js"></script>
+    <script src="Modules/modalEditarCliente.js"></script>
+    <script src="Modules/validadorForm.js"></script>
+    <script src="Modules/tabla.js"></script>
+    <script src="Modules/fitness.js"></script>
 </html>

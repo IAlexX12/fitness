@@ -43,3 +43,29 @@
         calcularCampos: calcularCampos
     };
 })(window);
+
+// =====================
+// Utilidades (expuestas en window)
+// =====================
+function pad(n) {
+    return n.toString().padStart(2, '0');
+}
+window.pad = pad;
+
+function obtenerFechaHoraActual() {
+    const now = new Date();
+    return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}:${pad(now.getHours())}.${pad(now.getMinutes())}.${pad(now.getSeconds())}`;
+}
+window.obtenerFechaHoraActual = obtenerFechaHoraActual;
+
+function formatearNombre(nombre) {
+    return nombre
+        .trim()
+        .replace(/\s+/g, ' ')
+        .toLowerCase()
+        .split(' ')
+        .filter(palabra => palabra.length > 0)
+        .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1))
+        .join(' ');
+}
+window.formatearNombre = formatearNombre;
