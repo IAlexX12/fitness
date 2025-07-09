@@ -92,7 +92,6 @@ body, html {
     box-shadow: 0 4px 12px rgba(239,68,68,0.25);
 }
 
-/* Botones pequeños para informe, editar y borrar */
 .btn-informe, .btn-editar, .btn-borrar {
   width: 32px !important;
   min-width: 32px !important;

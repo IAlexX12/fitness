@@ -3,7 +3,7 @@
 // ============================================================
 // Este archivo gestiona toda la lógica de la aplicación Fitness:
 //
-// - Variables globales y utilidades generales
+// - Variables globales
 // - Renderizado dinámico de la tabla de clientes en la función renderTabla
 // - Ordenación de la tabla por columnas (ASC/DESC)
 // - Importación y exportación de clientes en formato CSV
@@ -22,31 +22,6 @@
 window.clientes = [];
 let ordenColumna = null;
 let ordenAscendente = true;
-
-// =====================
-// Utilidades
-// =====================
-function pad(n) {
-    return n.toString().padStart(2, '0');
-}
-
-// Función para obtener la fecha y hora actual formateada para el csv
-function obtenerFechaHoraActual() {
-    const now = new Date();
-    return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}:${pad(now.getHours())}.${pad(now.getMinutes())}.${pad(now.getSeconds())}`;
-}
-
-// Función para formatear nombre 
-function formatearNombre(nombre) {
-    return nombre
-        .trim()
-        .replace(/\s+/g, ' ')
-        .toLowerCase()
-        .split(' ')
-        .filter(palabra => palabra.length > 0)
-        .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1))
-        .join(' ');
-}
 
 // =====================
 // Renderizado
@@ -300,7 +275,7 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
     const calculos = Calculos.calcularCampos({ altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo });
     const fechaActual = new Date().toLocaleDateString('es-ES');
     const cliente = {
-        nombre: formatearNombre(nombre), altura, peso, edad, grasa,
+        nombre: window.formatearNombre(nombre), altura, peso, edad, grasa,
         masaMagra: calculos.masaMagra,
         masaGrasa: calculos.masaGrasa,
         imc: calculos.imc,
@@ -366,7 +341,7 @@ document.getElementById('exportarCSV').addEventListener('click', function () {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    const fecha = obtenerFechaHoraActual();
+    const fecha = window.obtenerFechaHoraActual();
     a.download = `clientes_${fecha}.csv`;
     a.click();
     URL.revokeObjectURL(url);
@@ -509,7 +484,7 @@ if (formEditarCliente) {
         const calculos = Calculos.calcularCampos({ altura, peso, edad, grasa, actividad, objetivo, porcentajeObjetivo });
         clientes[idx] = {
             ...clientes[idx],
-            nombre: formatearNombre(nombre),
+            nombre: window.formatearNombre(nombre),
             altura,
             peso,
             edad,
