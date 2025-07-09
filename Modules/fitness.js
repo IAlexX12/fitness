@@ -205,7 +205,7 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
 
 // EXPORTAR a CSV
 document.getElementById('exportarCSV').addEventListener('click', function () {
-    let csv = 'Nombre,Altura,Peso,Edad,% Graso,M. Magra,M. Grasa,IMC,MB,Calorías Objetivo,Actividad,Objetivo,% Objetivo,Alergias,Fecha alta\n';
+    let csv = 'Nombre,Altura,Peso,Edad,% Graso,M. Magra,M. Grasa,IMC,MB,Calorías Objetivo,Actividad,Objetivo,% Objetivo,Alergias,Alimentos,Fecha alta\n';
     clientes.forEach(cliente => {
         const altura = Number(cliente.altura);
         const peso = Number(cliente.peso);
@@ -238,7 +238,7 @@ document.getElementById('exportarCSV').addEventListener('click', function () {
             cliente.objetivo,
             cliente.porcentajeObjetivo,
             (cliente.alergias || "").join(';'),
-            (cliente.alergias || "").join(';'),
+            (cliente.alimentos || "").join(';'),
             cliente.fechaAlta || '-'
         ].join(',') + '\n';
     });
