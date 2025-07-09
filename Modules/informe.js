@@ -365,17 +365,34 @@ window.generarInforme = async function(idx) {
         return !alim.alergenos.some(al => alergiasCliente.includes(al));
     });
 
-    // Filtrar por categorías seleccionadas si cliente.alimentos tiene algo
+    // 1. Construir el array de categorías a mostrar
     let categoriasSeleccionadas = (cliente.alimentos || []).map(c => c.toLowerCase()).filter(Boolean);
-    let alimentosFinal = alimentosFiltrados;
-    if (categoriasSeleccionadas.length > 0 && !categoriasSeleccionadas.includes('todos')) {
-        alimentosFinal = alimentosFiltrados.filter(alim => categoriasSeleccionadas.includes(alim.categoria));
+    const categoriasFijas = ['proteina', 'carbohidratos', 'grasa'];
+    categoriasSeleccionadas = Array.from(new Set([...categoriasFijas, ...categoriasSeleccionadas]));
+
+    // 2. Filtrar alimentos finales por esas categorías y sin duplicados
+    const alimentosFinal = alimentosFiltrados.filter(alim => categoriasSeleccionadas.includes(alim.categoria));
+
+    // 3. Función para filtrar por tipo y categoría exacta (por si quieres mantener flags)
+    function filtrarPorTipoYCategoria(alimentos, tipo, categoriaExacta) {
+        // Alimentos que cumplen el flag (esproteico, escarbohidrato, esgrasa)
+        const porFlag = alimentos.filter(a => a[tipo]);
+        // Alimentos que tienen la categoría exacta
+        const porCategoria = alimentos.filter(a => a.categoria === categoriaExacta);
+        // Unir y quitar duplicados por nombre
+        const todos = [...porFlag, ...porCategoria];
+        const vistos = new Set();
+        return todos.filter(a => {
+            if (vistos.has(a.nombre)) return false;
+            vistos.add(a.nombre);
+            return true;
+        });
     }
 
-    // Separar por tipo
-    const proteinas = alimentosFinal.filter(a => a.esproteico);
-    const carbohidratos = alimentosFinal.filter(a => a.escarbohidrato);
-    const grasas = alimentosFinal.filter(a => a.esgrasa);
+    // 4. Usa alimentosFinal para las tablas:
+    const proteinas = filtrarPorTipoYCategoria(alimentosFinal, 'esproteico', 'proteina');
+    const carbohidratos = filtrarPorTipoYCategoria(alimentosFinal, 'escarbohidrato', 'carbohidratos');
+    const grasas = filtrarPorTipoYCategoria(alimentosFinal, 'esgrasa', 'grasa');
 
     // ---------- TABLA DE PROTEÍNAS ----------
     y += 15;
@@ -383,21 +400,25 @@ window.generarInforme = async function(idx) {
     doc.setTextColor(40, 60, 100);
     doc.text("Porciones de Proteína (1 porción = gramaje indicado)", marginX, y);
     y += 10;
+    let proteinasBody = proteinas.map(a => {
+        if (!a.gramaje) return [a.nombre, ''];
+        let unidad = '';
+        if (a.categoria === 'lácteos') {
+            unidad = 'ml';
+        } else if (a.gramaje < 10) {
+            unidad = 'unidades';
+        } else {
+            unidad = 'g';
+        }
+        return [a.nombre, `${a.gramaje}${unidad}`];
+    });
+    if (proteinasBody.length === 0) {
+        proteinasBody = [['(Sin alimentos disponibles)', '']];
+    }
     doc.autoTable({
         startY: y,
         head: [['Alimento', 'Porción']],
-        body: proteinas.map(a => {
-            if (!a.gramaje) return [a.nombre, ''];
-            let unidad = '';
-            if (a.categoria === 'lácteos') {
-                unidad = 'ml';
-            } else if (a.gramaje < 10) {
-                unidad = 'unidades';
-            } else {
-                unidad = 'g';
-            }
-            return [a.nombre, `${a.gramaje}${unidad}`];
-        }),
+        body: proteinasBody,
         styles: { fontSize: 10, cellPadding: 4 },
         headStyles: { fillColor: [40, 60, 100], textColor: 255 },
         alternateRowStyles: { fillColor: [245, 245, 245] },
@@ -412,21 +433,25 @@ window.generarInforme = async function(idx) {
     doc.setTextColor(40, 60, 100);
     doc.text("Porciones de Carbohidratos (1 porción = gramaje indicado)", marginX, y);
     y += 10;
+    let carbohidratosBody = carbohidratos.map(a => {
+        if (!a.gramaje) return [a.nombre, ''];
+        let unidad = '';
+        if (a.categoria === 'lácteos') {
+            unidad = 'ml';
+        } else if (a.gramaje < 10) {
+            unidad = 'unidades';
+        } else {
+            unidad = 'g';
+        }
+        return [a.nombre, `${a.gramaje}${unidad}`];
+    });
+    if (carbohidratosBody.length === 0) {
+        carbohidratosBody = [['(Sin alimentos disponibles)', '']];
+    }
     doc.autoTable({
         startY: y,
         head: [['Alimento', 'Porción']],
-        body: carbohidratos.map(a => {
-            if (!a.gramaje) return [a.nombre, ''];
-            let unidad = '';
-            if (a.categoria === 'lácteos') {
-                unidad = 'ml';
-            } else if (a.gramaje < 10) {
-                unidad = 'unidades';
-            } else {
-                unidad = 'g';
-            }
-            return [a.nombre, `${a.gramaje}${unidad}`];
-        }),
+        body: carbohidratosBody,
         styles: { fontSize: 10, cellPadding: 4 },
         headStyles: { fillColor: [40, 60, 100], textColor: 255 },
         alternateRowStyles: { fillColor: [245, 245, 245] },
@@ -441,21 +466,25 @@ window.generarInforme = async function(idx) {
     doc.setTextColor(40, 60, 100);
     doc.text("Porciones de Grasas (1 porción = gramaje indicado)", marginX, y);
     y += 10;
+    let grasasBody = grasas.map(a => {
+        if (!a.gramaje) return [a.nombre, ''];
+        let unidad = '';
+        if (a.categoria === 'lácteos') {
+            unidad = 'ml';
+        } else if (a.gramaje < 10) {
+            unidad = 'unidades';
+        } else {
+            unidad = 'g';
+        }
+        return [a.nombre, `${a.gramaje}${unidad}`];
+    });
+    if (grasasBody.length === 0) {
+        grasasBody = [['(Sin alimentos disponibles)', '']];
+    }
     doc.autoTable({
         startY: y,
         head: [['Alimento', 'Porción']],
-        body: grasas.map(a => {
-            if (!a.gramaje) return [a.nombre, ''];
-            let unidad = '';
-            if (a.categoria === 'lácteos') {
-                unidad = 'ml';
-            } else if (a.gramaje < 10) {
-                unidad = 'unidades';
-            } else {
-                unidad = 'g';
-            }
-            return [a.nombre, `${a.gramaje}${unidad}`];
-        }),
+        body: grasasBody,
         styles: { fontSize: 10, cellPadding: 4 },
         headStyles: { fillColor: [40, 60, 100], textColor: 255 },
         alternateRowStyles: { fillColor: [245, 245, 245] },

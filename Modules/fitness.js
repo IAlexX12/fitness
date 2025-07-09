@@ -459,10 +459,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Choices para el alta
     new Choices('#alergias', { removeItemButton: true, searchEnabled: false });
     new Choices('#alimentos', { removeItemButton: true, searchEnabled: false });
-
-    // Choices para el modal de edición
-    new Choices('#editAlergias', { removeItemButton: true, searchEnabled: false });
-    new Choices('#editAlimentos', { removeItemButton: true, searchEnabled: false });
 });
 
 window.addEventListener('beforeunload', function (e) {
