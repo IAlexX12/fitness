@@ -168,8 +168,8 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
     const nombre = document.getElementById('nombre').value;
     const altura = parseFloat(document.getElementById('altura').value);
     const peso = parseFloat(document.getElementById('peso').value);
-    const edad = Number(document.getElementById('edad').value);
-    const grasa = Number(document.getElementById('grasa').value);
+    const edad = parseInt(document.getElementById('edad').value);
+    const grasa = parseFloat(document.getElementById('grasa').value);
 
     const actividadTxt = document.getElementById('actividad').selectedOptions[0].text;
     const actividad = Number(document.getElementById('actividad').value);
@@ -209,10 +209,10 @@ document.getElementById('exportarCSV').addEventListener('click', function () {
     clientes.forEach(cliente => {
         const altura = parseFloat(cliente.altura);
         const peso = parseFloat(cliente.peso);
-        const edad = Number(cliente.edad);
-        const grasa = Number(cliente.grasa);
+        const edad = parseInt(cliente.edad);
+        const grasa = parseFloat(cliente.grasa);
         let actividad = cliente.actividad;
-        const porcentajeObjetivo = Number(cliente.porcentajeObjetivo);
+        const porcentajeObjetivo = parseFloat(cliente.porcentajeObjetivo);
         if (isNaN(Number(actividad))) {
             actividad = 1.2;
         } else {
@@ -419,21 +419,31 @@ function mostrarToast(mensaje, tipo = 'success') {
 // Configurar eventos
 // =====================
 function configurarValidaciones() {
-    // Validación en tiempo real
-    document.querySelectorAll('#nombre, #altura, #peso, #edad, #grasa, #porcentajeObjetivo').forEach(input => {
-        input.addEventListener('input', function () {
-            if (this.id !== 'nombre') {
-                // Permite números y un punto decimal
-                this.value = this.value.replace(/[^0-9.]/g, '');
-                // Permite solo un punto decimal
-                if ((this.value.match(/\./g) || []).length > 1) {
-                    this.value = this.value.substring(0, this.value.lastIndexOf('.'));
-                }
+    // Campos que permiten decimales
+    document.querySelectorAll('#altura, #peso').forEach(input => {
+        input.addEventListener('input', function() {
+            // Permite números y un solo punto decimal
+            this.value = this.value.replace(/[^0-9.]/g, '');
+            // Evita múltiples puntos decimales
+            if ((this.value.match(/\./g) || []).length > 1) {
+                this.value = this.value.substring(0, this.value.lastIndexOf('.'));
             }
             ValidadorForm.validarCampo(this);
         });
+    });
 
-        input.addEventListener('blur', function () {
+    // Campos que solo permiten enteros
+    document.querySelectorAll('#edad, #grasa, #porcentajeObjetivo').forEach(input => {
+        input.addEventListener('input', function() {
+            // Solo permite números enteros
+            this.value = this.value.replace(/\D/g, '');
+            ValidadorForm.validarCampo(this);
+        });
+    });
+
+    // Validar al perder el foco
+    document.querySelectorAll('#nombre, #altura, #peso, #edad, #grasa, #porcentajeObjetivo').forEach(input => {
+        input.addEventListener('blur', function() {
             ValidadorForm.validarCampo(this);
         });
     });
@@ -443,20 +453,28 @@ function configurarValidaciones() {
 // Configurar eventos de validación para edición
 // =====================
 function configurarValidacionesEdicion() {
-    document.querySelectorAll('#editNombre, #editAltura, #editPeso, #editEdad, #editGrasa, #editPorcentajeObjetivo').forEach(input => {
-        input.addEventListener('input', function () {
-            if (this.id !== 'editNombre') {
-                // Permite números y un punto decimal
-                this.value = this.value.replace(/[^0-9.]/g, '');
-                // Permite solo un punto decimal
-                if ((this.value.match(/\./g) || []).length > 1) {
-                    this.value = this.value.substring(0, this.value.lastIndexOf('.'));
-                }
+    // Campos que permiten decimales (edición)
+    document.querySelectorAll('#editAltura, #editPeso').forEach(input => {
+        input.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9.]/g, '');
+            if ((this.value.match(/\./g) || []).length > 1) {
+                this.value = this.value.substring(0, this.value.lastIndexOf('.'));
             }
             ValidadorForm.validarCampoEdicion(this);
         });
+    });
 
-        input.addEventListener('blur', function () {
+    // Campos que solo permiten enteros (edición)
+    document.querySelectorAll('#editEdad, #editGrasa, #editPorcentajeObjetivo').forEach(input => {
+        input.addEventListener('input', function() {
+            this.value = this.value.replace(/\D/g, '');
+            ValidadorForm.validarCampoEdicion(this);
+        });
+    });
+
+    // Validar al perder el foco (edición)
+    document.querySelectorAll('#editNombre, #editAltura, #editPeso, #editEdad, #editGrasa, #editPorcentajeObjetivo').forEach(input => {
+        input.addEventListener('blur', function() {
             ValidadorForm.validarCampoEdicion(this);
         });
     });
