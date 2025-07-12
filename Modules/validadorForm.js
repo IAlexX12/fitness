@@ -15,17 +15,24 @@
     };
 
 
-    
+
     function validarCampo(input) {
         const id = input.id;
         const valor = input.value.trim();
-        const feedback = document.querySelector(`.${id}-feedback`);
+        const feedback = document.querySelector(`.${id}-feedback`) || input.nextElementSibling;
 
-        feedback.textContent = '';
+        // Limpia estados anteriores
+        if (feedback) {
+            feedback.textContent = '';
+            feedback.style.display = 'none';
+        }
         input.classList.remove('is-invalid');
 
         if (valor === '') {
-            feedback.textContent = 'Este campo es obligatorio';
+            if (feedback) {
+                feedback.textContent = 'Este campo es obligatorio';
+                feedback.style.display = 'block';
+            }
             input.classList.add('is-invalid');
             return false;
         }
@@ -39,41 +46,49 @@
             return true;
         }
 
-        // Obtener configuración del campo
+        // Validación para campos numéricos
         const config = configValidacion[id];
-        if (!config) return true;
+        if (config) {
+            let numero;
+            if (config.decimal) {
+                if (!/^\d*\.?\d+$/.test(valor)) {
+                    if (feedback) {
+                        feedback.textContent = 'Debe ser un número decimal válido';
+                        feedback.style.display = 'block';
+                    }
+                    input.classList.add('is-invalid');
+                    return false;
+                }
+                numero = parseFloat(valor);
+            } else {
+                if (!/^\d+$/.test(valor)) {
+                    if (feedback) {
+                        feedback.textContent = 'Debe ser un número entero';
+                        feedback.style.display = 'block';
+                    }
+                    input.classList.add('is-invalid');
+                    return false;
+                }
+                numero = parseInt(valor);
+            }
 
-        // Validar formato numérico
-        let numero;
-        if (config.decimal) {
-            // Validar decimales
-            if (!/^\d*\.?\d*$/.test(valor)) {  // Nota: .? permite punto decimal opcional
-                feedback.textContent = 'Debe ser un número válido';
+            if (isNaN(numero)) {
+                if (feedback) {
+                    feedback.textContent = 'Debe ser un número válido';
+                    feedback.style.display = 'block';
+                }
                 input.classList.add('is-invalid');
                 return false;
             }
-            numero = parseFloat(valor);
-        } else {
-            // Validar enteros
-            if (!/^\d+$/.test(valor)) {
-                feedback.textContent = 'Debe ser un número entero';
+
+            if (numero < config.min || numero > config.max) {
+                if (feedback) {
+                    feedback.textContent = config.mensaje; // Muestra el mensaje configurado
+                    feedback.style.display = 'block';
+                }
                 input.classList.add('is-invalid');
                 return false;
             }
-            numero = parseInt(valor);
-        }
-
-        // Validar rango
-        if (isNaN(numero)) {
-            feedback.textContent = 'Debe ser un número válido';
-            input.classList.add('is-invalid');
-            return false;
-        }
-
-        if (numero < config.min || numero > config.max) {
-            feedback.textContent = config.mensaje;
-            input.classList.add('is-invalid');
-            return false;
         }
         return true;
     }

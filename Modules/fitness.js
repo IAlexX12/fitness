@@ -420,7 +420,7 @@ function mostrarToast(mensaje, tipo = 'success') {
 // =====================
 function configurarValidaciones() {
     // Campos que permiten decimales
-    document.querySelectorAll('#altura, #peso').forEach(input => {
+    document.querySelectorAll('#altura, #peso, #grasa').forEach(input => {
         input.addEventListener('input', function() {
             // Permite números y un solo punto decimal
             this.value = this.value.replace(/[^0-9.]/g, '');
@@ -433,7 +433,7 @@ function configurarValidaciones() {
     });
 
     // Campos que solo permiten enteros
-    document.querySelectorAll('#edad, #grasa, #porcentajeObjetivo').forEach(input => {
+    document.querySelectorAll('#edad, #porcentajeObjetivo').forEach(input => {
         input.addEventListener('input', function() {
             // Solo permite números enteros
             this.value = this.value.replace(/\D/g, '');
@@ -454,7 +454,7 @@ function configurarValidaciones() {
 // =====================
 function configurarValidacionesEdicion() {
     // Campos que permiten decimales (edición)
-    document.querySelectorAll('#editAltura, #editPeso').forEach(input => {
+    document.querySelectorAll('#editAltura, #editPeso, #editGrasa').forEach(input => {
         input.addEventListener('input', function() {
             this.value = this.value.replace(/[^0-9.]/g, '');
             if ((this.value.match(/\./g) || []).length > 1) {
@@ -465,7 +465,7 @@ function configurarValidacionesEdicion() {
     });
 
     // Campos que solo permiten enteros (edición)
-    document.querySelectorAll('#editEdad, #editGrasa, #editPorcentajeObjetivo').forEach(input => {
+    document.querySelectorAll('#editEdad, #editPorcentajeObjetivo').forEach(input => {
         input.addEventListener('input', function() {
             this.value = this.value.replace(/\D/g, '');
             ValidadorForm.validarCampoEdicion(this);
