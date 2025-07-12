@@ -166,8 +166,8 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
     }
 
     const nombre = document.getElementById('nombre').value;
-    const altura = Number(document.getElementById('altura').value);
-    const peso = Number(document.getElementById('peso').value);
+    const altura = parseFloat(document.getElementById('altura').value);
+    const peso = parseFloat(document.getElementById('peso').value);
     const edad = Number(document.getElementById('edad').value);
     const grasa = Number(document.getElementById('grasa').value);
 
@@ -207,8 +207,8 @@ document.getElementById('fitnessForm').addEventListener('submit', function (e) {
 document.getElementById('exportarCSV').addEventListener('click', function () {
     let csv = 'Nombre,Altura,Peso,Edad,% Graso,M. Magra,M. Grasa,IMC,MB,Calorías Objetivo,Actividad,Objetivo,% Objetivo,Alergias,Alimentos,Fecha alta\n';
     clientes.forEach(cliente => {
-        const altura = Number(cliente.altura);
-        const peso = Number(cliente.peso);
+        const altura = parseFloat(cliente.altura);
+        const peso = parseFloat(cliente.peso);
         const edad = Number(cliente.edad);
         const grasa = Number(cliente.grasa);
         let actividad = cliente.actividad;
@@ -276,11 +276,11 @@ document.addEventListener('DOMContentLoaded', function () {
     configurarValidaciones();
     configurarValidacionesEdicion();
 
-    document.getElementById('objetivo').addEventListener('change', function() {
+    document.getElementById('objetivo').addEventListener('change', function () {
         togglePorcentajeObjetivo();
     });
-    
-    document.getElementById('editObjetivo').addEventListener('change', function() {
+
+    document.getElementById('editObjetivo').addEventListener('change', function () {
         toggleEditPorcentajeObjetivo();
     });
 
@@ -353,7 +353,7 @@ function toggleEditPorcentajeObjetivo() {
 // Edición
 // =====================
 // Reemplaza la función global por la llamada a la clase ModalEditarCliente
-window.abrirEditarCliente = function(idx) {
+window.abrirEditarCliente = function (idx) {
     ModalEditarCliente.abrir(idx, clientes);
 };
 
@@ -423,13 +423,18 @@ function configurarValidaciones() {
     document.querySelectorAll('#nombre, #altura, #peso, #edad, #grasa, #porcentajeObjetivo').forEach(input => {
         input.addEventListener('input', function () {
             if (this.id !== 'nombre') {
-                this.value = this.value.replace(/\D/g, ''); // Solo números
+                // Permite números y un punto decimal
+                this.value = this.value.replace(/[^0-9.]/g, '');
+                // Permite solo un punto decimal
+                if ((this.value.match(/\./g) || []).length > 1) {
+                    this.value = this.value.substring(0, this.value.lastIndexOf('.'));
+                }
             }
-            ValidadorForm.validarCampo(this); // Usa funciones de la clase ValidadorForm para validar campos
+            ValidadorForm.validarCampo(this);
         });
 
         input.addEventListener('blur', function () {
-            ValidadorForm.validarCampo(this); // Usa funciones de la clase ValidadorForm para validar campos
+            ValidadorForm.validarCampo(this);
         });
     });
 }
@@ -441,13 +446,18 @@ function configurarValidacionesEdicion() {
     document.querySelectorAll('#editNombre, #editAltura, #editPeso, #editEdad, #editGrasa, #editPorcentajeObjetivo').forEach(input => {
         input.addEventListener('input', function () {
             if (this.id !== 'editNombre') {
-                this.value = this.value.replace(/\D/g, ''); // Solo números
+                // Permite números y un punto decimal
+                this.value = this.value.replace(/[^0-9.]/g, '');
+                // Permite solo un punto decimal
+                if ((this.value.match(/\./g) || []).length > 1) {
+                    this.value = this.value.substring(0, this.value.lastIndexOf('.'));
+                }
             }
-            ValidadorForm.validarCampoEdicion(this); // Usa funciones de la clase ValidadorForm para validar campos
+            ValidadorForm.validarCampoEdicion(this);
         });
 
         input.addEventListener('blur', function () {
-            ValidadorForm.validarCampoEdicion(this); // Usa funciones de la clase ValidadorForm para validar campos
+            ValidadorForm.validarCampoEdicion(this);
         });
     });
 }

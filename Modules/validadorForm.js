@@ -1,14 +1,14 @@
 // =====================
 // Clase para Validación de Formularios (expuesta en window.ValidadorForm)
 // =====================
-(function(global) {
+(function (global) {
     const configValidacion = {
         nombre: {
             regex: /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
             mensaje: 'Solo se permiten letras y espacios (sin números ni símbolos)'
         },
-        altura: { min: 100, max: 250, mensaje: 'Debe ser entre 100 y 250 cm' },
-        peso: { min: 30, max: 300, mensaje: 'Debe ser entre 30 y 300 kg' },
+        altura: { min: 100, max: 250, mensaje: 'Debe ser entre 100 y 250 cm', regex: /^\d*\.?\d+$/ },
+        peso: { min: 30, max: 300, mensaje: 'Debe ser entre 30 y 300 kg', regex: /^\d*\.?\d+$/ },
         edad: { min: 15, max: 120, mensaje: 'Debe ser entre 15 y 120 años' },
         grasa: { min: 1, max: 60, mensaje: 'Debe ser entre 1% y 60%' },
         porcentajeObjetivo: { min: 0, max: 30, mensaje: 'El porcentaje debe estar entre 0% y 30%' }
@@ -37,8 +37,14 @@
             return true;
         }
 
-        const numero = parseInt(valor);
         const config = configValidacion[id];
+        if (config && config.regex && !config.regex.test(valor)) {
+            feedback.textContent = 'Formato inválido. Use números con punto decimal si es necesario';
+            input.classList.add('is-invalid');
+            return false;
+        }
+        
+        const numero = parseFloat(valor);
         if (numero < config.min || numero > config.max) {
             feedback.textContent = config.mensaje;
             input.classList.add('is-invalid');
@@ -67,14 +73,18 @@
             }
             return true;
         }
-        const numero = parseInt(valor);
-        const config = configValidacion[idOriginal];
-        if (config) {
-            if (numero < config.min || numero > config.max) {
-                feedback.textContent = config.mensaje;
-                input.classList.add('is-invalid');
-                return false;
-            }
+        const config = configValidacion[id];
+        if (config && config.regex && !config.regex.test(valor)) {
+            feedback.textContent = 'Formato inválido. Use números con punto decimal si es necesario';
+            input.classList.add('is-invalid');
+            return false;
+        }
+        
+        const numero = parseFloat(valor);
+        if (numero < config.min || numero > config.max) {
+            feedback.textContent = config.mensaje;
+            input.classList.add('is-invalid');
+            return false;
         } else if (idOriginal === 'porcentajeobjetivo') {
             if (numero < 0 || numero > 30) {
                 feedback.textContent = 'El porcentaje debe estar entre 0% y 30%';
