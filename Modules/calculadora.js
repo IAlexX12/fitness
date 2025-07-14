@@ -66,4 +66,8 @@ document.getElementById('formCalculadoraGrasa').addEventListener('submit', funct
 
     // Si quieres rellenar el campo principal automáticamente:
     document.getElementById('grasa').value = grasa;
+
+    // Pasar de int a float
+    const peso = parseFloat(document.getElementById('pesoYMCA').value);
+
 });
