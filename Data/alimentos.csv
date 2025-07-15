@@ -77,7 +77,7 @@ Yema de huevo,grasa,huevos,2,0,0,1
 Gazpacho,grasa,,250,0,0,1
 Salmorejo,grasa,,120,0,0,1
 Patatas fritas,grasa,,20,0,0,1
-Mermelada (0% azúcares añadidos),carbohidratos,frutas,263,0,1,0
+Mermelada (0% azúcares añadidos),carbohidratos,frutas,<263,1,0
 Leche condensada,carbohidratos,leche,20,0,1,0
 Dulce de leche,carbohidratos,leche,30,0,1,0
 Salsa de soja,carbohidratos,soja,200,0,1,0

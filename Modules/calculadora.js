@@ -22,15 +22,19 @@ document.getElementById('abrirCalculadoraGrasa').addEventListener('click', funct
 // Mostrar/ocultar campo cadera según sexo
 const sexoYMCA = document.getElementById('sexoYMCA');
 if (sexoYMCA) {
-    sexoYMCA.addEventListener('change', function () {
+    sexoYMCA.addEventListener('change', function() {
         const caderaContainer = document.getElementById('caderaYMCAContainer');
         const caderaInput = document.getElementById('caderaYMCA');
+        
         if (this.value === 'mujer') {
             caderaContainer.classList.remove('d-none');
             caderaInput.setAttribute('required', 'required');
         } else {
             caderaContainer.classList.add('d-none');
             caderaInput.removeAttribute('required');
+            caderaInput.value = '';
+            caderaInput.classList.remove('is-invalid');
+            document.querySelector('.caderaYMCA-feedback').textContent = '';
         }
     });
 }
@@ -40,10 +44,22 @@ if (sexoYMCA) {
 // =====================
 document.getElementById('formCalculadoraGrasa').addEventListener('submit', function (e) {
     e.preventDefault();
+
+    // Limpiar errores previos
+    document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+    document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+    
+    // Validar antes de calcular
+    if (!ValidadorForm.validarCalculadoraYMCA()) {
+        mostrarToast('Por favor corrige los errores en los campos', 'danger');
+        return;
+    }
+
     const sexo = document.getElementById('sexoYMCA').value;
     const altura = parseFloat(document.getElementById('alturaYMCA').value);
     const cintura = parseFloat(document.getElementById('cinturaYMCA').value);
     const cuello = parseFloat(document.getElementById('cuelloYMCA').value);
+
     let cadera = 0;
     if (sexo === 'mujer') {
         cadera = parseFloat(document.getElementById('caderaYMCA').value);
@@ -64,6 +80,7 @@ document.getElementById('formCalculadoraGrasa').addEventListener('submit', funct
     resultado.textContent = `Tu % graso estimado es: ${grasa}%`;
     resultado.classList.remove('d-none');
 
-    // Si quieres rellenar el campo principal automáticamente:
+     // Rellenar el campo principal
     document.getElementById('grasa').value = grasa;
+    ValidadorForm.validarCampo(document.getElementById('grasa'));
 });

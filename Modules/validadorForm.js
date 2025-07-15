@@ -7,11 +7,17 @@
             regex: /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
             mensaje: 'Solo se permiten letras y espacios (sin números ni símbolos)'
         },
-        altura: { min: 100, max: 250, mensaje: 'Debe ser entre 100 y 250 cm', regex: /^\d*\.?\d+$/, decimal: true },
-        peso: { min: 30, max: 300, mensaje: 'Debe ser entre 30 y 300 kg', regex: /^\d*\.?\d+$/, decimal: true },
+        altura: { min: 100, max: 250, mensaje: 'Debe ser entre 100 y 250 cm' },
+        peso: { min: 30, max: 300, mensaje: 'Debe ser entre 30 y 300 kg', decimal: true },
         edad: { min: 15, max: 120, mensaje: 'Debe ser entre 15 y 120 años' },
         grasa: { min: 1, max: 60, mensaje: 'Debe ser entre 1% y 60%', decimal: true },
-        porcentajeObjetivo: { min: 0, max: 30, mensaje: 'El porcentaje debe estar entre 0% y 30%' }
+        porcentajeObjetivo: { min: 0, max: 30, mensaje: 'El porcentaje debe estar entre 0% y 30%' },
+        // Validaciones para campos de la calculadora de grasa YMCA
+        alturaYMCA: { min: 100, max: 250, mensaje: 'Debe ser entre 100 y 250 cm' },
+        pesoYMCA: { min: 30, max: 300, mensaje: 'Debe ser entre 30 y 300 kg', decimal: true },
+        cinturaYMCA: { min: 30, max: 200, mensaje: 'Debe ser entre 30 y 200 cm' },
+        cuelloYMCA: { min: 20, max: 80, mensaje: 'Debe ser entre 20 y 80 cm' },
+        caderaYMCA: { min: 50, max: 300, mensaje: 'Debe ser entre 50 y 300 cm' }
     };
 
 
@@ -215,11 +221,71 @@
         return valido;
     }
 
+    // Validacion de campos de la calculadora de grasa YMCA
+    function validarCalculadoraYMCA() {
+        let valido = true;
+        const campos = ['alturaYMCA', 'pesoYMCA', 'cinturaYMCA', 'cuelloYMCA'];
+
+        // Validar campos comunes
+        campos.forEach(id => {
+            const input = document.getElementById(id);
+            if (!validarCampo(input)) {
+                valido = false;
+            }
+        });
+
+        // Validar cadera solo si es mujer
+        const sexo = document.getElementById('sexoYMCA').value;
+        if (sexo === 'mujer') {
+            const caderaInput = document.getElementById('caderaYMCA');
+            if (!validarCampo(caderaInput)) {
+                valido = false;
+            }
+        }
+
+        return valido;
+    }
+
+    function configurarValidacionesCalculadora() {
+        document.querySelectorAll('#alturaYMCA, #pesoYMCA, #cinturaYMCA, #cuelloYMCA, #caderaYMCA').forEach(input => {
+            input.addEventListener('input', function () {
+                // Guarda la posición del cursor
+                const cursorPosition = this.selectionStart;
+
+                // Permite números y un solo punto decimal
+                let newValue = this.value.replace(/[^0-9.]/g, '');
+
+                // Maneja múltiples puntos decimales
+                const pointCount = (newValue.match(/\./g) || []).length;
+                if (pointCount > 1) {
+                    const parts = newValue.split('.');
+                    newValue = parts[0] + '.' + parts.slice(1).join('');
+                }
+
+                // Si el valor cambió, actualiza el campo
+                if (this.value !== newValue) {
+                    this.value = newValue;
+                    // Restaura la posición del cursor
+                    this.setSelectionRange(cursorPosition, cursorPosition);
+                }
+
+                ValidadorForm.validarCampo(this);
+            });
+
+            // Validar al perder el foco
+            input.addEventListener('blur', function () {
+                ValidadorForm.validarCampo(this);
+            });
+        });
+    }
+
     global.ValidadorForm = {
         validarCampo,
         validarCampoEdicion,
         validarFormularioCompleto,
         validarFormularioEdicionCompleto,
+        validarCalculadoraYMCA,
+        configurarValidacionesCalculadora,
         configValidacion
     };
 })(window);
